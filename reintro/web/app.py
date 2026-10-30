@@ -1,0 +1,272 @@
+"""The site: bill search, bill pages with the reintroduction draft, downloads."""
+
+from __future__ import annotations
+
+import io
+import json
+import os
+import re
+import zipfile
+from functools import lru_cache
+from pathlib import Path
+
+import markdown
+from fastapi import FastAPI, HTTPException, Query, Request
+from fastapi.responses import HTMLResponse, JSONResponse, PlainTextResponse, Response
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+
+from .. import db, generate, render
+from ..linkedleg import default_clients
+from ..reintroduce import ordinal
+
+HERE = Path(__file__).parent
+DOCS = Path(os.environ.get("REINTRO_DOCS", HERE.parents[1] / "docs"))
+DB_PATH = os.environ.get("REINTRO_DB", "data/reintro.db")
+CACHE_DIR = Path(os.environ.get("REINTRO_CACHE", "data/cache"))
+CHECKS = os.environ.get("REINTRO_CHECKS", "on") != "off"
+PAGE = 25
+
+app = FastAPI(title="Reintroductions", docs_url="/api/docs", redoc_url=None)
+app.mount("/static", StaticFiles(directory=HERE / "static"), name="static")
+templates = Jinja2Templates(directory=HERE / "templates")
+templates.env.globals["ordinal"] = ordinal
+templates.env.globals["citation"] = db.citation
+
+
+@lru_cache(maxsize=1)
+def con():
+    Path(DB_PATH).parent.mkdir(parents=True, exist_ok=True)
+    return db.connect(DB_PATH)
+
+
+@lru_cache(maxsize=1)
+def clients():
+    if not CHECKS:
+        return None, None
+    CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    return default_clients(str(CACHE_DIR / "http.db"))
+
+
+def latest_congress() -> int | None:
+    cs = db.congresses(con())
+    return cs[0] if cs else None
+
+
+def bill_label(row) -> str:
+    return db.citation(row["bill_type"], row["number"])
+
+
+templates.env.globals["bill_label"] = bill_label
+templates.env.filters["loads"] = lambda s: json.loads(s) if s else None
+
+
+def _doc(name: str) -> tuple[str, str]:
+    p = DOCS / name
+    if not p.exists():
+        raise HTTPException(404)
+    text = p.read_text()
+    title = name
+    if text.startswith("---"):
+        _, fm, text = text.split("---", 2)
+        m = re.search(r"^title:\s*(.+)$", fm, re.M)
+        if m:
+            title = m.group(1).strip()
+    body = markdown.markdown(text, extensions=["tables", "fenced_code", "toc"])
+    return title, body
+
+
+@app.get("/healthz", include_in_schema=False)
+def healthz():
+    return {"ok": True, "congresses": db.congresses(con())}
+
+
+@app.get("/", response_class=HTMLResponse)
+def home(request: Request):
+    c = con()
+    counts = c.execute("select congress, count(*) n, sum(enacted) enacted, sum(related_enacted is not null) related "
+                       "from bills group by congress order by congress desc").fetchall()
+    return templates.TemplateResponse(request, "home.html", {
+        "counts": counts, "latest": latest_congress(), "subjects": db.subject_list(c, latest_congress())})
+
+
+@app.get("/search", response_class=HTMLResponse)
+def search_page(request: Request, q: str = "", congress: int | None = None, chamber: str | None = None,
+                subject: str | None = None, sponsor: str | None = None, cosponsor: str | None = None,
+                status: str | None = None, page: int = Query(1, ge=1)):
+    c = con()
+    congress = congress if congress is not None else latest_congress()
+    res = db.search(c, q=q, congress=congress, chamber=chamber, subject=subject or None, sponsor=sponsor or None,
+                    cosponsor=cosponsor or None, status=status or None, limit=PAGE, offset=(page - 1) * PAGE)
+    pages = max(1, (res.total + PAGE - 1) // PAGE)
+    params = {k: v for k, v in dict(q=q, congress=congress, chamber=chamber, subject=subject, sponsor=sponsor,
+                                     cosponsor=cosponsor, status=status).items() if v}
+    return templates.TemplateResponse(request, "search.html", {
+        "res": res, "params": params, "page": page, "pages": pages, "congresses": db.congresses(c),
+        "subjects": db.subject_list(c, congress)})
+
+
+@app.get("/bills/{bill_id}", response_class=HTMLResponse)
+def bill_page(request: Request, bill_id: str, check: int = 1):
+    c = con()
+    row = db.get_bill(c, bill_id)
+    if row is None:
+        raise HTTPException(404, f"no bill {bill_id}")
+    draft = error = None
+    if not row["enacted"] and row["text_path"]:
+        try:
+            draft = _draft(bill_id, check=bool(check))
+        except generate.NotEligible as e:
+            error = str(e)
+        except Exception as e:  # noqa: BLE001 — show the page without a draft
+            error = f"The draft could not be built: {e}"
+    later = db.same_title_in(c, bill_id, row["congress"] + 1) if row["congress"] + 1 in db.congresses(c) else []
+    ctx = {
+        "b": row, "people": db.people(c, bill_id), "subjects": db.subjects(c, bill_id),
+        "related_enacted": json.loads(row["related_enacted"]) if row["related_enacted"] else [],
+        "enacted_as": json.loads(row["enacted_as"]) if row["enacted_as"] else None,
+        "draft": draft, "draft_html": render.render(draft.tree) if draft else None, "error": error,
+        "later": later, "check": check, "to_congress": row["congress"] + 1,
+    }
+    return templates.TemplateResponse(request, "bill.html", ctx)
+
+
+def _draft(bill_id: str, check: bool = True, force: bool = False):
+    us, st = clients() if check else (None, None)
+    return generate.build(con(), bill_id, uscode=us, statutes=st, cache_dir=CACHE_DIR, force=force)
+
+
+def _filename(bill_id: str, ext: str) -> str:
+    return f"reintroduction-draft-{bill_id}.{ext}"
+
+
+def _eligible(bill_id: str):
+    try:
+        return _draft(bill_id)
+    except KeyError:
+        raise HTTPException(404, f"no bill {bill_id}")
+    except generate.NotEligible as e:
+        raise HTTPException(409, str(e))
+
+
+@app.get("/bills/{bill_id}/draft.xml")
+def draft_xml(bill_id: str):
+    d = _eligible(bill_id)
+    return Response(d.xml, media_type="application/xml",
+                    headers={"Content-Disposition": f'attachment; filename="{_filename(bill_id, "xml")}"'})
+
+
+@app.get("/bills/{bill_id}/draft.pdf")
+def draft_pdf(bill_id: str, warnings: int = 1):
+    from ..pdf import draft_pdf as make_pdf
+    d = _eligible(bill_id)
+    data = make_pdf(d.tree, source_line=f"Draft from {d.source['citation']}", warnings_on=bool(warnings))
+    return Response(data, media_type="application/pdf",
+                    headers={"Content-Disposition": f'attachment; filename="{_filename(bill_id, "pdf")}"'})
+
+
+@app.get("/bills/{bill_id}/warnings.csv")
+def draft_warnings(bill_id: str):
+    d = _eligible(bill_id)
+    return PlainTextResponse(d.warnings_csv(), media_type="text/csv",
+                             headers={"Content-Disposition": f'attachment; filename="{_filename(bill_id, "csv")}"'})
+
+
+@app.get("/selection", response_class=HTMLResponse)
+def selection(request: Request):
+    return templates.TemplateResponse(request, "selection.html", {})
+
+
+@app.get("/download")
+def download(ids: str = Query(..., description="Comma-separated bill ids, at most 50"), pdf: int = 1):
+    from ..pdf import draft_pdf as make_pdf
+    want = [i for i in ids.split(",") if i][:50]
+    buf = io.BytesIO()
+    skipped = []
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as z:
+        rows = ["bill,kind,where,message"]
+        for bid in want:
+            try:
+                d = _draft(bid)
+            except (KeyError, generate.NotEligible) as e:
+                skipped.append(f"{bid}: {e}")
+                continue
+            z.writestr(_filename(bid, "xml"), d.xml)
+            if pdf:
+                z.writestr(_filename(bid, "pdf"), make_pdf(d.tree, source_line=f"Draft from {d.source['citation']}"))
+            rows += d.warnings_csv().splitlines()[1:]
+        z.writestr("warnings.csv", "\n".join(rows) + "\n")
+        if skipped:
+            z.writestr("skipped.txt", "\n".join(skipped) + "\n")
+    return Response(buf.getvalue(), media_type="application/zip",
+                    headers={"Content-Disposition": 'attachment; filename="reintroduction-drafts.zip"'})
+
+
+@app.get("/guideline", response_class=HTMLResponse)
+def guideline(request: Request):
+    title, body = _doc("guideline.md")
+    return templates.TemplateResponse(request, "doc.html", {"title": title, "body": body})
+
+
+@app.get("/research", response_class=HTMLResponse)
+def research(request: Request):
+    title, body = _doc("research/README.md")
+    return templates.TemplateResponse(request, "doc.html", {"title": title, "body": body})
+
+
+@app.get("/research/{name}.json", include_in_schema=False)
+def research_json(name: str):
+    p = DOCS / "research" / f"{name}.json"
+    if not re.fullmatch(r"[a-z\-]+", name) or not p.exists():
+        raise HTTPException(404)
+    return Response(p.read_bytes(), media_type="application/json")
+
+
+@app.get("/plan", response_class=HTMLResponse)
+def plan(request: Request):
+    title, body = _doc("plan.md")
+    return templates.TemplateResponse(request, "doc.html", {"title": title, "body": body})
+
+
+# ---------------------------------------------------------------- JSON API
+
+
+def _bill_json(row) -> dict:
+    d = {k: row[k] for k in row.keys() if k not in ("text_path",)}
+    for k in ("enacted_as", "related_enacted", "reintroduced_as"):
+        d[k] = json.loads(d[k]) if d[k] else None
+    d["enacted"] = bool(d["enacted"])
+    d["citation"] = bill_label(row)
+    return d
+
+
+@app.get("/api/v1/search")
+def api_search(q: str = "", congress: int | None = None, chamber: str | None = None, subject: str | None = None,
+               sponsor: str | None = None, cosponsor: str | None = None, status: str | None = None,
+               limit: int = Query(25, le=100), offset: int = 0):
+    res = db.search(con(), q=q, congress=congress, chamber=chamber, subject=subject, sponsor=sponsor,
+                    cosponsor=cosponsor, status=status, limit=limit, offset=offset)
+    return {"total": res.total, "results": [_bill_json(r) for r in res.rows]}
+
+
+@app.get("/api/v1/bills/{bill_id}")
+def api_bill(bill_id: str):
+    row = db.get_bill(con(), bill_id)
+    if row is None:
+        raise HTTPException(404)
+    d = _bill_json(row)
+    d["people"] = [dict(p) for p in db.people(con(), bill_id)]
+    d["subjects"] = db.subjects(con(), bill_id)
+    return d
+
+
+@app.get("/api/v1/bills/{bill_id}/draft")
+def api_draft(bill_id: str, check: int = 1):
+    try:
+        d = _draft(bill_id, check=bool(check))
+    except KeyError:
+        raise HTTPException(404)
+    except generate.NotEligible as e:
+        return JSONResponse({"detail": str(e)}, status_code=409)
+    return {"bill_id": bill_id, "source": d.source, "changes": d.changes, "warnings": d.warnings,
+            "report": d.report, "xml_url": f"/bills/{bill_id}/draft.xml", "pdf_url": f"/bills/{bill_id}/draft.pdf"}

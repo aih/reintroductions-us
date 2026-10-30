@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Search bills{% endblock %}
+{% block main %}
+<h1>Search bills</h1>
+<form class="filters" action="/search" method="get" role="search">
+  <div class="field wide"><label for="q">Words, title or number</label><input id="q" name="q" type="search" value="{{ params.q or '' }}"></div>
+  <div class="field"><label for="congress">Congress</label>
+    <select id="congress" name="congress">{% for c in congresses %}<option value="{{ c }}" {% if params.congress == c %}selected{% endif %}>{{ ordinal(c) }}</option>{% endfor %}</select></div>
+  <div class="field"><label for="chamber">Chamber</label>
+    <select id="chamber" name="chamber"><option value="">Both</option>
+      <option value="house" {% if params.chamber == 'house' %}selected{% endif %}>House</option>
+      <option value="senate" {% if params.chamber == 'senate' %}selected{% endif %}>Senate</option></select></div>
+  <div class="field"><label for="subject">Policy area</label>
+    <select id="subject" name="subject"><option value="">Any</option>
+      {% for s in subjects %}<option {% if params.subject == s.s %}selected{% endif %}>{{ s.s }}</option>{% endfor %}</select></div>
+  <div class="field"><label for="sponsor">Sponsor</label><input id="sponsor" name="sponsor" value="{{ params.sponsor or '' }}" placeholder="Name or bioguide id"></div>
+  <div class="field"><label for="cosponsor">Cosponsor</label><input id="cosponsor" name="cosponsor" value="{{ params.cosponsor or '' }}" placeholder="Name or bioguide id"></div>
+  <div class="field"><label for="status">Status</label>
+    <select id="status" name="status"><option value="">Any</option>
+      <option value="not-enacted" {% if params.status == 'not-enacted' %}selected{% endif %}>Not law, no related law</option>
+      <option value="enacted" {% if params.status == 'enacted' %}selected{% endif %}>Became law</option>
+      <option value="related-enacted" {% if params.status == 'related-enacted' %}selected{% endif %}>A related bill became law</option></select></div>
+  <div class="field"><button type="submit">Search</button></div>
+</form>
+<p class="total" role="status">{{ "{:,}".format(res.total) }} result{{ '' if res.total == 1 else 's' }}</p>
+{% if res.rows %}
+<ul class="results">
+{% for b in res.rows %}
+  <li class="result">
+    <div class="result__head">
+      <a class="result__num" href="/bills/{{ b.bill_id }}">{{ bill_label(b) }}</a>
+      <span class="result__congress">{{ ordinal(b.congress) }} Congress</span>
+      {% if b.enacted %}<span class="badge badge--law">Became law{% set law = b.enacted_as|loads %}{% if law %}: Pub. L. {{ law.congress }}-{{ law.number }}{% endif %}</span>
+      {% elif b.related_enacted %}<span class="badge badge--related">Related bill became law</span>{% endif %}
+    </div>
+    <p class="result__title">{{ b.display_title or b.official_title or "(no title)" }}</p>
+    <p class="result__meta">{% if b.sponsor_name %}{{ b.sponsor_name }}{% if b.sponsor_party %} ({{ b.sponsor_party }}-{{ b.sponsor_state }}){% endif %}{% endif %}
+      {% if b.cosponsor_count %} · {{ b.cosponsor_count }} cosponsor{{ '' if b.cosponsor_count == 1 else 's' }}{% endif %}
+      {% if b.introduced_at %} · introduced {{ b.introduced_at }}{% endif %}{% if b.policy_area %} · {{ b.policy_area }}{% endif %}</p>
+    {% if not b.enacted and b.text_path %}
+    <button type="button" class="sel-toggle" data-sel="{{ b.bill_id }}" data-label="{{ bill_label(b) }} ({{ ordinal(b.congress) }})" aria-pressed="false">Add to selection</button>
+    {% endif %}
+  </li>
+{% endfor %}
+</ul>
+{% if pages > 1 %}
+<nav class="pager" aria-label="Pages">
+  {% if page > 1 %}<a href="?{{ params|urlencode }}&page={{ page - 1 }}">Previous</a>{% endif %}
+  <span>Page {{ page }} of {{ pages }}</span>
+  {% if page < pages %}<a href="?{{ params|urlencode }}&page={{ page + 1 }}">Next</a>{% endif %}
+</nav>
+{% endif %}
+{% endif %}
+{% endblock %}

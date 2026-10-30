@@ -1,0 +1,49 @@
+/* The bill text, on the page and in the PDF. */
+.bill-text { font-family: Georgia, "DejaVu Serif", serif; line-height: 1.55; border: 1px solid var(--rule, #ddd); padding: 1rem 1.25rem; border-radius: 6px; }
+.draft-banner { font: 700 .85rem system-ui, sans-serif; letter-spacing: .08em; color: var(--err, #90302e); margin: 0 0 1rem; }
+.uslm .preface { text-align: center; margin-bottom: 1.5rem; }
+.uslm .preface > span { display: block; }
+.uslm .pf-congress, .uslm .pf-session { font-weight: 700; display: inline !important; }
+.uslm .pf-congress::after { content: " — "; }
+.uslm .doc-type, .uslm .pf-docNumber { font-weight: 700; font-size: 1.2em; }
+.uslm .pf-chamber { margin-top: .75rem; }
+.uslm .pf-action { text-align: left; margin-top: .75rem; }
+.uslm .pf-dist { display: none !important; }
+.uslm .doc-title { text-align: center; font-size: 1.4em; letter-spacing: .1em; margin: 1rem 0 .5rem; }
+.uslm .official-title { text-align: center; font-style: normal; margin: 0 2rem 1rem; }
+.uslm .enacting { text-indent: 1.5em; }
+.uslm .lv { margin: .35rem 0; }
+.uslm .lv-division > .num, .uslm .lv-title > .num, .uslm .lv-subtitle > .num, .uslm .lv-part > .num, .uslm .lv-chapter > .num,
+.uslm .lv-division > .heading, .uslm .lv-title > .heading, .uslm .lv-subtitle > .heading, .uslm .lv-part > .heading, .uslm .lv-chapter > .heading { display: inline; font-weight: 700; }
+.uslm .lv-division, .uslm .lv-title, .uslm .lv-subtitle, .uslm .lv-part, .uslm .lv-chapter { margin-top: 1.25rem; }
+.uslm .lv-division > .num, .uslm .lv-title > .num { display: block; text-align: center; }
+.uslm .lv-division > .heading, .uslm .lv-title > .heading { display: block; text-align: center; text-transform: uppercase; }
+.uslm .lv-section { margin-top: 1rem; }
+.uslm .lv-section > .num, .uslm .lv-section > .heading { font-weight: 700; }
+.uslm .lv-section > .heading { text-transform: uppercase; }
+.uslm .lv-section > .heading::after { content: "."; }
+.uslm .lv-subsection, .uslm .lv-paragraph, .uslm .lv-subparagraph, .uslm .lv-clause, .uslm .lv-subclause, .uslm .lv-item, .uslm .lv-subitem { margin-left: 1.5em; }
+.uslm .lv-section > .lv-subsection { margin-left: 0; text-indent: 1.5em; }
+.uslm .content, .uslm .chapeau, .uslm .continuation { display: inline; }
+.uslm .lv > .num + .content, .uslm .lv > .heading + .content, .uslm .lv > .heading + .chapeau { display: inline; }
+.uslm .continuation { display: block; }
+.uslm .smallCaps { font-variant: small-caps; }
+.uslm .quoted { margin: .4rem 0 .4rem 1.5em; padding-left: .75rem; border-left: 2px solid var(--rule, #ddd); }
+.uslm .quoted .lv { margin-left: 1em; }
+.uslm q.quotedText { quotes: none; }
+.uslm .shortTitle { font-style: normal; }
+.uslm .amendingAction { text-decoration: underline dotted; text-underline-offset: 3px; }
+.uslm .toc { list-style: none; padding-left: 1.5em; font-size: .95em; }
+.uslm .toc-title, .uslm .toc-division { font-weight: 700; margin-top: .3rem; }
+.uslm table { border-collapse: collapse; margin: .5rem 0; font-size: .9em; }
+.uslm td, .uslm th { border: 1px solid var(--rule, #ccc); padding: .2rem .4rem; }
+.uslm .preamble .recital { margin: .5rem 0; text-indent: 1.5em; }
+aside.warning { display: block; margin: .5rem 0; padding: .45rem .75rem; text-indent: 0; font: .88rem/1.45 system-ui, "DejaVu Sans", sans-serif;
+  background: var(--warn-bg, #fff4d6); border-left: 4px solid var(--warn, #8a5a00); color: var(--ink, #1b1b1b); }
+.warning__kind { font-weight: 700; text-transform: uppercase; font-size: .78em; letter-spacing: .04em; color: var(--warn, #8a5a00); margin-right: .35rem; }
+aside.warning--citation-amended, aside.warning--struck-text-not-found, aside.warning--citation-missing, aside.warning--law-amended { border-color: var(--err, #90302e); }
+aside.warning--citation-amended .warning__kind, aside.warning--struck-text-not-found .warning__kind,
+aside.warning--citation-missing .warning__kind, aside.warning--law-amended .warning__kind { color: var(--err, #90302e); }
+body.print .uslm .lv { break-inside: auto; }
+.uslm .lv > .num + .heading, .uslm .lv > .heading { margin-right: .35em; }
+.uslm .after-quoted-block { display: block; margin-left: 1.5em; }
