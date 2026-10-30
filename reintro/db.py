@@ -69,8 +69,11 @@ NUMBER_RX = re.compile(r"^\s*(h\.?\s*r\.?|s\.?|h\.?\s*res\.?|s\.?\s*res\.?|h\.?\
 
 
 def connect(path: str | Path) -> sqlite3.Connection:
-    con = sqlite3.connect(str(path), check_same_thread=False)
+    con = sqlite3.connect(str(path), check_same_thread=False, timeout=30)
     con.row_factory = sqlite3.Row
+    # WAL: the daily update writes from another process while the site reads.
+    if str(path) != ":memory:":
+        con.execute("pragma journal_mode=wal")
     con.executescript(SCHEMA)
     return con
 

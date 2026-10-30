@@ -1,0 +1,83 @@
+# reintro.linkedlegislation.org on the box that runs the US Code and Statutes
+# sites (docs/deploy.md). The edge Caddy (statutes-at-large deploy/edge)
+# terminates TLS and hands the hostname to `proxy` here, under the alias
+# `reintro-proxy` on the external `edge` network.
+#
+#   docker compose -f docker-compose.prod.yml up -d --build --wait
+#
+# .env beside this file (mode 600):
+#   SITE_ADDRESS=http://reintro.linkedlegislation.org:8000   required
+#   DATA_ROOT=/var/lib/reintro           the database, the congress data, the cache
+#   USCODE_API_TOKEN=…, STATUTES_API_TOKEN=…   docs/api-tokens.md; unset, anonymous limits
+#   GATE_HOST=gate.invalid               turns the cookie gate off (deploy/Caddyfile)
+name: reintroductions
+
+services:
+  app:
+    image: reintroductions-app:latest
+    build: .
+    environment:
+      USCODE_API_TOKEN: ${USCODE_API_TOKEN:-}
+      STATUTES_API_TOKEN: ${STATUTES_API_TOKEN:-}
+    volumes:
+      - ${DATA_ROOT:-/var/lib/reintro}:/data
+    expose:
+      - "8020"
+    restart: unless-stopped
+    mem_limit: 1g
+    logging:
+      driver: json-file
+      options:
+        max-size: 50m
+        max-file: "3"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8020/healthz', timeout=5)"]
+      interval: 15s
+      timeout: 6s
+      retries: 5
+      start_period: 20s
+
+  # The daily update and one-off loads (deploy/update.sh), outside the serving
+  # container's 1 GB: `docker compose --profile jobs run --rm jobs reintro …`.
+  jobs:
+    image: reintroductions-app:latest
+    profiles: ["jobs"]
+    environment:
+      USCODE_API_TOKEN: ${USCODE_API_TOKEN:-}
+      STATUTES_API_TOKEN: ${STATUTES_API_TOKEN:-}
+    volumes:
+      - ${DATA_ROOT:-/var/lib/reintro}:/data
+    mem_limit: 1g
+    logging:
+      driver: json-file
+      options:
+        max-size: 50m
+        max-file: "3"
+
+  proxy:
+    image: caddy:2-alpine
+    depends_on:
+      app:
+        condition: service_healthy
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS:?set SITE_ADDRESS in .env}
+      GATE_HOST: ${GATE_HOST:-reintro.linkedlegislation.org}
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ${DATA_ROOT:-/var/lib/reintro}/caddy:/data
+    networks:
+      default: {}
+      edge:
+        aliases:
+          - reintro-proxy
+    restart: unless-stopped
+    mem_limit: 64m
+    logging:
+      driver: json-file
+      options:
+        max-size: 50m
+        max-file: "3"
+
+networks:
+  edge:
+    external: true

@@ -14,6 +14,7 @@ years and dates the bill sets, renamed committees and findings.
 
 - [docs/guideline.md](docs/guideline.md): what changes between Congresses, shown on the site at `/guideline`.
 - [docs/research/README.md](docs/research/README.md): the comparison of 1,223 bills of January 2025 with their 118th versions.
+- [docs/deploy.md](docs/deploy.md): reintro.linkedlegislation.org on the shared EC2 box, its sizing, and the serverless pre-generation plan.
 - [docs/plan.md](docs/plan.md): the data, the pipeline, the warnings, the site workflow, research still owed, and API tokens for the two linkedlegislation sites.
 
 ## Run it
@@ -38,6 +39,8 @@ uv run reintro draft hr206-119 --out hr206.xml --pdf hr206.pdf
 | `REINTRO_DB` | `data/reintro.db` | SQLite database with the FTS5 search index |
 | `REINTRO_CACHE` | `data/cache` | Drafts and API answers |
 | `REINTRO_CHECKS` | `on` | `off` builds drafts without calling the two linkedlegislation sites |
+| `REINTRO_PDF_MAX_SOURCE_BYTES` | `1000000` | Longest source text whose PDF is rendered on request; also the PDF budget of one zip |
+| `REINTRO_PDF_CONCURRENCY` | `1` | PDF renders at once |
 | `USCODE_API_TOKEN`, `STATUTES_API_TOKEN` | — | Sent as `Authorization: Bearer`; generating and storing them is [docs/api-tokens.md](docs/api-tokens.md) |
 
 The variables can be kept in `.env` (copied from `.env.example`, gitignored) and passed with

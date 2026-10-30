@@ -1,0 +1,90 @@
+# reintro.linkedlegislation.org behind the edge (statutes-at-large deploy/edge).
+# The edge terminates TLS and overwrites X-Forwarded-For with the client; this
+# proxy trusts the edge network's subnet and no other.
+{
+	servers {
+		trusted_proxies static 10.83.0.0/24
+	}
+}
+
+{$SITE_ADDRESS::8000} {
+	encode gzip zstd
+
+	handle /robots.txt {
+		header Content-Type "text/plain; charset=utf-8"
+		respond <<ROBOTS
+			User-agent: *
+			Disallow: /
+			ROBOTS 200
+	}
+
+	# The two linkedlegislation sites' crawler list: 403 before a draft is built.
+	@crawlers header_regexp User-Agent "(?i)(meta-externalagent|meta-webindexer|facebookexternalhit|claudebot|claude-web|gptbot|oai-searchbot|chatgpt-user|perplexitybot|perplexity-user|google-extended|googleother|applebot|amazonbot|bytespider|ccbot|cohere-ai|diffbot|imagesift|omgili|dataforseo|semrush|ahrefs|mj12|dotbot|petalbot|yandex|timpibot|webzio|scrapy|bot[/ ]|[ /(]bot\b|crawler|spider)"
+	handle @crawlers {
+		header Content-Type "text/plain; charset=utf-8"
+		respond "This site is closed to automated crawling. See /robots.txt." 403
+	}
+
+	# The pages ask for a cookie, as on the other two sites. A request without
+	# `reintro_h` gets 403 with Set-Cookie and one scripted reload. /healthz,
+	# /static and the JSON API are outside it. GATE_HOST names the hostname it
+	# applies to; the default `gate.invalid` matches nothing.
+	@gate {
+		host {$GATE_HOST:gate.invalid}
+		not path /healthz /static/* /api/* /robots.txt
+		not header Cookie *reintro_h=*
+	}
+	handle @gate {
+		header Content-Type "text/html; charset=utf-8"
+		header Cache-Control "no-store"
+		header Set-Cookie "reintro_h=1; Path=/; Max-Age=2592000; SameSite=Lax; Secure; HttpOnly"
+		respond <<HTML
+			<!doctype html>
+			<html lang="en">
+			<head>
+			<meta charset="utf-8">
+			<meta name="viewport" content="width=device-width, initial-scale=1">
+			<title>Checking your browser</title>
+			<script>
+			try {
+			  if (!sessionStorage.getItem('reintro-gate')) {
+			    sessionStorage.setItem('reintro-gate', '1');
+			    location.reload();
+			  }
+			} catch (e) {}
+			</script>
+			</head>
+			<body>
+			<h1>Checking your browser</h1>
+			<p>This page should reload itself. The site needs cookies enabled.</p>
+			<p>For automated access, use the API at <a href="/api/docs">/api/docs</a>.
+			This site is closed to crawling: see <a href="/robots.txt">/robots.txt</a>.</p>
+			</body>
+			</html>
+			HTML 403
+	}
+
+	handle {
+		reverse_proxy app:8020 {
+			header_up X-Forwarded-For {client_ip}
+			lb_try_duration 25s
+			lb_try_interval 250ms
+			transport http {
+				dial_timeout 5s
+				response_header_timeout 120s
+			}
+		}
+	}
+
+	header {
+		?Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		?X-Content-Type-Options "nosniff"
+		?Referrer-Policy "strict-origin-when-cross-origin"
+		?X-Frame-Options "DENY"
+	}
+
+	log {
+		output stdout
+		format console
+	}
+}
