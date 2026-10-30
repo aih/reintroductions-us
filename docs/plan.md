@@ -136,7 +136,8 @@ are limited per caller. Pull requests:
 [aih/statutes-at-large#28](https://github.com/aih/statutes-at-large/pull/28)
 (`STATUTES_API_TOKENS`, ADR-0038). Each site's `scripts/api_token.py NAME --scale N`
 makes a token and prints the settings entry; this site reads the tokens from
-`USCODE_API_TOKEN` and `STATUTES_API_TOKEN`.
+`USCODE_API_TOKEN` and `STATUTES_API_TOKEN`. Both pull requests are merged; generating, storing and
+using the tokens is [docs/api-tokens.md](api-tokens.md).
 
 Until a token is issued, this site uses the unwindowed history
 (`/sections/{id}/versions`, not limited by the windowed budget) and computes

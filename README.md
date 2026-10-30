@@ -38,7 +38,10 @@ uv run reintro draft hr206-119 --out hr206.xml --pdf hr206.pdf
 | `REINTRO_DB` | `data/reintro.db` | SQLite database with the FTS5 search index |
 | `REINTRO_CACHE` | `data/cache` | Drafts and API answers |
 | `REINTRO_CHECKS` | `on` | `off` builds drafts without calling the two linkedlegislation sites |
-| `USCODE_API_TOKEN`, `STATUTES_API_TOKEN` | — | Sent as `Authorization: Bearer` |
+| `USCODE_API_TOKEN`, `STATUTES_API_TOKEN` | — | Sent as `Authorization: Bearer`; generating and storing them is [docs/api-tokens.md](docs/api-tokens.md) |
+
+The variables can be kept in `.env` (copied from `.env.example`, gitignored) and passed with
+`uv run --env-file .env reintro …`.
 
 ## Layout
 
