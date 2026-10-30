@@ -1,0 +1,32 @@
+{
+ "pairs": 1046,
+ "min_similarity": 0.5,
+ "counts": {
+  "has_citations": 769,
+  "amends_law": 632,
+  "any_year_shift": 451,
+  "strike_and_insert": 395,
+  "uses_date_of_enactment": 281,
+  "has_fiscal_year": 120,
+  "citations_changed": 91,
+  "fiscal_year_changed": 80,
+  "section_count_changed": 77,
+  "has_taxable_year": 55,
+  "taxable_year_changed": 48,
+  "has_fixed_deadline": 22,
+  "fixed_deadline_changed": 15,
+  "names_renamed_committee": 10,
+  "renamed_committee_updated": 7
+ },
+ "year_shift_histogram": {
+  "-5": 1,
+  "-1": 4,
+  "1": 394,
+  "2": 652,
+  "3": 19,
+  "4": 7,
+  "6": 1,
+  "11": 1,
+  "27": 1
+ }
+}

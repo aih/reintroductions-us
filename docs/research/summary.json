@@ -1,0 +1,45 @@
+{
+ "congress": 119,
+ "window": [
+  "2025-01-03",
+  "2025-01-31"
+ ],
+ "types": "hr,s",
+ "introduced_in_window": 1223,
+ "matched_with_text": 1088,
+ "unmatched": 125,
+ "identical_body": 316,
+ "similarity_median": 0.9956,
+ "similarity_ge_0_95": 840,
+ "similarity_lt_0_80": 136,
+ "bills_with_change_kind": {
+  "wording": 479,
+  "year": 470,
+  "inserted": 327,
+  "deleted": 238,
+  "citation": 133,
+  "date": 54,
+  "dollar-amount": 41,
+  "fiscal-year": 36
+ },
+ "bills_with_change_kind_pct": {
+  "wording": 44.0,
+  "year": 43.2,
+  "inserted": 30.1,
+  "deleted": 21.9,
+  "citation": 12.2,
+  "date": 5.0,
+  "dollar-amount": 3.8,
+  "fiscal-year": 3.3
+ },
+ "same_sponsor_pct": 85.9,
+ "chamber_changed": 43,
+ "official_title_same_pct": 89.8,
+ "short_titles_same_pct": 57.7,
+ "short_title_year_only_pct": 31.4,
+ "committees_same_pct": 94.4,
+ "cosponsors_kept_pct_of_old": 44.6,
+ "old_had_later_version": 175,
+ "closer_to_old_latest_than_introduced": 85,
+ "old_enacted": 0
+}

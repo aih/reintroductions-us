@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}Reintroductions{% endblock %} · Reintroductions</title>
+<link rel="stylesheet" href="/static/site.css">
+<link rel="stylesheet" href="/static/bill.css">
+<script src="/static/selection.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site">
+  <a class="brand" href="/">Reintroductions</a>
+  <nav aria-label="Site">
+    <a href="/search">Search bills</a>
+    <a href="/selection">Selection <span class="sel-count" data-sel-count>0</span></a>
+    <a href="/guideline">Guideline</a>
+    <a href="/research">Research</a>
+    <a href="/plan">Plan</a>
+  </nav>
+</header>
+<main id="main">
+{% block main %}{% endblock %}
+</main>
+<footer class="site">
+  <p>Drafts prepared here are not for introduction. Bill data: GovInfo bulk data via
+  <a href="https://github.com/unitedstates/congress">unitedstates/congress</a>. Citation checks:
+  <a href="https://uscode.linkedlegislation.org">uscode.linkedlegislation.org</a> and
+  <a href="https://statutes.linkedlegislation.org">statutes.linkedlegislation.org</a>.</p>
+</footer>
+</body>
+</html>

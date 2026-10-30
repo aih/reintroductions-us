@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Selection{% endblock %}
+{% block main %}
+<h1>Selection</h1>
+<p>Bills you add from search results or bill pages are kept in this browser.</p>
+<ul class="selection" data-sel-list></ul>
+<p data-sel-empty>No bills selected. <a href="/search">Search bills</a>.</p>
+<div class="draft-actions" data-sel-actions hidden>
+  <a class="button" data-sel-download href="#">Download drafts (zip: XML, PDF, warnings)</a>
+  <a class="button button--plain" data-sel-download-xml href="#">XML only</a>
+  <button type="button" class="button--plain" data-sel-clear>Clear selection</button>
+</div>
+<p class="note">A download holds at most 50 bills.</p>
+{% endblock %}

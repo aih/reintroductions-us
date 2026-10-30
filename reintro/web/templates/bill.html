@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}{{ bill_label(b) }} ({{ ordinal(b.congress) }}){% endblock %}
+{% block main %}
+<p class="crumbs"><a href="/search?congress={{ b.congress }}">{{ ordinal(b.congress) }} Congress</a></p>
+<h1>{{ bill_label(b) }} <span class="sub">{{ ordinal(b.congress) }} Congress</span></h1>
+<p class="lede">{{ b.display_title or b.official_title }}</p>
+{% if b.enacted %}
+<div class="alert alert--law" role="status"><strong>This bill became law{% if enacted_as %} as Public Law {{ enacted_as.congress }}-{{ enacted_as.number }}{% endif %}.</strong> No reintroduction is prepared.</div>
+{% endif %}
+{% for r in related_enacted %}
+<div class="alert alert--related" role="status">A {{ r.reason }} became law: <a href="/bills/{{ r.bill_id }}">{{ r.bill_id }}</a>{% if r.law %}, Public Law {{ r.law.congress }}-{{ r.law.number }}{% endif %}. Check whether this bill's text was enacted before reintroducing it.</div>
+{% endfor %}
+{% for l, t in later %}
+<div class="alert {% if l.enacted %}alert--law{% else %}alert--related{% endif %}" role="status">Possibly already reintroduced: <a href="/bills/{{ l.bill_id }}">{{ bill_label(l) }} ({{ ordinal(l.congress) }})</a>, “{{ t }}”{% if l.enacted %}{% set law = l.enacted_as|loads %}, which became law{% if law %} as Public Law {{ law.congress }}-{{ law.number }}{% endif %}{% endif %}.</div>
+{% endfor %}
+<dl class="facts">
+  <dt>Official title</dt><dd>{{ b.official_title }}</dd>
+  <dt>Introduced</dt><dd>{{ b.introduced_at or "—" }}</dd>
+  <dt>Status</dt><dd>{{ b.latest_action or b.status or "—" }}{% if b.latest_action_date %} ({{ b.latest_action_date }}){% endif %}</dd>
+  <dt>Policy area</dt><dd>{% if b.policy_area %}<a href="/search?congress={{ b.congress }}&subject={{ b.policy_area|urlencode }}">{{ b.policy_area }}</a>{% else %}—{% endif %}</dd>
+  <dt>Sponsor</dt><dd>{% for p in people if p.role == 'sponsor' %}<a href="/search?congress={{ b.congress }}&sponsor={{ p.bioguide_id }}">{{ p.name }}</a>{% if p.party %} ({{ p.party }}-{{ p.state }}){% endif %}{% endfor %}</dd>
+  <dt>Cosponsors</dt><dd>{% set cos = people|selectattr('role', 'equalto', 'cosponsor')|list %}{% if cos %}<details><summary>{{ cos|length }} cosponsor{{ '' if cos|length == 1 else 's' }}</summary><ul class="cos">{% for p in cos %}<li><a href="/search?congress={{ b.congress }}&cosponsor={{ p.bioguide_id }}">{{ p.name }}</a>{% if p.party %} ({{ p.party }}-{{ p.state }}){% endif %}{% if p.original %} · original{% endif %}</li>{% endfor %}</ul></details>{% else %}None{% endif %}</dd>
+  {% if subjects %}<dt>Subjects</dt><dd>{{ subjects|join("; ") }}</dd>{% endif %}
+  <dt>Source text</dt><dd>{% if b.text_version %}{{ b.text_version|upper }}{% if b.text_date %}, {{ b.text_date }}{% endif %}{% else %}Not published{% endif %}</dd>
+</dl>
+
+{% if draft %}
+<section class="draft" aria-labelledby="draft-h">
+  <h2 id="draft-h">Draft for the {{ ordinal(to_congress) }} Congress</h2>
+  <div class="draft-actions">
+    <a class="button" href="/bills/{{ b.bill_id }}/draft.xml">Download USLM XML</a>
+    <a class="button" href="/bills/{{ b.bill_id }}/draft.pdf">Download PDF</a>
+    <a class="button button--plain" href="/bills/{{ b.bill_id }}/warnings.csv">Warnings (CSV)</a>
+    <button type="button" class="sel-toggle" data-sel="{{ b.bill_id }}" data-label="{{ bill_label(b) }} ({{ ordinal(b.congress) }})" aria-pressed="false">Add to selection</button>
+  </div>
+  <h3>Changed in the text</h3>
+  <ul>{% for c in draft.changes %}<li>{{ c }}</li>{% endfor %}</ul>
+  <h3>Warnings <span class="n">{{ draft.warnings|length }}</span></h3>
+  <ul class="warning-summary">
+  {% for w in draft.warnings %}<li><span class="warning__kind">{{ w.kind }}</span> {% if w.where %}<a href="#{{ w.where }}">{{ w.where.split('/draft')[-1] or 'bill' }}</a>{% endif %} {{ w.message }}</li>{% endfor %}
+  </ul>
+  {% if not check %}<p class="note">Citation checks are off for this view. <a href="?check=1">Run them</a>.</p>
+  {% elif draft.report.usc_sections is defined %}<p class="note">Checked {{ draft.report.usc_sections }} cited US Code section{{ '' if draft.report.usc_sections == 1 else 's' }} and {{ draft.report.public_laws }} Public Law{{ '' if draft.report.public_laws == 1 else 's' }}{% if draft.report.uscode_release %} against release point {{ draft.report.uscode_release }}{% endif %} on {{ draft.report.checked_at }}{% if draft.report.errors %}; {{ draft.report.errors }} lookup{{ '' if draft.report.errors == 1 else 's' }} failed{% endif %}.</p>{% endif %}
+  <div class="bill-text">
+    <p class="draft-banner">DRAFT — NOT FOR INTRODUCTION</p>
+    {{ draft_html|safe }}
+  </div>
+</section>
+{% elif error %}
+<p class="alert">{{ error }}</p>
+{% endif %}
+{% endblock %}

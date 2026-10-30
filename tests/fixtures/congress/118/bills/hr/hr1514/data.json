@@ -1,0 +1,184 @@
+{
+  "actions": [
+    {
+      "acted_at": "2023-03-09",
+      "action_code": "Intro-H",
+      "references": [],
+      "text": "Introduced in House",
+      "type": "action"
+    },
+    {
+      "acted_at": "2023-03-09",
+      "action_code": "H11100",
+      "committees": [
+        "HSVR"
+      ],
+      "references": [],
+      "status": "REFERRED",
+      "text": "Referred to the House Committee on Veterans' Affairs.",
+      "type": "referral"
+    }
+  ],
+  "amendments": [],
+  "bill_id": "hr1514-118",
+  "bill_type": "hr",
+  "by_request": false,
+  "committee_reports": [],
+  "committees": [
+    {
+      "activity": [
+        "referral"
+      ],
+      "committee": "House Veterans' Affairs",
+      "committee_id": "HSVR"
+    }
+  ],
+  "congress": "118",
+  "cosponsors": [
+    {
+      "bioguide_id": "B001291",
+      "district": "36",
+      "name": "Babin, Brian",
+      "original_cosponsor": false,
+      "sponsored_at": "2023-05-10",
+      "state": "TX",
+      "title": "Rep.",
+      "withdrawn_at": null
+    },
+    {
+      "bioguide_id": "B001302",
+      "district": "5",
+      "name": "Biggs, Andy",
+      "original_cosponsor": false,
+      "sponsored_at": "2023-03-27",
+      "state": "AZ",
+      "title": "Rep.",
+      "withdrawn_at": null
+    },
+    {
+      "bioguide_id": "B000825",
+      "district": "3",
+      "name": "Boebert, Lauren",
+      "original_cosponsor": false,
+      "sponsored_at": "2023-03-24",
+      "state": "CO",
+      "title": "Rep.",
+      "withdrawn_at": null
+    },
+    {
+      "bioguide_id": "D000594",
+      "district": "15",
+      "name": "De La Cruz, Monica",
+      "original_cosponsor": false,
+      "sponsored_at": "2023-05-09",
+      "state": "TX",
+      "title": "Rep.",
+      "withdrawn_at": null
+    },
+    {
+      "bioguide_id": "G000578",
+      "district": "1",
+      "name": "Gaetz, Matt",
+      "original_cosponsor": false,
+      "sponsored_at": "2023-03-24",
+      "state": "FL",
+      "title": "Rep.",
+      "withdrawn_at": null
+    },
+    {
+      "bioguide_id": "P000614",
+      "district": "1",
+      "name": "Pappas, Chris",
+      "original_cosponsor": true,
+      "sponsored_at": "2023-03-09",
+      "state": "NH",
+      "title": "Rep.",
+      "withdrawn_at": null
+    },
+    {
+      "bioguide_id": "V000135",
+      "district": "3",
+      "name": "Van Orden, Derrick",
+      "original_cosponsor": false,
+      "sponsored_at": "2024-02-13",
+      "state": "WI",
+      "title": "Rep.",
+      "withdrawn_at": null
+    },
+    {
+      "bioguide_id": "W000823",
+      "district": "6",
+      "name": "Waltz, Michael",
+      "original_cosponsor": false,
+      "sponsored_at": "2024-03-21",
+      "state": "FL",
+      "title": "Rep.",
+      "withdrawn_at": null
+    }
+  ],
+  "enacted_as": null,
+  "history": {
+    "active": false,
+    "awaiting_signature": false,
+    "enacted": false,
+    "vetoed": false
+  },
+  "introduced_at": "2023-03-09",
+  "number": "1514",
+  "official_title": "To amend title 38, United States Code, to increase the rate of the special pension payable to Medal of Honor recipients, and for other purposes.",
+  "popular_title": null,
+  "related_bills": [
+    {
+      "bill_id": "s5036-118",
+      "identified_by": "CRS",
+      "reason": "related",
+      "type": "bill"
+    }
+  ],
+  "short_title": "Medal of Honor Act",
+  "sponsor": {
+    "bioguide_id": "N000026",
+    "district": "22",
+    "name": "Nehls, Troy E.",
+    "state": "TX",
+    "title": "Rep.",
+    "type": "person"
+  },
+  "status": "REFERRED",
+  "status_at": "2023-03-09",
+  "subjects": [
+    "Armed forces and national security"
+  ],
+  "subjects_top_term": "Armed forces and national security",
+  "summary": {
+    "as": "Introduced in House",
+    "asOf": "2023-03-09",
+    "date": "2024-01-10T15:26:36Z",
+    "text": "Medal of Honor Act\n\nThis bill increases the monthly special pension for living Medal of Honor recipients from $1,619.34 to $8,333.33 and establishes a rate of $1,489.73 for the monthly special pension for surviving spouses of Medal of Honor recipients. Both amounts must be adjusted annually for inflation."
+  },
+  "titles": [
+    {
+      "as": null,
+      "is_for_portion": false,
+      "textVersionCode": null,
+      "title": "Medal of Honor Act",
+      "type": "display"
+    },
+    {
+      "as": "introduced",
+      "is_for_portion": false,
+      "textVersionCode": null,
+      "title": "Medal of Honor Act",
+      "type": "short"
+    },
+    {
+      "as": "introduced",
+      "is_for_portion": false,
+      "textVersionCode": null,
+      "title": "To amend title 38, United States Code, to increase the rate of the special pension payable to Medal of Honor recipients, and for other purposes.",
+      "type": "official"
+    }
+  ],
+  "updated_at": "2024-12-11T17:51:07Z",
+  "url": "https://www.govinfo.gov/bulkdata/BILLSTATUS/118/hr/BILLSTATUS-118hr1514.xml"
+}

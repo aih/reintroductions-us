@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Prepare a bill for reintroduction{% endblock %}
+{% block main %}
+<h1>Prepare a bill for reintroduction</h1>
+<p class="lede">Find bills of the {% if latest %}{{ ordinal(latest) }}{% else %}most recent{% endif %} Congress that did not become law,
+and download each as a draft for the next Congress in USLM 2.0 XML and PDF. Each draft marks the places that need review:
+cited law amended since the bill was written, words it strikes that are no longer in the law, dates and fiscal years to move.</p>
+<form class="searchbox" action="/search" method="get" role="search">
+  <label for="q">Search by words, title or number</label>
+  <div class="row">
+    <input id="q" name="q" type="search" placeholder="e.g. pet food, H.R. 597, Medal of Honor">
+    <button type="submit">Search</button>
+  </div>
+</form>
+{% if counts %}
+<table class="counts">
+  <caption>Bills loaded</caption>
+  <thead><tr><th scope="col">Congress</th><th scope="col">Bills and resolutions</th><th scope="col">Became law</th><th scope="col">A related bill became law</th></tr></thead>
+  <tbody>
+  {% for r in counts %}
+  <tr><td><a href="/search?congress={{ r.congress }}">{{ ordinal(r.congress) }}</a></td><td>{{ "{:,}".format(r.n) }}</td>
+      <td><a href="/search?congress={{ r.congress }}&status=enacted">{{ "{:,}".format(r.enacted or 0) }}</a></td>
+      <td><a href="/search?congress={{ r.congress }}&status=related-enacted">{{ "{:,}".format(r.related or 0) }}</a></td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>No bills are loaded yet. Run <code>reintro update --congress 119</code>.</p>
+{% endif %}
+{% if subjects %}
+<h2>Browse by policy area</h2>
+<ul class="subjects">
+{% for s in subjects %}<li><a href="/search?subject={{ s.s|urlencode }}">{{ s.s }}</a> <span class="n">{{ s.n }}</span></li>{% endfor %}
+</ul>
+{% endif %}
+<h2>How it works</h2>
+<ol>
+  <li>Search for bills by text, number, policy area, sponsor or cosponsor.</li>
+  <li>Open a bill to see its draft for the next Congress with the warnings in place.</li>
+  <li>Add bills to your selection and download the drafts as XML, PDF and a warnings list.</li>
+</ol>
+<p>The <a href="/guideline">guideline</a> lists what usually changes between Congresses.</p>
+{% endblock %}

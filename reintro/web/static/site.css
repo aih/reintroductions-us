@@ -1,0 +1,59 @@
+:root {
+  --ink: #1b1b1b; --muted: #555; --bg: #fff; --panel: #f4f3f0; --edge: #8a8a8a; --rule: #ddd;
+  --link: #31509d; --law: #036639; --warn: #8a5a00; --warn-bg: #fff4d6; --err: #90302e;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --ink: #eee; --muted: #b5b5b5; --bg: #161616; --panel: #232323; --edge: #8a8a8a; --rule: #333;
+          --link: #9fb6ef; --law: #6fd19c; --warn: #f2c66d; --warn-bg: #3a2f12; --err: #f0a3a1; }
+}
+* { box-sizing: border-box; }
+body { margin: 0; font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; color: var(--ink); background: var(--bg); }
+a { color: var(--link); }
+.skip { position: absolute; left: -999px; }
+.skip:focus { left: 1rem; top: 1rem; background: var(--bg); padding: .5rem; z-index: 10; }
+header.site { display: flex; flex-wrap: wrap; gap: .5rem 1.5rem; align-items: center; padding: .75rem 1rem; border-bottom: 1px solid var(--rule); }
+header.site .brand { font-weight: 700; font-size: 1.15rem; text-decoration: none; color: var(--ink); }
+header.site nav { display: flex; flex-wrap: wrap; gap: .25rem 1rem; }
+.sel-count { display: inline-block; min-width: 1.4em; padding: 0 .3em; border-radius: 1em; background: var(--panel); text-align: center; font-size: .85em; }
+main { max-width: 60rem; margin: 0 auto; padding: 1rem; }
+footer.site { max-width: 60rem; margin: 2rem auto 0; padding: 1rem; border-top: 1px solid var(--rule); color: var(--muted); font-size: .9rem; }
+h1 .sub { font-weight: 400; color: var(--muted); font-size: .6em; }
+.lede { font-size: 1.1rem; }
+label { display: block; font-weight: 600; margin-bottom: .2rem; }
+input, select, button, .button { font: inherit; padding: .45rem .6rem; border: 1px solid var(--edge); border-radius: 4px; background: var(--bg); color: var(--ink); }
+button, .button { cursor: pointer; background: var(--link); color: #fff; border-color: var(--link); text-decoration: none; display: inline-block; }
+.button--plain, button.button--plain, .sel-toggle { background: var(--bg); color: var(--link); }
+.sel-toggle[aria-pressed="true"] { background: var(--panel); color: var(--ink); }
+:focus-visible { outline: 3px solid #2491ff; outline-offset: 2px; }
+.searchbox .row { display: flex; gap: .5rem; }
+.searchbox input { flex: 1; min-width: 0; }
+.filters { display: flex; flex-wrap: wrap; gap: .75rem 1rem; align-items: flex-end; padding: 1rem; background: var(--panel); border-radius: 6px; }
+.filters .field.wide { flex: 1 1 100%; }
+.filters .field.wide input { width: 100%; }
+.results { list-style: none; padding: 0; }
+.result { padding: .9rem 0; border-bottom: 1px solid var(--rule); }
+.result__head { display: flex; flex-wrap: wrap; gap: .5rem; align-items: baseline; }
+.result__num { font-weight: 700; font-size: 1.1rem; }
+.result__congress, .result__meta, .n, .note, .crumbs { color: var(--muted); }
+.result__title { margin: .2rem 0; }
+.result__meta { margin: .2rem 0 .5rem; font-size: .92rem; }
+.badge { font-size: .8rem; padding: .05rem .5rem; border-radius: 1rem; border: 1px solid currentColor; }
+.badge--law { color: var(--law); }
+.badge--related { color: var(--warn); }
+.alert { padding: .75rem 1rem; border-left: 4px solid var(--warn); background: var(--warn-bg); margin: .75rem 0; }
+.alert--law { border-color: var(--law); background: var(--panel); }
+.facts { display: grid; grid-template-columns: max-content 1fr; gap: .3rem 1rem; }
+.facts dt { font-weight: 600; }
+.facts dd { margin: 0; }
+.cos { columns: 2 16rem; padding-left: 1.2rem; }
+.draft-actions { display: flex; flex-wrap: wrap; gap: .5rem; margin: .75rem 0; }
+.pager { display: flex; gap: 1rem; justify-content: center; margin: 1rem 0; }
+.counts { border-collapse: collapse; margin: 1rem 0; }
+.counts th, .counts td { padding: .3rem .8rem; border-bottom: 1px solid var(--rule); text-align: left; }
+.subjects { columns: 2 18rem; padding-left: 1.2rem; }
+.warning-summary { padding-left: 1.2rem; font-size: .93rem; }
+.doc table { border-collapse: collapse; }
+.doc th, .doc td { border: 1px solid var(--rule); padding: .3rem .6rem; vertical-align: top; }
+.doc code, .doc pre { background: var(--panel); }
+.doc pre { padding: .75rem; overflow-x: auto; }
+@media (max-width: 40em) { .facts { grid-template-columns: 1fr; } .facts dt { margin-top: .5rem; } }

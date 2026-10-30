@@ -1,0 +1,156 @@
+{
+  "actions": [
+    {
+      "acted_at": "2023-12-05",
+      "action_code": "10000",
+      "references": [],
+      "text": "Introduced in Senate",
+      "type": "action"
+    },
+    {
+      "acted_at": "2023-12-05",
+      "action_code": "",
+      "committees": [
+        "SSAF"
+      ],
+      "references": [],
+      "status": "REFERRED",
+      "text": "Read twice and referred to the Committee on Agriculture, Nutrition, and Forestry.",
+      "type": "referral"
+    }
+  ],
+  "amendments": [],
+  "bill_id": "s3401-118",
+  "bill_type": "s",
+  "by_request": false,
+  "committee_reports": [],
+  "committees": [
+    {
+      "activity": [
+        "Referred To"
+      ],
+      "committee": "Senate Agriculture, Nutrition, and Forestry",
+      "committee_id": "SSAF"
+    }
+  ],
+  "congress": "118",
+  "cosponsors": [
+    {
+      "bioguide_id": "B001277",
+      "district": null,
+      "name": "Blumenthal, Richard",
+      "original_cosponsor": false,
+      "sponsored_at": "2024-06-11",
+      "state": "CT",
+      "title": "Sen.",
+      "withdrawn_at": null
+    },
+    {
+      "bioguide_id": "M000133",
+      "district": null,
+      "name": "Markey, Edward J.",
+      "original_cosponsor": true,
+      "sponsored_at": "2023-12-05",
+      "state": "MA",
+      "title": "Sen.",
+      "withdrawn_at": null
+    },
+    {
+      "bioguide_id": "M001169",
+      "district": null,
+      "name": "Murphy, Christopher",
+      "original_cosponsor": false,
+      "sponsored_at": "2024-03-07",
+      "state": "CT",
+      "title": "Sen.",
+      "withdrawn_at": null
+    },
+    {
+      "bioguide_id": "S000033",
+      "district": null,
+      "name": "Sanders, Bernard",
+      "original_cosponsor": true,
+      "sponsored_at": "2023-12-05",
+      "state": "VT",
+      "title": "Sen.",
+      "withdrawn_at": null
+    },
+    {
+      "bioguide_id": "W000817",
+      "district": null,
+      "name": "Warren, Elizabeth",
+      "original_cosponsor": true,
+      "sponsored_at": "2023-12-05",
+      "state": "MA",
+      "title": "Sen.",
+      "withdrawn_at": null
+    }
+  ],
+  "enacted_as": null,
+  "history": {
+    "active": false,
+    "awaiting_signature": false,
+    "enacted": false,
+    "vetoed": false
+  },
+  "introduced_at": "2023-12-05",
+  "number": "3401",
+  "official_title": "A bill to amend the Federal Crop Insurance Act to authorize the Federal Crop Insurance Corporation to carry out research and development on a single index insurance policy, and for other purposes.",
+  "popular_title": null,
+  "related_bills": [
+    {
+      "bill_id": "hr8611-118",
+      "identified_by": "CRS",
+      "reason": "related",
+      "type": "bill"
+    }
+  ],
+  "short_title": "WEATHER Act of 2023",
+  "sponsor": {
+    "bioguide_id": "W000800",
+    "district": null,
+    "name": "Welch, Peter",
+    "state": "VT",
+    "title": "Sen.",
+    "type": "person"
+  },
+  "status": "REFERRED",
+  "status_at": "2023-12-05",
+  "subjects": [
+    "Agriculture and food"
+  ],
+  "subjects_top_term": "Agriculture and food",
+  "summary": null,
+  "titles": [
+    {
+      "as": null,
+      "is_for_portion": false,
+      "textVersionCode": null,
+      "title": "WEATHER Act of 2023",
+      "type": "display"
+    },
+    {
+      "as": "introduced",
+      "is_for_portion": false,
+      "textVersionCode": null,
+      "title": "WEATHER Act of 2023",
+      "type": "short"
+    },
+    {
+      "as": "introduced",
+      "is_for_portion": false,
+      "textVersionCode": null,
+      "title": "Withstanding Extreme Agricultural Threats by Harvesting Economic Resilience Act of 2023",
+      "type": "short"
+    },
+    {
+      "as": "introduced",
+      "is_for_portion": false,
+      "textVersionCode": null,
+      "title": "A bill to amend the Federal Crop Insurance Act to authorize the Federal Crop Insurance Corporation to carry out research and development on a single index insurance policy, and for other purposes.",
+      "type": "official"
+    }
+  ],
+  "updated_at": "2025-01-14T16:41:20Z",
+  "url": "https://www.govinfo.gov/bulkdata/BILLSTATUS/118/s/BILLSTATUS-118s3401.xml"
+}
