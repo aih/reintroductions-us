@@ -65,7 +65,9 @@ class CachedClient:
                 time.sleep(min(30.0, float(r.headers.get("Retry-After", "5"))))
                 continue
             break
-        if r.status_code >= 500 or r.status_code == 429:
+        # Not cached: a server error, a spent budget, and a refused token (401)
+        # or User-Agent (403) all answer differently once fixed.
+        if r.status_code >= 500 or r.status_code in (401, 403, 429):
             return Answer(r.status_code, None)
         try:
             data = r.json()

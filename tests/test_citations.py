@@ -34,3 +34,23 @@ def test_written_citations_are_found():
     root.append(c)
     found = {(x.title, x.section) for x in citations.collect_usc(root)}
     assert found == {("38", "1562"), ("42", "1395w-4")}
+
+
+def test_a_refused_token_is_sent_and_not_cached(tmp_path):
+    import httpx
+
+    from reintro.linkedleg import CachedClient
+
+    seen = []
+
+    def handler(request: httpx.Request):
+        seen.append(request.headers.get("authorization"))
+        if len(seen) == 1:
+            return httpx.Response(401, json={"detail": "unknown API token"})
+        return httpx.Response(200, json={"ok": True})
+
+    c = CachedClient("https://example.test/api/v1", str(tmp_path / "http.db"), token="stat_x",
+                     min_interval=0, transport=httpx.MockTransport(handler))
+    assert c.get("/us/pl/119/43").status == 401
+    assert c.get("/us/pl/119/43").status == 200
+    assert seen == ["Bearer stat_x", "Bearer stat_x"]

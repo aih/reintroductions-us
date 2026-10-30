@@ -6,3 +6,4 @@ cache/
 *.db
 *.db-*
 .pytest_cache/
+.env
