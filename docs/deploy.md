@@ -113,7 +113,17 @@ All steps on the box as `ec2-user` unless marked root. Reach it with
    The tokens are optional; `docs/api-tokens.md` has how to make them. `GATE_HOST=gate.invalid`
    turns the cookie gate off; `REINTRO_CONGRESS=119` pins the Congress the update fetches.
 
-4. **The site.**
+4. **The site.** Compose builds the image with buildx, which the box's Docker does not carry
+   (the other sites pull prebuilt images). Once, as root:
+
+   ```bash
+   mkdir -p /usr/local/lib/docker/cli-plugins
+   curl -sSL https://github.com/docker/buildx/releases/download/v0.38.1/buildx-v0.38.1.linux-arm64 \
+       -o /usr/local/lib/docker/cli-plugins/docker-buildx
+   chmod +x /usr/local/lib/docker/cli-plugins/docker-buildx
+   ```
+
+   Then, as `ec2-user`:
 
    ```bash
    bash deploy/deploy-on-box.sh
