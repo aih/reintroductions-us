@@ -20,6 +20,10 @@ env_value() {  # env_value NAME [default]: NAME from .env, or the default
     echo "${v:-${2:-}}"
 }
 
+if [ "$(id -u)" -eq 0 ]; then
+    echo "run this as ec2-user, not root: files it creates must stay writable by the cron jobs" >&2
+    exit 1
+fi
 if [ ! -f .env ]; then
     echo ".env is missing (docs/deploy.md, step 3)" >&2
     exit 1
@@ -52,6 +56,16 @@ docker run --rm \
     -e GATE_HOST="$(env_value GATE_HOST "$HOST")" \
     -v "$PWD/deploy/Caddyfile:/etc/caddy/Caddyfile:ro" \
     caddy:2-alpine caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
+
+# compose builds through buildx; the box's Docker had no buildx plugin on
+# 2026-10-30, since the other two sites pull prebuilt images.
+if ! docker buildx version >/dev/null 2>&1; then
+    echo "docker buildx is not installed; as root (docs/deploy.md, step 4):" >&2
+    echo "  mkdir -p /usr/local/lib/docker/cli-plugins" >&2
+    echo "  curl -sSL https://github.com/docker/buildx/releases/download/v0.38.1/buildx-v0.38.1.linux-arm64 -o /usr/local/lib/docker/cli-plugins/docker-buildx" >&2
+    echo "  chmod +x /usr/local/lib/docker/cli-plugins/docker-buildx" >&2
+    exit 1
+fi
 
 echo "=== building and starting ==="
 $COMPOSE up -d --build --wait --force-recreate app proxy
