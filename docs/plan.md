@@ -129,8 +129,14 @@ Plan: an API token, sent as `Authorization: Bearer <token>`, that
 - is stored as a SHA-256 hash in the server's settings, named, and revocable by
   removing it.
 
-The same on statutes.linkedlegislation.org, whose `cite` and `cited-by` routes are
-limited per caller. Pull requests: see the README.
+The same on statutes.linkedlegislation.org, whose law, `cite` and `cited-by` routes
+are limited per caller. Pull requests:
+[aih/uscode-redesign#100](https://github.com/aih/uscode-redesign/pull/100)
+(`USC_API_TOKENS`, ADR-0096) and
+[aih/statutes-at-large#28](https://github.com/aih/statutes-at-large/pull/28)
+(`STATUTES_API_TOKENS`, ADR-0038). Each site's `scripts/api_token.py NAME --scale N`
+makes a token and prints the settings entry; this site reads the tokens from
+`USCODE_API_TOKEN` and `STATUTES_API_TOKEN`.
 
 Until a token is issued, this site uses the unwindowed history
 (`/sections/{id}/versions`, not limited by the windowed budget) and computes
