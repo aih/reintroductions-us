@@ -5,6 +5,8 @@
     reintro update --congress 119                   fetch, then load
     reintro link --older 118 --newer 119            mark 118th bills reintroduced in the 119th
     reintro draft hr1514-118 [--to 120] [--out F.xml] [--pdf F.pdf] [--no-check]
+    reintro pregen --congress 119 [--limit N]       queue PDFs for the Lambda renderer (reintro/pregen.py)
+    reintro pregen-sync                             copy rendered PDFs from S3 into the cache
     reintro serve [--port 8020]
 """
 
@@ -100,6 +102,42 @@ def cmd_draft(a) -> int:
     return 0
 
 
+def _pregen_env() -> tuple[str, str]:
+    bucket, queue = os.environ.get("REINTRO_PREGEN_BUCKET"), os.environ.get("REINTRO_PREGEN_QUEUE_URL")
+    if not bucket:
+        sys.exit("REINTRO_PREGEN_BUCKET is not set (docs/deploy.md)")
+    return bucket, queue or ""
+
+
+def cmd_pregen(a) -> int:
+    import boto3
+
+    from . import generate, pregen
+    from .linkedleg import default_clients
+    bucket, queue = _pregen_env()
+    if not queue:
+        sys.exit("REINTRO_PREGEN_QUEUE_URL is not set (docs/deploy.md)")
+    con = db.connect(DB_PATH)
+    us = st = None
+    if os.environ.get("REINTRO_CHECKS", "on") != "off":
+        CACHE.mkdir(parents=True, exist_ok=True)
+        us, st = default_clients(str(CACHE / "http.db"))
+    build = lambda bid: generate.build(con, bid, uscode=us, statutes=st, cache_dir=CACHE)  # noqa: E731
+    r = pregen.plan(con, build, bucket=bucket, queue_url=queue, s3=boto3.client("s3"), sqs=boto3.client("sqs"),
+                    pdf_dir=CACHE / "pdf", congress=a.congress, limit=a.limit, resend=a.resend)
+    print(json.dumps(r))
+    return 0
+
+
+def cmd_pregen_sync(a) -> int:
+    import boto3
+
+    from . import pregen
+    bucket, _ = _pregen_env()
+    print(json.dumps(pregen.sync(bucket=bucket, s3=boto3.client("s3"), pdf_dir=CACHE / "pdf")))
+    return 0
+
+
 def cmd_serve(a) -> int:
     import uvicorn
     uvicorn.run("reintro.web.app:app", host=a.host, port=a.port, reload=a.reload)
@@ -128,6 +166,13 @@ def main(argv=None) -> int:
     p.add_argument("--force", action="store_true")
     p.add_argument("--allow-enacted", action="store_true")
     p.set_defaults(fn=cmd_draft)
+    p = sub.add_parser("pregen", help="queue PDFs for the Lambda renderer")
+    p.add_argument("--congress", type=int, required=True)
+    p.add_argument("--limit", type=int, default=None, help="queue at most this many bills")
+    p.add_argument("--resend", action="store_true", help="queue bills whose XML is already in S3")
+    p.set_defaults(fn=cmd_pregen)
+    p = sub.add_parser("pregen-sync", help="copy rendered PDFs from S3 into the cache")
+    p.set_defaults(fn=cmd_pregen_sync)
     p = sub.add_parser("serve")
     p.add_argument("--host", default="127.0.0.1")
     p.add_argument("--port", type=int, default=8020)

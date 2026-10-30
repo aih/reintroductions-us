@@ -19,7 +19,10 @@ compose project, `reintroductions`, behind the shared edge Caddy that statutes-a
 | `deploy/Caddyfile` | robots `Disallow: /`, crawler User-Agents refused, the cookie gate, security headers |
 | `deploy/deploy-on-box.sh` | Checkout, Caddyfile validation, build, `up -d --wait`, a check through the edge |
 | `deploy/update.sh` | `reintro update` for the current Congress, then `reintro link` against the one before |
-| `deploy/install-crons.sh` | `/etc/cron.d/reintro`: the update daily at 08:17 UTC |
+| `deploy/install-crons.sh` | `/etc/cron.d/reintro`: the update daily at 08:17 UTC, the PDF sync every 30 minutes |
+| `deploy/aws-setup.sh` | One-time AWS setup for the pre-generated PDFs (CloudShell) |
+| `lambda/Dockerfile`, `deploy/lambda-deploy.sh`, `.github/workflows/pdf-lambda.yml` | The PDF renderer on Lambda |
+| `deploy/pregen-sync.sh` | Rendered PDFs from S3 into `${DATA_ROOT}/cache/pdf` |
 
 ## Sizing
 
@@ -51,8 +54,9 @@ On the box this comes to:
   of at most 1 MB of source text, one at a time (`REINTRO_PDF_MAX_SOURCE_BYTES`,
   `REINTRO_PDF_CONCURRENCY`), and kept in `${DATA_ROOT}/cache/pdf` by the draft's hash, so each
   is rendered once. The PDFs in one zip download share a 1 MB budget, each counted at least
-  50 KB, about 20 typical bills. A bill over the limit gets its XML only, and the bill page shows
-  no PDF link. The daily update is 73 s of CPU for the load plus usc-run's downloads.
+  50 KB, about 20 typical bills. A bill over the limit with no pre-generated PDF gets its XML
+  only, and the bill page shows no PDF link. A PDF in the cache is served whatever the bill's
+  length. The daily update is 73 s of CPU for the load plus usc-run's downloads.
 - **Disk.** About 7 GB: congress data 3.5 GB with every bill type, the database 0.6 GB, the draft
   and PDF caches up to 2 GB, and room for the next Congress. It goes on a volume of its own at
   `/var/lib/reintro`, off the root volume (the root disk filled once already, uscode-redesign
@@ -60,7 +64,7 @@ On the box this comes to:
 
 Rendering every PDF ahead of time does not fit the box: about 6–7 CPU-hours for the 16,447
 eligible bills of the 119th, about 1.5 GB of PDFs, and 2.7 GB of memory for the longest bills.
-That is the serverless job below.
+Lambda renders them instead (below).
 
 ## First deploy
 
@@ -173,19 +177,70 @@ Logs: `${DATA_ROOT}/logs/deploy.log`, `${DATA_ROOT}/logs/update.log`, and
 A token change in `.env` takes effect after
 `docker compose -f docker-compose.prod.yml up -d --no-deps --force-recreate --wait app`.
 
-## Serverless pre-generation
+## Pre-generated PDFs
 
-A job that renders every draft and PDF ahead of time, off the box:
+PDFs are rendered ahead of time by the Lambda function `reintro-pdf`; the box builds the drafts
+and copies the PDFs back.
 
-| Part | |
-|---|---|
-| Trigger | EventBridge after the daily update, or once a new US Code release point appears |
-| Planner | Reads `reintro.db`, lists bills whose draft key changed (bill text version, target Congress, US Code release point), and sends one SQS message per bill |
-| Worker | Lambda from this image (arm64), 2 GB, 4 GB for bills over 1 MB of source, 15-minute limit; builds the draft, runs the citation checks, renders the PDF, writes XML, PDF and warnings JSON to S3 |
-| Citation checks | The planner collects the cited US Code sections and Public Laws of the whole batch and fetches each once with the tokens; the workers read those answers instead of calling the two sites per bill |
-| Serving | The box syncs the S3 prefix into `${DATA_ROOT}/cache` (same key as on-request drafts and PDFs), or the site redirects a PDF download to a signed S3 URL |
+```
+box: reintro pregen ── XML → s3://reintro-linkedlegislation/in/ ── message → SQS reintro-pdf
+                                                                          │
+Lambda reintro-pdf (arm64, 4096 MB, 900 s, 10 at once) ◄──────────────────┘
+   └── PDF → s3://reintro-linkedlegislation/pdf/{bill}-{xml hash}-1.pdf
+box: reintro pregen-sync ── pdf/ → ${DATA_ROOT}/cache/pdf/ ── served by the site
+```
 
-A full run of the 119th is about 23,000 Lambda-seconds at 2 GB, about $1; a day's changed bills
-cost cents; S3 holds about 1.8 GB, under $0.05 a month. Building it needs an AWS administrator for
-the IAM role, the queue, the function and the bucket prefix, as for the other sites' backups.
-Until it exists, the on-request limits above apply and the 14 bills over 1 MB have XML only.
+- `reintro pregen --congress N` (`reintro/pregen.py`) builds each eligible bill's draft with the
+  site's own cache and citation checks, so the XML hash, and with it the PDF's name, is the one
+  the site looks up. It skips a bill whose PDF is on disk or in `pdf/`, and one whose XML is
+  already in `in/` (in flight; `--resend` queues it again). `deploy/update.sh` runs it after the
+  daily load once `REINTRO_PREGEN_BUCKET` is in `.env`; the first run builds every draft of the
+  Congress, which takes hours of mostly network time for the citation checks.
+- The function (`reintro.pregen.handler`, `lambda/Dockerfile`) reads the XML, renders the PDF
+  and writes it to `pdf/`. A message that fails twice goes to `reintro-pdf-dlq`. `in/` expires
+  after 14 days.
+- `deploy/pregen-sync.sh` copies new PDFs into the cache every 30 minutes.
+- A draft changes when the bill's text, the target Congress or the US Code release point the
+  checks read changes; the next `pregen` queues it again and the old PDF stays unused.
+
+A full run of the 119th is about 23,000 Lambda-seconds at 4 GB, about $1.25, and 40 minutes at 10
+at once; a day's changed bills cost cents; S3 holds about 1.8 GB, under $0.05 a month. In the
+Lambda image a 0.97 MB bill rendered in 16.8 s at 392 MB.
+
+### Setup, once
+
+1. **AWS**, in CloudShell (us-east-1) as an administrator, from a checkout of this repository:
+
+   ```bash
+   git clone https://github.com/aih/reintroductions-us.git && cd reintroductions-us
+   bash deploy/aws-setup.sh
+   ```
+
+   It creates the bucket `reintro-linkedlegislation` (`BUCKET=…` to name another), the queue
+   and its dead-letter queue, the ECR repository, the log group, the function's role, the
+   policy `reintro-pdf` on the instance role `uscode-site`, and the GitHub deploy role
+   `reintro-github-deploy`, and prints the values for the next two steps.
+
+2. **GitHub**, Settings → Secrets and variables → Actions → Variables: `AWS_DEPLOY_ROLE_ARN`,
+   `REINTRO_PREGEN_BUCKET`, `REINTRO_PREGEN_QUEUE_ARN`. Then Actions → pdf-lambda → Run
+   workflow. It builds the image on an arm64 runner, pushes it, creates the function and its
+   queue trigger. Later pushes to `main` that touch `reintro/` or `lambda/` redeploy it.
+
+3. **The box**, `.env`: `REINTRO_PREGEN_BUCKET=…` and `REINTRO_PREGEN_QUEUE_URL=…`. Then a
+   first run, a few bills at a time:
+
+   ```bash
+   C="docker compose -f docker-compose.prod.yml --profile jobs run --rm --no-deps jobs"
+   $C reintro pregen --congress 119 --limit 20
+   $C reintro pregen-sync
+   ```
+
+   and the rest in the background:
+
+   ```bash
+   nohup $C reintro pregen --congress 119 >> /var/lib/reintro/logs/pregen.log 2>&1 &
+   ```
+
+Checks: `aws sqs get-queue-attributes --queue-url … --attribute-names
+ApproximateNumberOfMessages ApproximateNumberOfMessagesNotVisible`, the dead-letter queue's count,
+`aws logs tail /aws/lambda/reintro-pdf --since 1h`, and `${DATA_ROOT}/logs/pregen-sync.log`.

@@ -41,6 +41,7 @@ uv run reintro draft hr206-119 --out hr206.xml --pdf hr206.pdf
 | `REINTRO_CHECKS` | `on` | `off` builds drafts without calling the two linkedlegislation sites |
 | `REINTRO_PDF_MAX_SOURCE_BYTES` | `1000000` | Longest source text whose PDF is rendered on request; also the PDF budget of one zip |
 | `REINTRO_PDF_CONCURRENCY` | `1` | PDF renders at once |
+| `REINTRO_PREGEN_BUCKET`, `REINTRO_PREGEN_QUEUE_URL` | — | The S3 bucket and SQS queue of the Lambda PDF renderer (`reintro pregen`, [docs/deploy.md](docs/deploy.md)) |
 | `USCODE_API_TOKEN`, `STATUTES_API_TOKEN` | — | Sent as `Authorization: Bearer`; generating and storing them is [docs/api-tokens.md](docs/api-tokens.md) |
 
 The variables can be kept in `.env` (copied from `.env.example`, gitignored) and passed with
@@ -57,6 +58,7 @@ The variables can be kept in `.env` (copied from `.env.example`, gitignored) and
 | `reintro/citations.py`, `reintro/linkedleg.py` | Citation checks and the API clients |
 | `reintro/db.py` | SQLite schema, load, search, enacted and related-law marking |
 | `reintro/render.py`, `reintro/pdf.py` | HTML and the watermarked PDF (WeasyPrint) |
+| `reintro/pregen.py` | PDFs rendered ahead of time on Lambda: the planner, the handler, the sync |
 | `reintro/web/` | The FastAPI site and its JSON API (`/api/v1/search`, `/api/v1/bills/{id}`, `/api/v1/bills/{id}/draft`) |
 | `research/compare_reintroductions.py` | The research comparison |
 | `reintro/schema/` | USLM 2.1.0 schema from [usgpo/uslm](https://github.com/usgpo/uslm) |

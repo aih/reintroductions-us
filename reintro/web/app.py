@@ -5,7 +5,6 @@ from __future__ import annotations
 import io
 import json
 import os
-import hashlib
 import re
 import threading
 import zipfile
@@ -19,6 +18,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from .. import db, generate, render
+from ..pregen import pdf_name
 from ..linkedleg import default_clients
 from ..reintroduce import ordinal
 
@@ -136,7 +136,8 @@ def bill_page(request: Request, bill_id: str, check: int = 1):
         "related_enacted": json.loads(row["related_enacted"]) if row["related_enacted"] else [],
         "enacted_as": json.loads(row["enacted_as"]) if row["enacted_as"] else None,
         "draft": draft, "draft_html": render.render(draft.tree) if draft else None, "error": error,
-        "later": later, "check": check, "to_congress": row["congress"] + 1, "pdf_allowed": pdf_allowed(row),
+        "later": later, "check": check, "to_congress": row["congress"] + 1,
+        "pdf_allowed": pdf_allowed(row) or bool(draft and check and _pdf_path(draft, True).exists()),
     }
     return templates.TemplateResponse(request, "bill.html", ctx)
 
@@ -159,8 +160,7 @@ def pdf_allowed(row) -> bool:
 
 
 def _pdf_path(d, warnings_on: bool) -> Path:
-    h = hashlib.sha256(d.xml).hexdigest()[:16]
-    return CACHE_DIR / "pdf" / f"{d.bill_id}-{h}-{int(warnings_on)}.pdf"
+    return CACHE_DIR / "pdf" / pdf_name(d.bill_id, d.xml, warnings_on)
 
 
 def cached_pdf(d, warnings_on: bool = True) -> bytes | None:
@@ -169,7 +169,8 @@ def cached_pdf(d, warnings_on: bool = True) -> bytes | None:
 
 
 def render_pdf(d, warnings_on: bool = True) -> bytes:
-    """The draft's PDF, from `{cache}/pdf/` by the draft XML's hash, else rendered and kept there."""
+    """The draft's PDF, from `{cache}/pdf/` by the draft XML's hash (where `reintro pregen-sync`
+    also puts the PDFs rendered ahead of time), else rendered and kept there."""
     from ..pdf import draft_pdf as make_pdf
     data = cached_pdf(d, warnings_on)
     if data is not None:
@@ -215,9 +216,11 @@ def draft_xml(bill_id: str):
 @app.get("/bills/{bill_id}/draft.pdf")
 def draft_pdf(bill_id: str, warnings: int = 1):
     d = _eligible(bill_id)
-    if not pdf_allowed(db.get_bill(con(), bill_id)):
-        raise HTTPException(413, PDF_TOO_LARGE)
-    data = render_pdf(d, bool(warnings))
+    data = cached_pdf(d, bool(warnings))
+    if data is None:
+        if not pdf_allowed(db.get_bill(con(), bill_id)):
+            raise HTTPException(413, PDF_TOO_LARGE)
+        data = render_pdf(d, bool(warnings))
     return Response(data, media_type="application/pdf",
                     headers={"Content-Disposition": f'attachment; filename="{_filename(bill_id, "pdf")}"'})
 
@@ -250,18 +253,18 @@ def download(ids: str = Query(..., description="Comma-separated bill ids, at mos
                 continue
             z.writestr(_filename(bid, "xml"), d.xml)
             row = db.get_bill(con(), bid)
-            if pdf and not pdf_allowed(row):
+            data = cached_pdf(d) if pdf else None
+            if data is not None:
+                z.writestr(_filename(bid, "pdf"), data)
+            elif pdf and not pdf_allowed(row):
                 skipped.append(f"{bid}: PDF not included. {PDF_TOO_LARGE}")
             elif pdf:
-                data = cached_pdf(d)
                 cost = max(source_size(row), PDF_MIN_COST)
-                if data is None and cost > budget:
+                if cost > budget:
                     skipped.append(f"{bid}: PDF not included. {PDF_OVER_BUDGET}")
                 else:
-                    if data is None:
-                        budget -= cost
-                        data = render_pdf(d)
-                    z.writestr(_filename(bid, "pdf"), data)
+                    budget -= cost
+                    z.writestr(_filename(bid, "pdf"), render_pdf(d))
             rows += d.warnings_csv().splitlines()[1:]
         z.writestr("warnings.csv", "\n".join(rows) + "\n")
         if skipped:
