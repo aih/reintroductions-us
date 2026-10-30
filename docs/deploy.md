@@ -151,7 +151,8 @@ All steps on the box as `ec2-user` unless marked root. Reach it with
    `deploy/edge/Caddyfile`, in that checkout:
 
    ```bash
-   cd ~/statutes-at-large && git pull
+   cd ~/statutes-at-large
+   git log -1 --oneline && grep -c reintro deploy/edge/Caddyfile   # the statutes deploy pins a commit
    docker compose -p edge -f deploy/edge/docker-compose.yml up -d --force-recreate --wait
    ```
 
