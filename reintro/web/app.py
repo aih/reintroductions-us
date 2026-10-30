@@ -5,7 +5,9 @@ from __future__ import annotations
 import io
 import json
 import os
+import hashlib
 import re
+import threading
 import zipfile
 from functools import lru_cache
 from pathlib import Path
@@ -25,6 +27,14 @@ DOCS = Path(os.environ.get("REINTRO_DOCS", HERE.parents[1] / "docs"))
 DB_PATH = os.environ.get("REINTRO_DB", "data/reintro.db")
 CACHE_DIR = Path(os.environ.get("REINTRO_CACHE", "data/cache"))
 CHECKS = os.environ.get("REINTRO_CHECKS", "on") != "off"
+# A PDF is rendered on request only for a bill whose source text is at most this
+# many bytes: WeasyPrint took 19 s and 420 MB at 0.97 MB, 150 s and 2.7 GB at 9 MB
+# (docs/deploy.md). The PDFs of one zip share the same budget, each counted at
+# least PDF_MIN_COST, the fixed cost of a render (about 1 s).
+PDF_MAX_SOURCE = int(os.environ.get("REINTRO_PDF_MAX_SOURCE_BYTES", "1000000"))
+PDF_MIN_COST = 50_000
+# Renders at once; the others wait.
+PDF_RENDERS = threading.Semaphore(int(os.environ.get("REINTRO_PDF_CONCURRENCY", "1")))
 PAGE = 25
 
 app = FastAPI(title="Reintroductions", docs_url="/api/docs", redoc_url=None)
@@ -126,7 +136,7 @@ def bill_page(request: Request, bill_id: str, check: int = 1):
         "related_enacted": json.loads(row["related_enacted"]) if row["related_enacted"] else [],
         "enacted_as": json.loads(row["enacted_as"]) if row["enacted_as"] else None,
         "draft": draft, "draft_html": render.render(draft.tree) if draft else None, "error": error,
-        "later": later, "check": check, "to_congress": row["congress"] + 1,
+        "later": later, "check": check, "to_congress": row["congress"] + 1, "pdf_allowed": pdf_allowed(row),
     }
     return templates.TemplateResponse(request, "bill.html", ctx)
 
@@ -134,6 +144,52 @@ def bill_page(request: Request, bill_id: str, check: int = 1):
 def _draft(bill_id: str, check: bool = True, force: bool = False):
     us, st = clients() if check else (None, None)
     return generate.build(con(), bill_id, uscode=us, statutes=st, cache_dir=CACHE_DIR, force=force)
+
+
+def source_size(row) -> int | None:
+    try:
+        return Path(row["text_path"]).stat().st_size
+    except (OSError, TypeError):
+        return None
+
+
+def pdf_allowed(row) -> bool:
+    size = source_size(row)
+    return size is not None and size <= PDF_MAX_SOURCE
+
+
+def _pdf_path(d, warnings_on: bool) -> Path:
+    h = hashlib.sha256(d.xml).hexdigest()[:16]
+    return CACHE_DIR / "pdf" / f"{d.bill_id}-{h}-{int(warnings_on)}.pdf"
+
+
+def cached_pdf(d, warnings_on: bool = True) -> bytes | None:
+    p = _pdf_path(d, warnings_on)
+    return p.read_bytes() if p.exists() else None
+
+
+def render_pdf(d, warnings_on: bool = True) -> bytes:
+    """The draft's PDF, from `{cache}/pdf/` by the draft XML's hash, else rendered and kept there."""
+    from ..pdf import draft_pdf as make_pdf
+    data = cached_pdf(d, warnings_on)
+    if data is not None:
+        return data
+    with PDF_RENDERS:
+        data = cached_pdf(d, warnings_on)
+        if data is None:
+            data = make_pdf(d.tree, source_line=f"Draft from {d.source['citation']}", warnings_on=warnings_on)
+            p = _pdf_path(d, warnings_on)
+            p.parent.mkdir(parents=True, exist_ok=True)
+            tmp = p.with_suffix(".tmp")
+            tmp.write_bytes(data)
+            tmp.replace(p)
+    return data
+
+
+PDF_TOO_LARGE = ("This bill is too long for its PDF to be rendered on request. "
+                 "Download the USLM XML instead.")
+PDF_OVER_BUDGET = ("The PDFs in one download are limited to about 1 MB of bill text in all. "
+                   "Download this one from its bill page.")
 
 
 def _filename(bill_id: str, ext: str) -> str:
@@ -158,9 +214,10 @@ def draft_xml(bill_id: str):
 
 @app.get("/bills/{bill_id}/draft.pdf")
 def draft_pdf(bill_id: str, warnings: int = 1):
-    from ..pdf import draft_pdf as make_pdf
     d = _eligible(bill_id)
-    data = make_pdf(d.tree, source_line=f"Draft from {d.source['citation']}", warnings_on=bool(warnings))
+    if not pdf_allowed(db.get_bill(con(), bill_id)):
+        raise HTTPException(413, PDF_TOO_LARGE)
+    data = render_pdf(d, bool(warnings))
     return Response(data, media_type="application/pdf",
                     headers={"Content-Disposition": f'attachment; filename="{_filename(bill_id, "pdf")}"'})
 
@@ -179,10 +236,10 @@ def selection(request: Request):
 
 @app.get("/download")
 def download(ids: str = Query(..., description="Comma-separated bill ids, at most 50"), pdf: int = 1):
-    from ..pdf import draft_pdf as make_pdf
     want = [i for i in ids.split(",") if i][:50]
     buf = io.BytesIO()
     skipped = []
+    budget = PDF_MAX_SOURCE
     with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as z:
         rows = ["bill,kind,where,message"]
         for bid in want:
@@ -192,8 +249,19 @@ def download(ids: str = Query(..., description="Comma-separated bill ids, at mos
                 skipped.append(f"{bid}: {e}")
                 continue
             z.writestr(_filename(bid, "xml"), d.xml)
-            if pdf:
-                z.writestr(_filename(bid, "pdf"), make_pdf(d.tree, source_line=f"Draft from {d.source['citation']}"))
+            row = db.get_bill(con(), bid)
+            if pdf and not pdf_allowed(row):
+                skipped.append(f"{bid}: PDF not included. {PDF_TOO_LARGE}")
+            elif pdf:
+                data = cached_pdf(d)
+                cost = max(source_size(row), PDF_MIN_COST)
+                if data is None and cost > budget:
+                    skipped.append(f"{bid}: PDF not included. {PDF_OVER_BUDGET}")
+                else:
+                    if data is None:
+                        budget -= cost
+                        data = render_pdf(d)
+                    z.writestr(_filename(bid, "pdf"), data)
             rows += d.warnings_csv().splitlines()[1:]
         z.writestr("warnings.csv", "\n".join(rows) + "\n")
         if skipped:

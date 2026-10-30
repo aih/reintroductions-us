@@ -84,3 +84,39 @@ def test_api(client):
     assert r["total"] == 1 and r["results"][0]["citation"] == "H.R. 206"
     d = client.get("/api/v1/bills/hr206-119/draft", params={"check": 0}).json()
     assert d["warnings"] and d["source"]["congress"] == 119
+
+
+def test_a_long_bill_gets_no_pdf_on_request(client, monkeypatch):
+    from reintro.web import app as appmod
+
+    monkeypatch.setattr(appmod, "PDF_MAX_SOURCE", 10)
+    assert "Download PDF" not in client.get("/bills/hr206-119").text
+    r = client.get("/bills/hr206-119/draft.pdf")
+    assert r.status_code == 413 and "XML" in r.json()["detail"]
+    r = client.get("/download", params={"ids": "hr206-119", "pdf": 1})
+    import io
+    import zipfile
+    z = zipfile.ZipFile(io.BytesIO(r.content))
+    assert "reintroduction-draft-hr206-119.pdf" not in z.namelist()
+    assert "PDF not included" in z.read("skipped.txt").decode()
+
+
+def test_pdfs_are_kept_and_a_zip_has_a_pdf_budget(client, monkeypatch):
+    import io
+    import shutil
+    import zipfile
+
+    from reintro.web import app as appmod
+
+    shutil.rmtree(appmod.CACHE_DIR / "pdf", ignore_errors=True)
+    monkeypatch.setattr(appmod, "PDF_MIN_COST", appmod.PDF_MAX_SOURCE + 1)
+    r = client.get("/download", params={"ids": "hr206-119", "pdf": 1})
+    z = zipfile.ZipFile(io.BytesIO(r.content))
+    assert "reintroduction-draft-hr206-119.pdf" not in z.namelist()
+    assert "1 MB of bill text" in z.read("skipped.txt").decode()
+
+    first = client.get("/bills/hr206-119/draft.pdf").content
+    assert [p.name for p in (appmod.CACHE_DIR / "pdf").iterdir()][0].startswith("hr206-119-")
+    assert client.get("/bills/hr206-119/draft.pdf").content == first
+    r = client.get("/download", params={"ids": "hr206-119", "pdf": 1})
+    assert zipfile.ZipFile(io.BytesIO(r.content)).read("reintroduction-draft-hr206-119.pdf") == first

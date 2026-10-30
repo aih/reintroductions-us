@@ -29,7 +29,7 @@
   <h2 id="draft-h">Draft for the {{ ordinal(to_congress) }} Congress</h2>
   <div class="draft-actions">
     <a class="button" href="/bills/{{ b.bill_id }}/draft.xml">Download USLM XML</a>
-    <a class="button" href="/bills/{{ b.bill_id }}/draft.pdf">Download PDF</a>
+    {% if pdf_allowed %}<a class="button" href="/bills/{{ b.bill_id }}/draft.pdf">Download PDF</a>{% endif %}
     <a class="button button--plain" href="/bills/{{ b.bill_id }}/warnings.csv">Warnings (CSV)</a>
     <button type="button" class="sel-toggle" data-sel="{{ b.bill_id }}" data-label="{{ bill_label(b) }} ({{ ordinal(b.congress) }})" aria-pressed="false">Add to selection</button>
   </div>
