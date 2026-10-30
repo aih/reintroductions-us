@@ -3,8 +3,10 @@
 #
 #   sudo bash deploy/install-crons.sh
 #
-# One job: the daily update (deploy/update.sh). Image pruning is already on
-# the statutes site's weekly cron, which prunes for the whole box.
+# The daily update (deploy/update.sh) and, every 30 minutes, the copy of
+# pre-rendered PDFs from S3 (deploy/pregen-sync.sh, a no-op until the bucket
+# is set). Image pruning is already on the statutes site's weekly cron, which
+# prunes for the whole box.
 set -euo pipefail
 
 REPO_DIR="${REPO_DIR:-/home/ec2-user/reintroductions-us}"
@@ -23,6 +25,9 @@ PATH=/usr/local/bin:/usr/bin:/bin
 
 # Daily 08:17 UTC: new bill text and status from govinfo, then the load.
 17 8 * * * root cd ${REPO_DIR} && sudo -u ec2-user bash deploy/update.sh >/dev/null 2>&1
+
+# Every 30 minutes: PDFs rendered by the Lambda function, from S3 into the cache.
+*/30 * * * * root cd ${REPO_DIR} && sudo -u ec2-user bash deploy/pregen-sync.sh >/dev/null 2>&1
 CRON
 
 chmod 0644 "$CRON_FILE"

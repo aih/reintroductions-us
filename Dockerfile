@@ -16,10 +16,10 @@ ENV UV_PROJECT_ENVIRONMENT=/opt/venv \
 WORKDIR /app
 
 COPY pyproject.toml uv.lock ./
-RUN uv sync --frozen --no-dev --extra ingest --no-install-project
+RUN uv sync --frozen --no-dev --extra ingest --extra aws --no-install-project
 
 COPY . .
-RUN uv sync --frozen --no-dev --extra ingest
+RUN uv sync --frozen --no-dev --extra ingest --extra aws
 
 EXPOSE 8020
 

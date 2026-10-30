@@ -39,7 +39,9 @@ class CachedClient:
         if token:
             headers["Authorization"] = f"Bearer {token}"
         self.http = httpx.Client(headers=headers, timeout=timeout, transport=transport, follow_redirects=True)
-        self.db = sqlite3.connect(cache_path, check_same_thread=False)
+        self.db = sqlite3.connect(cache_path, check_same_thread=False, timeout=30)
+        if cache_path != ":memory:":
+            self.db.execute("pragma journal_mode=wal")  # the site and the pre-generation share it
         self.db.execute("create table if not exists http_cache (url text primary key, status int, body text, fetched real)")
         self._lock = threading.Lock()
         self._last = 0.0

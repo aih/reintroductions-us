@@ -87,8 +87,11 @@ def test_api(client):
 
 
 def test_a_long_bill_gets_no_pdf_on_request(client, monkeypatch):
+    import shutil
+
     from reintro.web import app as appmod
 
+    shutil.rmtree(appmod.CACHE_DIR / "pdf", ignore_errors=True)
     monkeypatch.setattr(appmod, "PDF_MAX_SOURCE", 10)
     assert "Download PDF" not in client.get("/bills/hr206-119").text
     r = client.get("/bills/hr206-119/draft.pdf")
@@ -120,3 +123,12 @@ def test_pdfs_are_kept_and_a_zip_has_a_pdf_budget(client, monkeypatch):
     assert client.get("/bills/hr206-119/draft.pdf").content == first
     r = client.get("/download", params={"ids": "hr206-119", "pdf": 1})
     assert zipfile.ZipFile(io.BytesIO(r.content)).read("reintroduction-draft-hr206-119.pdf") == first
+
+
+def test_a_pregenerated_pdf_is_served_past_the_limit(client, monkeypatch):
+    from reintro.web import app as appmod
+
+    first = client.get("/bills/hr206-119/draft.pdf").content  # kept in the cache
+    monkeypatch.setattr(appmod, "PDF_MAX_SOURCE", 10)
+    assert "Download PDF" in client.get("/bills/hr206-119").text
+    assert client.get("/bills/hr206-119/draft.pdf").content == first

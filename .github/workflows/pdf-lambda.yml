@@ -1,0 +1,50 @@
+name: pdf-lambda
+
+# Builds lambda/Dockerfile for arm64, pushes it to ECR and deploys the
+# function reintro-pdf (deploy/lambda-deploy.sh). Skipped until the
+# repository variables from deploy/aws-setup.sh are set.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "reintro/**"
+      - "lambda/**"
+      - "pyproject.toml"
+      - "deploy/lambda-deploy.sh"
+      - ".github/workflows/pdf-lambda.yml"
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: pdf-lambda
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: vars.AWS_DEPLOY_ROLE_ARN != ''
+    runs-on: ubuntu-24.04-arm
+    env:
+      AWS_REGION: us-east-1
+      REINTRO_PREGEN_BUCKET: ${{ vars.REINTRO_PREGEN_BUCKET }}
+      REINTRO_PREGEN_QUEUE_ARN: ${{ vars.REINTRO_PREGEN_QUEUE_ARN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: us-east-1
+      - id: ecr
+        uses: aws-actions/amazon-ecr-login@v2
+      - name: Build and push
+        id: image
+        run: |
+          image="${{ steps.ecr.outputs.registry }}/reintro-pdf:${GITHUB_SHA}"
+          docker build --provenance=false -f lambda/Dockerfile -t "$image" .
+          docker run --rm --entrypoint python3 "$image" -c "import reintro.pregen, weasyprint"
+          docker push "$image"
+          echo "uri=$image" >> "$GITHUB_OUTPUT"
+      - name: Deploy
+        run: bash deploy/lambda-deploy.sh "${{ steps.image.outputs.uri }}"

@@ -10,6 +10,7 @@
 #   DATA_ROOT=/var/lib/reintro           the database, the congress data, the cache
 #   USCODE_API_TOKEN=…, STATUTES_API_TOKEN=…   docs/api-tokens.md; unset, anonymous limits
 #   GATE_HOST=gate.invalid               turns the cookie gate off (deploy/Caddyfile)
+#   REINTRO_PREGEN_BUCKET=…, REINTRO_PREGEN_QUEUE_URL=…   the PDF pre-generation (deploy/aws-setup.sh)
 name: reintroductions
 
 services:
@@ -45,6 +46,9 @@ services:
     environment:
       USCODE_API_TOKEN: ${USCODE_API_TOKEN:-}
       STATUTES_API_TOKEN: ${STATUTES_API_TOKEN:-}
+      REINTRO_PREGEN_BUCKET: ${REINTRO_PREGEN_BUCKET:-}
+      REINTRO_PREGEN_QUEUE_URL: ${REINTRO_PREGEN_QUEUE_URL:-}
+      AWS_DEFAULT_REGION: ${AWS_REGION:-us-east-1}
     volumes:
       - ${DATA_ROOT:-/var/lib/reintro}:/data
     mem_limit: 1g

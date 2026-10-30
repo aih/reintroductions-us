@@ -5,7 +5,9 @@
 #
 # `reintro update` for the current Congress (usc-run downloads only what
 # changed, then the load), then `reintro link` against the Congress before, in
-# the `jobs` container while the site keeps serving. The Congress is
+# the `jobs` container while the site keeps serving. With REINTRO_PREGEN_BUCKET
+# in .env, `reintro pregen` then queues the PDFs of new and changed drafts for
+# the Lambda renderer (deploy/aws-setup.sh). The Congress is
 # REINTRO_CONGRESS from .env, else the one in session today. flock on
 # ${DATA_ROOT}/update.lock; logs to ${DATA_ROOT}/logs/update.log.
 set -euo pipefail
@@ -37,4 +39,7 @@ echo "=== $(date -u +%FT%TZ) update, Congress $CONGRESS ==="
 start=$(date +%s)
 $COMPOSE run --rm --no-deps jobs reintro update --congress "$CONGRESS"
 $COMPOSE run --rm --no-deps jobs reintro link --older "$(( CONGRESS - 1 ))" --newer "$CONGRESS"
+if grep -qE '^REINTRO_PREGEN_BUCKET=.+' .env 2>/dev/null; then
+    $COMPOSE run --rm --no-deps jobs reintro pregen --congress "$CONGRESS"
+fi
 echo "=== $(date -u +%FT%TZ) done in $(( $(date +%s) - start )) s ==="
