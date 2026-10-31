@@ -1,10 +1,10 @@
 :root {
   --ink: #1b1b1b; --muted: #555; --bg: #fff; --panel: #f4f3f0; --edge: #8a8a8a; --rule: #ddd;
-  --link: #31509d; --law: #036639; --warn: #8a5a00; --warn-bg: #fff4d6; --err: #90302e; --mark: #fde68a;
+  --link: #31509d; --law: #036639; --warn: #8a5a00; --warn-bg: #fff4d6; --err: #90302e; --mark: #fde68a; --brand: #1f7a4a;
 }
 @media (prefers-color-scheme: dark) {
   :root { --ink: #eee; --muted: #b5b5b5; --bg: #161616; --panel: #232323; --edge: #8a8a8a; --rule: #333;
-          --link: #9fb6ef; --law: #6fd19c; --warn: #f2c66d; --warn-bg: #3a2f12; --err: #f0a3a1; --mark: #6b5310; }
+          --link: #9fb6ef; --law: #6fd19c; --warn: #f2c66d; --warn-bg: #3a2f12; --err: #f0a3a1; --mark: #6b5310; --brand: #6fd19c; }
 }
 * { box-sizing: border-box; }
 body { margin: 0; font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; color: var(--ink); background: var(--bg); }
@@ -12,7 +12,15 @@ a { color: var(--link); }
 .skip { position: absolute; left: -999px; }
 .skip:focus { left: 1rem; top: 1rem; background: var(--bg); padding: .5rem; z-index: 10; }
 header.site { display: flex; flex-wrap: wrap; gap: .5rem 1.5rem; align-items: center; padding: .75rem 1rem; border-bottom: 1px solid var(--rule); }
-header.site .brand { font-weight: 700; font-size: 1.15rem; text-decoration: none; color: var(--ink); }
+header.site .brand { display: inline-flex; align-items: center; gap: .45rem; font-size: 1.45rem; text-decoration: none; }
+.sitename { font-family: Georgia, "Iowan Old Style", "Times New Roman", serif; font-weight: 700; font-variant: small-caps;
+            letter-spacing: .02em; color: var(--brand); }
+footer.site .sitename, .doc .sitename { font-size: 1.08em; }
+.info { display: inline-flex; align-items: center; justify-content: center; width: 1.35rem; height: 1.35rem; padding: 0;
+        margin-left: .25rem; border-radius: 50%; border: 1px solid var(--link); background: var(--bg); color: var(--link);
+        font: italic 700 .8rem/1 Georgia, serif; vertical-align: middle; }
+.info[aria-expanded="true"] { background: var(--link); color: var(--bg); }
+.explain { margin-top: .75rem; padding: .25rem 1rem; border-left: 3px solid var(--link); background: var(--panel); }
 header.site nav { display: flex; flex-wrap: wrap; gap: .25rem 1rem; }
 .sel-count { display: inline-block; min-width: 1.4em; padding: 0 .3em; border-radius: 1em; background: var(--panel); text-align: center; font-size: .85em; }
 main { max-width: 60rem; margin: 0 auto; padding: 1rem; }

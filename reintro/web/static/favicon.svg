@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <title>Reintroductions</title>
+  <style>
+    .arrow { fill: none; stroke: #1f7a4a; stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; }
+    .head { fill: #1f7a4a; }
+    .page { fill: #fff; stroke: #1b1b1b; stroke-width: 2.5; stroke-linejoin: round; }
+    .mark { fill: #1b1b1b; }
+    @media (prefers-color-scheme: dark) {
+      .arrow { stroke: #6fd19c; } .head { fill: #6fd19c; }
+      .page { fill: #161616; stroke: #eee; } .mark { fill: #eee; }
+    }
+  </style>
+  <!-- Three chasing arrows on the sides of a triangle around a page; each arrow is
+       the first one turned 120 degrees about the centre (32, 37). -->
+  <g id="a">
+    <path class="arrow" d="M 11 54 L 40 54"/>
+    <path class="head" d="M 39 46.5 L 52.5 54 L 39 61.5 Z"/>
+  </g>
+  <use href="#a" transform="rotate(120 32 37)"/>
+  <use href="#a" transform="rotate(240 32 37)"/>
+  <!-- The page, with a section sign drawn as two interlocking S curves. -->
+  <path class="page" d="M 24.5 26 H 36 L 39.5 29.5 V 47 H 24.5 Z"/>
+  <path class="mark" transform="translate(32 36.8) scale(0.78) translate(-30.5 -34)" d="M 34.6 27.6 c -0.6 -1 -1.7 -1.6 -3 -1.6 c -2 0 -3.4 1.1 -3.4 2.7 c 0 3.6 6.6 2.8 6.6 6.4 c 0 1.2 -0.8 2.1 -2 2.6 l -1 -1.4 c 0.7 -0.3 1 -0.7 1 -1.2 c 0 -2.3 -6.6 -1.7 -6.6 -6.2 c 0 -0.9 0.4 -1.7 1 -2.2 Z M 26.4 40.4 c 0.6 1 1.7 1.6 3 1.6 c 2 0 3.4 -1.1 3.4 -2.7 c 0 -3.6 -6.6 -2.8 -6.6 -6.4 c 0 -1.2 0.8 -2.1 2 -2.6 l 1 1.4 c -0.7 0.3 -1 0.7 -1 1.2 c 0 2.3 6.6 1.7 6.6 6.2 c 0 0.9 -0.4 1.7 -1 2.2 Z"/>
+</svg>

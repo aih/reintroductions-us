@@ -21,3 +21,18 @@ def test_body_text_leaves_out_the_table_of_contents():
     t = billdtd.body_text(bill_text(119, "hr", 206, "ih"))
     assert "Landlord Accountability Act of 2025" in t
     assert "Sec. 1." not in t
+
+
+def test_an_empty_legis_body_before_the_real_one_is_skipped():
+    # GPO's S. 791 (118th Congress, introduced) carries `<legis-body/>` and then the text.
+    from pathlib import Path
+
+    from reintro import uslm
+
+    src = Path(bill_text(119, "hr", 206, "ih")).read_bytes()
+    doubled = src.replace(b"<legis-body", b'<legis-body changed="not-changed"></legis-body><legis-body', 1)
+    assert doubled.count(b"<legis-body") == 2
+    assert billdtd.body_text(doubled) == billdtd.body_text(src) != ""
+    assert billdtd.read_bill(doubled).short_titles == billdtd.read_bill(src).short_titles
+    n = lambda b: uslm.to_bytes(uslm.convert(b, version="ih").tree).count(b"<section")
+    assert n(doubled) == n(src) > 0

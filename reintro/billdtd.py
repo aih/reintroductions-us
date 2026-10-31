@@ -66,6 +66,14 @@ def _first(root, xpath):
     return r[0] if r else None
 
 
+def main_body(root: etree._Element) -> etree._Element | None:
+    """The bill's `<legis-body>` or `<resolution-body>`. Some GPO files carry an empty
+    one before the real one (S. 791 of the 118th Congress, introduced): the first that
+    has child elements wins, else the first."""
+    bodies = root.xpath("./legis-body|./resolution-body")
+    return next((b for b in bodies if len(b)), bodies[0] if bodies else None)
+
+
 def enum_path(el: etree._Element) -> str:
     """The designators of `el` and its ancestors, outermost first: `2(b)(1)`."""
     parts = []
@@ -113,7 +121,7 @@ def read_bill(path_or_bytes) -> BillDoc:
     cmts = [(c.get("committee-id", ""), text_of(c)) for c in root.xpath("./form/action/action-desc/committee-name")]
 
     ot = _first(root, "./form/official-title")
-    body = _first(root, "./legis-body|./resolution-body")
+    body = main_body(root)
     short_titles = []
     if body is not None:
         for st in body.xpath(".//short-title[not(ancestor::quoted-block)]"):
@@ -141,7 +149,7 @@ def body_text(path_or_bytes) -> str:
     """The legislative body as plain text, one line per enumerated element, with the
     table of contents left out."""
     root = parse(path_or_bytes).getroot()
-    body = _first(root, "./legis-body|./resolution-body")
+    body = main_body(root)
     if body is None:
         return ""
     lines: list[str] = []

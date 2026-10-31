@@ -26,12 +26,12 @@
 	}
 
 	# The pages ask for a cookie, as on the other two sites. A request without
-	# `reintro_h` gets 403 with Set-Cookie and one scripted reload. /healthz,
+	# `reintro_h` gets 403 with Set-Cookie and one scripted reload. /healthz, /favicon.ico,
 	# /static and the JSON API are outside it. GATE_HOST names the hostname it
 	# applies to; the default `gate.invalid` matches nothing.
 	@gate {
 		host {$GATE_HOST:gate.invalid}
-		not path /healthz /static/* /api/* /robots.txt
+		not path /healthz /favicon.ico /static/* /api/* /robots.txt
 		not header Cookie *reintro_h=*
 	}
 	handle @gate {
