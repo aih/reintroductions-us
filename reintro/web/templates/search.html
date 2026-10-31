@@ -16,8 +16,10 @@
   <div class="field"><label for="subject">Policy area</label>
     <select id="subject" name="subject"><option value="">Any</option>
       {% for s in subjects %}<option {% if params.subject == s.s %}selected{% endif %}>{{ s.s }}</option>{% endfor %}</select></div>
-  <div class="field"><label for="sponsor">Sponsor</label><input id="sponsor" name="sponsor" value="{{ params.sponsor or '' }}" placeholder="Name or bioguide id"></div>
-  <div class="field"><label for="cosponsor">Cosponsor</label><input id="cosponsor" name="cosponsor" value="{{ params.cosponsor or '' }}" placeholder="Name or bioguide id"></div>
+  {% for role, label in [('sponsor', 'Sponsor'), ('cosponsor', 'Cosponsor')] %}
+  <div class="field combo"><label for="{{ role }}">{{ label }}</label><input id="{{ role }}" name="{{ role }}" type="search" value="{{ params[role] or '' }}"
+    data-member-combo="{{ role }}" data-label="{{ labels[role] or '' }}" placeholder="Type a name" autocomplete="off" spellcheck="false"></div>
+  {% endfor %}
   <div class="field"><label for="status">Status</label>
     <select id="status" name="status"><option value="">Any</option>
       <option value="not-enacted" {% if params.status == 'not-enacted' %}selected{% endif %}>Not law, no related law</option>
@@ -74,4 +76,5 @@
 {% endif %}
 {% endif %}
 <script src="/static/search.js" defer></script>
+<script src="/static/members.js" defer></script>
 {% endblock %}
