@@ -368,3 +368,33 @@ def same_title_in(con, bill_id: str, congress: int):
         if short_title_key(r["title"]) in keys and r["bill_id"] != bill_id:
             hits[r["bill_id"]] = r["title"]
     return [(get_bill(con, b), t) for b, t in hits.items()]
+
+
+def members(con) -> list[dict]:
+    """Everyone who sponsored or cosponsored a bill in the database, by bioguide id: the name,
+    party and state of their latest Congress, the chamber they served in at each Congress, and
+    how many bills they sponsored and cosponsored at each."""
+    rows = con.execute(
+        "select p.bioguide_id id, p.name, p.party, p.state, b.congress, substr(b.bill_type, 1, 1) ch, p.role, "
+        "count(*) n from bill_people p join bills b on b.bill_id = p.bill_id "
+        "where p.bioguide_id is not null and p.bioguide_id != '' group by 1, 2, 3, 4, 5, 6, 7").fetchall()
+    out: dict[str, dict] = {}
+    best: dict[str, tuple] = {}
+    for r in rows:
+        m = out.setdefault(r["id"], {"id": r["id"], "chambers": {}, "counts": {}})
+        rank = (r["congress"], r["n"])
+        if rank > best.get(r["id"], (0, 0)):
+            best[r["id"]] = rank
+            m.update(name=r["name"], party=r["party"], state=r["state"])
+        key = str(r["congress"])
+        m["chambers"][key] = "house" if r["ch"] == "h" else "senate"
+        c = m["counts"].setdefault(key, {"sponsor": 0, "cosponsor": 0})
+        c[r["role"]] = c.get(r["role"], 0) + r["n"]
+    return sorted(out.values(), key=lambda m: (m["name"] or "").lower())
+
+
+def member_name(con, bioguide_id: str) -> str | None:
+    """The name a bioguide id appears under most recently, or None."""
+    row = con.execute("select p.name from bill_people p join bills b on b.bill_id = p.bill_id where p.bioguide_id = ? "
+                      "order by b.congress desc limit 1", (bioguide_id,)).fetchone()
+    return row[0] if row else None

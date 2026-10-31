@@ -125,6 +125,26 @@ def test_search_page_marks_matches_and_offers_checkboxes(client):
     assert 'class="sel-check"' in client.get("/bills/hr206-119").text
 
 
+def test_members(database):
+    con = db.connect(database)
+    ms = {m["id"]: m for m in db.members(con)}
+    nehls = ms["N000026"]
+    assert nehls["name"] == "Nehls, Troy E." and nehls["party"] == "R" and nehls["state"] == "TX"
+    assert nehls["chambers"]["118"] == "house" and nehls["counts"]["118"]["sponsor"] == 1
+    assert ms["B001291"]["counts"]["118"] == {"sponsor": 0, "cosponsor": 1}
+    assert db.member_name(con, "N000026") == "Nehls, Troy E." and db.member_name(con, "X999999") is None
+
+
+def test_sponsor_filters_are_type_aheads(client):
+    r = client.get("/api/v1/members")
+    assert r.headers["cache-control"] == "public, max-age=3600"
+    assert "N000026" in [m["id"] for m in r.json()["members"]]
+    page = client.get("/search", params={"congress": 118, "sponsor": "N000026", "cosponsor": "babin"}).text
+    assert 'data-member-combo="sponsor" data-label="Nehls, Troy E."' in page
+    assert 'name="cosponsor" type="search" value="babin"' in page and 'data-label="babin"' in page
+    assert "/static/members.js" in page and "H.R. 1514" in page
+
+
 def test_highlight_escapes():
     from reintro.web.app import highlight, snippet_html
     assert str(highlight("<b>Tenants</b> & landlords", ["tenant", "landlord"])) == \
