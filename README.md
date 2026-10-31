@@ -59,7 +59,7 @@ The variables can be kept in `.env` (copied from `.env.example`, gitignored) and
 | `reintro/db.py` | SQLite schema, load, search, enacted and related-law marking |
 | `reintro/render.py`, `reintro/pdf.py` | HTML and the watermarked PDF (WeasyPrint) |
 | `reintro/pregen.py` | PDFs rendered ahead of time on Lambda: the planner, the handler, the sync |
-| `reintro/web/` | The FastAPI site and its JSON API (`/api/v1/search`, `/api/v1/bills/{id}`, `/api/v1/bills/{id}/draft`) |
+| `reintro/web/` | The FastAPI site and its JSON API (`/api/v1/search`, `/api/v1/members`, `/api/v1/bills/{id}`, `/api/v1/bills/{id}/draft`) |
 | `research/compare_reintroductions.py` | The research comparison |
 | `reintro/schema/` | USLM 2.1.0 schema from [usgpo/uslm](https://github.com/usgpo/uslm) |
 

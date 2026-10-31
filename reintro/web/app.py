@@ -8,6 +8,7 @@ import os
 import re
 import threading
 import zipfile
+from contextlib import asynccontextmanager
 from functools import lru_cache
 from pathlib import Path
 
@@ -39,7 +40,20 @@ PDF_MIN_COST = 50_000
 PDF_RENDERS = threading.Semaphore(int(os.environ.get("REINTRO_PDF_CONCURRENCY", "1")))
 PAGE = 25
 
-app = FastAPI(title="Reintroductions", version=SITE_VERSION, docs_url="/api/docs", redoc_url=None)
+
+@asynccontextmanager
+async def lifespan(_app):
+    """Computes the member list in the background, so the first type-ahead does not wait for it."""
+    def warm():
+        try:
+            members_json()
+        except Exception:  # noqa: BLE001 — no database yet; the first request computes it
+            pass
+    threading.Thread(target=warm, daemon=True).start()
+    yield
+
+
+app = FastAPI(title="Reintroductions", version=SITE_VERSION, docs_url="/api/docs", redoc_url=None, lifespan=lifespan)
 app.mount("/static", StaticFiles(directory=HERE / "static"), name="static")
 templates = Jinja2Templates(directory=HERE / "templates")
 templates.env.globals["ordinal"] = ordinal
@@ -60,6 +74,16 @@ def clients():
         return None, None
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
     return default_clients(str(CACHE_DIR / "http.db"))
+
+
+@lru_cache(maxsize=2)
+def _members(loads: tuple) -> bytes:
+    return json.dumps({"members": db.members(con())}, ensure_ascii=False, separators=(",", ":")).encode()
+
+
+def members_json() -> bytes:
+    """`db.members` as JSON, computed once per state of the `loads` table (1.6 s over two Congresses)."""
+    return _members(tuple(tuple(r) for r in con().execute("select congress, loaded_at, bills from loads order by congress")))
 
 
 def latest_congress() -> int | None:
@@ -164,7 +188,10 @@ def search_page(request: Request, q: str = "", congress: int | None = None, cham
                                 "cosponsor": cosponsor, "status": status, "type": type, "from": _date(introduced_from),
                                 "to": _date(introduced_to), "sort": sort}.items() if v}
     text_query = bool(q.strip()) and db.parse_number(q) is None
+    labels = {role: (db.member_name(c, v) if re.fullmatch(r"[A-Z]\d{6}", v) else None) or v
+              for role, v in (("sponsor", sponsor), ("cosponsor", cosponsor)) if v}
     return templates.TemplateResponse(request, "search.html", {
+        "labels": labels,
         "res": res, "params": params, "page": page, "pages": pages, "congresses": db.congresses(c),
         "subjects": db.subject_list(c, congress), "types": db.TYPE_LABEL, "terms": db.query_terms(q) if text_query else [],
         "text_query": text_query, "first": (page - 1) * PAGE + 1})
@@ -389,6 +416,15 @@ def api_search(q: str = "", congress: int | None = None, chamber: str | None = N
                     introduced_to=_date(introduced_to), sort=sort if sort in db.SORTS else None,
                     limit=limit, offset=offset)
     return {"total": res.total, "results": [_bill_json(r) for r in res.rows]}
+
+
+@app.get("/api/v1/members")
+def api_members():
+    """Everyone who sponsored or cosponsored a bill in the database: `id` (bioguide), `name`,
+    `party` and `state` as of their latest Congress, `chambers` (Congress → house or senate) and
+    `counts` (Congress → bills sponsored and cosponsored). The search filters take the `id`."""
+    return Response(members_json(), media_type="application/json",
+                    headers={"Cache-Control": "public, max-age=3600"})
 
 
 @app.get("/api/v1/bills/{bill_id}")
