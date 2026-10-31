@@ -1,0 +1,134 @@
+# Deploy reintro.linkedlegislation.org after CI goes green on main, or on
+# demand: runs deploy/deploy-on-box.sh <sha> on the box over SSM, as ec2-user
+# in ~/reintroductions-us. The box checks out the exact commit CI tested and
+# builds the image there (docs/deploy.md, "Later deploys").
+#
+# The gate job skips the deploy when nothing the site reads changed since the
+# commit /healthz reports (deploy/deploy-gate.sh). A dispatch always deploys.
+# The role is reintro-github-deploy (deploy/aws-setup.sh), the one
+# pdf-lambda.yml uses; it needs the script's SSM statements.
+name: deploy
+
+on:
+  workflow_run:
+    workflows: ["ci"]
+    types: [completed]
+  workflow_dispatch: {}
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+env:
+  AWS_REGION: us-east-1
+
+jobs:
+  gate:
+    if: >-
+      vars.AWS_DEPLOY_ROLE_ARN != '' &&
+      (github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event == 'push' &&
+       github.event.workflow_run.head_branch == 'main'))
+    runs-on: ubuntu-latest
+    outputs:
+      sha: ${{ steps.sha.outputs.sha }}
+      deploy: ${{ steps.gate.outputs.deploy }}
+    steps:
+      - name: Resolve sha
+        id: sha
+        run: echo "sha=${{ github.event.workflow_run.head_sha || github.sha }}" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ steps.sha.outputs.sha }}
+          fetch-depth: 0
+
+      - name: Gate on a change the site does not read
+        id: gate
+        env:
+          SHA: ${{ steps.sha.outputs.sha }}
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "deploy=true" >> "$GITHUB_OUTPUT"
+          else
+            bash deploy/deploy-gate.sh "$SHA" >> "$GITHUB_OUTPUT"
+          fi
+
+  deploy:
+    needs: gate
+    if: needs.gate.outputs.deploy == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Deploy on the box via SSM
+        id: dispatch
+        env:
+          SHA: ${{ needs.gate.outputs.sha }}
+        run: |
+          # By instance id: a tag-targeted command reports no instance ids to
+          # poll. The IAM condition on the tag holds either way.
+          INSTANCE_ID=$(aws ec2 describe-instances \
+            --filters "Name=tag:Name,Values=uscode-site" \
+                      "Name=instance-state-name,Values=running" \
+            --query "Reservations[0].Instances[0].InstanceId" --output text)
+          if [ -z "$INSTANCE_ID" ] || [ "$INSTANCE_ID" = "None" ]; then
+            echo "no running instance tagged Name=uscode-site" >&2
+            exit 1
+          fi
+          echo "instance_id=$INSTANCE_ID" >> "$GITHUB_OUTPUT"
+
+          # Check out the commit first, so the deploy script that runs is the
+          # one from that commit.
+          INNER="cd ~/reintroductions-us && git fetch --quiet origin && git checkout --quiet --detach ${SHA} && bash deploy/deploy-on-box.sh ${SHA}"
+          REMOTE_CMD="sudo -iu ec2-user bash -c '${INNER}'"
+          PARAMS=$(jq -n --arg cmd "$REMOTE_CMD" '{commands: [$cmd], executionTimeout: ["1800"]}')
+          COMMAND_ID=$(aws ssm send-command \
+            --instance-ids "$INSTANCE_ID" \
+            --document-name "AWS-RunShellScript" \
+            --comment "reintro deploy $SHA" \
+            --parameters "$PARAMS" \
+            --query "Command.CommandId" --output text)
+          echo "command_id=$COMMAND_ID" >> "$GITHUB_OUTPUT"
+          echo "Dispatched SSM command $COMMAND_ID to $INSTANCE_ID for deploy of $SHA"
+
+      - name: Wait for the box to finish
+        env:
+          COMMAND_ID: ${{ steps.dispatch.outputs.command_id }}
+          INSTANCE_ID: ${{ steps.dispatch.outputs.instance_id }}
+        run: |
+          STATUS="Pending"
+          while [ "$STATUS" = "InProgress" ] || [ "$STATUS" = "Pending" ] || [ "$STATUS" = "Delayed" ]; do
+            sleep 10
+            STATUS=$(aws ssm get-command-invocation \
+              --command-id "$COMMAND_ID" --instance-id "$INSTANCE_ID" \
+              --query "Status" --output text 2>/dev/null || echo Pending)
+            echo "status: $STATUS"
+          done
+          INVOCATION=$(aws ssm get-command-invocation --command-id "$COMMAND_ID" --instance-id "$INSTANCE_ID")
+          echo "=== stdout ==="
+          echo "$INVOCATION" | jq -r ".StandardOutputContent"
+          if [ "$STATUS" != "Success" ]; then
+            echo "=== stderr ==="
+            echo "$INVOCATION" | jq -r ".StandardErrorContent"
+            echo "Deploy command ended in status $STATUS" >&2
+            exit 1
+          fi
+
+      - name: Check the deployed commit
+        env:
+          SHA: ${{ needs.gate.outputs.sha }}
+        run: |
+          got=$(curl -sf --max-time 10 --retry 3 --retry-delay 5 https://reintro.linkedlegislation.org/healthz | jq -r .commit)
+          echo "/healthz commit: $got"
+          [ "$got" = "$SHA" ]

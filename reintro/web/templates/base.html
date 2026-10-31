@@ -30,6 +30,9 @@
   <a href="https://github.com/unitedstates/congress">unitedstates/congress</a>. Citation checks:
   <a href="https://uscode.linkedlegislation.org">uscode.linkedlegislation.org</a> and
   <a href="https://statutes.linkedlegislation.org">statutes.linkedlegislation.org</a>.</p>
+  {% set repo = "https://github.com/aih/reintroductions-us" %}
+  <p class="version">Source: <a href="{{ repo }}">github.com/aih/reintroductions-us</a> — version {{ site_version }}, commit
+  {% if git_commit == "unknown" %}unknown{% else %}<a href="{{ repo }}/commit/{{ git_commit }}"><code>{{ git_commit[:7] }}</code></a>{% endif %}</p>
 </footer>
 </body>
 </html>

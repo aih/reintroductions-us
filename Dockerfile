@@ -21,6 +21,10 @@ RUN uv sync --frozen --no-dev --extra ingest --extra aws --no-install-project
 COPY . .
 RUN uv sync --frozen --no-dev --extra ingest --extra aws
 
+# The commit the footer and /healthz name; deploy/deploy-on-box.sh passes it.
+ARG GIT_COMMIT=unknown
+ENV GIT_COMMIT=$GIT_COMMIT
+
 EXPOSE 8020
 
 CMD ["uvicorn", "reintro.web.app:app", "--host", "0.0.0.0", "--port", "8020", \

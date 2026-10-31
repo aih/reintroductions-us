@@ -19,7 +19,8 @@
 #     read and list the bucket, send to the queue
 #   - OIDC role reintro-github-deploy for aih/reintroductions-us: push to the
 #     ECR repository, create and update the function reintro-pdf and its queue
-#     trigger, pass the function's role
+#     trigger, pass the function's role, and run AWS-RunShellScript over SSM
+#     on the instance tagged Name=uscode-site (.github/workflows/deploy.yml)
 #
 # The function itself is created by the first run of
 # .github/workflows/pdf-lambda.yml, once the image exists. Re-running this
@@ -210,7 +211,14 @@ cat > "$TMP/deploy.json" <<EOF
     {"Sid": "ListTriggers", "Effect": "Allow", "Action": "lambda:ListEventSourceMappings", "Resource": "*"},
     {"Sid": "PassRole", "Effect": "Allow", "Action": "iam:PassRole",
      "Resource": "arn:aws:iam::${ACCOUNT_ID}:role/${LAMBDA_ROLE}",
-     "Condition": {"StringEquals": {"iam:PassedToService": "lambda.amazonaws.com"}}}
+     "Condition": {"StringEquals": {"iam:PassedToService": "lambda.amazonaws.com"}}},
+    {"Sid": "SsmSendCommandBox", "Effect": "Allow", "Action": "ssm:SendCommand",
+     "Resource": "arn:aws:ec2:${REGION}:${ACCOUNT_ID}:instance/*",
+     "Condition": {"StringEquals": {"ssm:resourceTag/Name": "uscode-site"}}},
+    {"Sid": "SsmSendCommandDocument", "Effect": "Allow", "Action": "ssm:SendCommand",
+     "Resource": "arn:aws:ssm:${REGION}::document/AWS-RunShellScript"},
+    {"Sid": "SsmPollCommand", "Effect": "Allow", "Action": "ssm:GetCommandInvocation", "Resource": "*"},
+    {"Sid": "FindBox", "Effect": "Allow", "Action": "ec2:DescribeInstances", "Resource": "*"}
   ]
 }
 EOF

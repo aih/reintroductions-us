@@ -86,6 +86,22 @@ def test_pages(client):
     assert "Ari Hershowitz" in client.get("/about").text
 
 
+def test_version_in_footer_and_healthz(client):
+    from reintro.version import GIT_COMMIT, SITE_VERSION
+    h = client.get("/healthz").json()
+    assert h["version"] == SITE_VERSION and h["commit"] == GIT_COMMIT
+    home = client.get("/").text
+    assert f"version {SITE_VERSION}, commit" in home and 'href="https://github.com/aih/reintroductions-us"' in home
+
+
+def test_footer_links_a_known_commit(client, monkeypatch):
+    from reintro.web import app as appmod
+    sha = "0123456789abcdef0123456789abcdef01234567"
+    monkeypatch.setitem(appmod.templates.env.globals, "git_commit", sha)
+    home = client.get("/").text
+    assert f'href="https://github.com/aih/reintroductions-us/commit/{sha}"><code>0123456</code></a>' in home
+
+
 def test_search_page_marks_matches_and_offers_checkboxes(client):
     r = client.get("/search", params={"q": "landlord"}).text
     assert "<mark>Landlord</mark>" in r
