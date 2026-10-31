@@ -246,12 +246,29 @@ def fts_query(q: str) -> str:
     return " ".join(out)
 
 
+# Result orders: the relevance order needs a text query; the others do not.
+SORTS = {
+    "relevance": None,
+    "number": "b.congress desc, b.bill_type, b.number",
+    "number-desc": "b.congress desc, b.bill_type, b.number desc",
+    "introduced-desc": "b.introduced_at desc, b.bill_type, b.number",
+    "introduced": "b.introduced_at, b.bill_type, b.number",
+    "action-desc": "b.latest_action_date desc, b.bill_type, b.number",
+}
+MARK_START, MARK_END = "\x02", "\x03"
+
+
 def search(con: sqlite3.Connection, *, q: str = "", congress: int | None = None, chamber: str | None = None,
            subject: str | None = None, sponsor: str | None = None, cosponsor: str | None = None,
-           status: str | None = None, limit: int = 25, offset: int = 0) -> SearchResult:
+           status: str | None = None, bill_type: str | None = None, introduced_from: str | None = None,
+           introduced_to: str | None = None, sort: str | None = None,
+           limit: int = 25, offset: int = 0) -> SearchResult:
+    """Bills matching the filters. With a text query each row carries `snippet`: the passage of
+    the bill text that matched, its matched words between MARK_START and MARK_END."""
     where, args = [], []
-    order = "b.congress desc, b.bill_type, b.number"
+    order = SORTS["number"]
     join = ""
+    cols = "b.*, null as snippet"
     num = parse_number(q) if q else None
     if num:
         t, n, c = num
@@ -265,6 +282,7 @@ def search(con: sqlite3.Connection, *, q: str = "", congress: int | None = None,
         where.append("bills_fts match ?")
         args.append(fts_query(q))
         order = "bm25(bills_fts, 0, 10.0, 8.0, 3.0, 2.0, 1.0)"
+        cols = f"b.*, snippet(bills_fts, 5, '{MARK_START}', '{MARK_END}', '…', 28) as snippet"
     if congress:
         where.append("b.congress = ?")
         args.append(congress)
@@ -284,11 +302,32 @@ def search(con: sqlite3.Connection, *, q: str = "", congress: int | None = None,
         where.append("b.enacted = 0 and b.related_enacted is null")
     elif status == "related-enacted":
         where.append("b.related_enacted is not null")
+    if bill_type in TYPE_LABEL:
+        where.append("b.bill_type = ?")
+        args.append(bill_type)
+    if introduced_from:
+        where.append("b.introduced_at >= ?")
+        args.append(introduced_from)
+    if introduced_to:
+        where.append("b.introduced_at <= ?")
+        args.append(introduced_to)
+    if SORTS.get(sort or ""):
+        order = SORTS[sort]
     sql_where = ("where " + " and ".join(where)) if where else ""
     total = con.execute(f"select count(*) from bills b {join} {sql_where}", args).fetchone()[0]
-    rows = con.execute(f"select b.* from bills b {join} {sql_where} order by {order} limit ? offset ?",
+    rows = con.execute(f"select {cols} from bills b {join} {sql_where} order by {order} limit ? offset ?",
                        [*args, limit, offset]).fetchall()
     return SearchResult(total, rows)
+
+
+def query_terms(q: str) -> list[str]:
+    """The words and quoted phrases of a text query, for highlighting outside the index."""
+    out = []
+    for phrase, word in re.findall(r'"([^"]+)"|(\S+)', q or ""):
+        t = (phrase or re.sub(r"[^\w\-–']", "", word)).strip()
+        if t and t.lower() not in ("and", "or", "not"):
+            out.append(t)
+    return out
 
 
 def get_bill(con, bill_id: str):

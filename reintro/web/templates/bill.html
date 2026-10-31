@@ -31,7 +31,7 @@
     <a class="button" href="/bills/{{ b.bill_id }}/draft.xml">Download USLM XML</a>
     {% if pdf_allowed %}<a class="button" href="/bills/{{ b.bill_id }}/draft.pdf">Download PDF</a>{% endif %}
     <a class="button button--plain" href="/bills/{{ b.bill_id }}/warnings.csv">Warnings (CSV)</a>
-    <button type="button" class="sel-toggle" data-sel="{{ b.bill_id }}" data-label="{{ bill_label(b) }} ({{ ordinal(b.congress) }})" aria-pressed="false">Add to selection</button>
+    <label class="check check--button"><input type="checkbox" class="sel-check" data-sel="{{ b.bill_id }}" data-label="{{ bill_label(b) }} ({{ ordinal(b.congress) }})"> Select for download</label>
   </div>
   <h3>Changed in the text</h3>
   <ul>{% for c in draft.changes %}<li>{{ c }}</li>{% endfor %}</ul>
