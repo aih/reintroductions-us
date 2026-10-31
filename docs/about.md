@@ -4,7 +4,7 @@ title: About
 
 # About
 
-Reintroductions is a proof of concept by [Ari Hershowitz](https://aih.github.io).
+<span class="sitename">Reintroductions</span> is a proof of concept by [Ari Hershowitz](https://aih.github.io).
 It prepares a bill of the most recent Congress that did not become law as a draft
 for the next Congress, in USLM 2.0 XML and as a PDF marked "Draft — not for
 introduction" on every page. Drafts prepared here are not for introduction.

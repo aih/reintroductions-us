@@ -15,7 +15,7 @@ cited law amended since the bill was written, words it strikes that are no longe
 {% if counts %}
 <table class="counts">
   <caption>Bills loaded</caption>
-  <thead><tr><th scope="col">Congress</th><th scope="col">Bills and resolutions</th><th scope="col">Became law</th><th scope="col"><a href="#related">A related bill became law</a></th></tr></thead>
+  <thead><tr><th scope="col">Congress</th><th scope="col">Bills and resolutions</th><th scope="col">Became law</th><th scope="col">A related bill became law <button type="button" class="info" data-toggle="related" aria-expanded="false" aria-controls="related" aria-label="What “A related bill became law” means">i</button></th></tr></thead>
   <tbody>
   {% for r in counts %}
   <tr><td><a href="/search?congress={{ r.congress }}">{{ ordinal(r.congress) }}</a></td><td>{{ "{:,}".format(r.n) }}</td>
@@ -24,7 +24,8 @@ cited law amended since the bill was written, words it strikes that are no longe
   {% endfor %}
   </tbody>
 </table>
-<p class="note" id="related"><strong>A related bill became law</strong> means that this bill did not become law, but another
+<div class="explain" id="related" hidden>
+<p class="note"><strong>A related bill became law</strong> means that this bill did not become law, but another
 bill of the same Congress did, and either:</p>
 <ul class="note">
   <li>Congress.gov lists that bill as identical or related to this one, as identified by the Congressional Research
@@ -34,7 +35,9 @@ bill of the same Congress did, and either:</p>
   its year, where three bills or fewer carry that short title.</li>
 </ul>
 <p class="note">The bill's page names the law and how it was matched. Some or all of its provisions may already be law,
-so read the law before reintroducing the bill.</p>
+so read the law before reintroducing the bill. The <a href="/research#related-bills">research report</a> describes
+how Congress.gov identifies related bills and how titles are matched.</p>
+</div>
 {% else %}
 <p>No bills are loaded yet. Run <code>reintro update --congress 119</code>.</p>
 {% endif %}

@@ -81,7 +81,13 @@ def test_pages(client):
     for p in ("/guideline", "/research", "/plan", "/selection", "/about"):
         assert client.get(p).status_code == 200
     home = client.get("/").text
-    assert 'id="related"' in home and "Congressional Research" in home
+    assert 'id="related" hidden' in home and "Congressional Research" in home
+    assert 'class="info" data-toggle="related" aria-expanded="false" aria-controls="related"' in home
+    assert '<span class="sitename">Reintroductions</span>' in home and 'rel="icon" href="/static/favicon.svg"' in home
+    r = client.get("/favicon.ico")
+    assert r.status_code == 200 and r.headers["content-type"] == "image/png" and r.content.startswith(b"\x89PNG")
+    for f in ("favicon.svg", "favicon-32.png", "apple-touch-icon.png", "site.js"):
+        assert client.get(f"/static/{f}").status_code == 200
     assert 'href="https://aih.github.io"' in home and "proof of concept" in home
     assert "Ari Hershowitz" in client.get("/about").text
 

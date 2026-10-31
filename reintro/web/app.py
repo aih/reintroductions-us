@@ -126,6 +126,12 @@ def _doc(name: str) -> tuple[str, str]:
     return title, body
 
 
+@app.get("/favicon.ico", include_in_schema=False)
+def favicon():
+    return Response((HERE / "static" / "favicon-32.png").read_bytes(), media_type="image/png",
+                    headers={"Cache-Control": "public, max-age=86400"})
+
+
 @app.get("/healthz", include_in_schema=False)
 def healthz():
     return {"ok": True, "congresses": db.congresses(con()), "version": SITE_VERSION, "commit": GIT_COMMIT}

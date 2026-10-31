@@ -120,9 +120,7 @@ class _Converter:
         root.append(self.meta())
         root.append(self.preface())
         main = etree.SubElement(root, U("main"))
-        body = self.src.find("legis-body")
-        if body is None:
-            body = self.src.find("resolution-body")
+        body = billdtd.main_body(self.src)
         if body is not None:
             if body.get("id"):
                 main.set("id", body.get("id"))
