@@ -22,6 +22,7 @@ from .. import db, generate, render
 from ..pregen import pdf_name
 from ..linkedleg import default_clients
 from ..reintroduce import ordinal
+from ..version import GIT_COMMIT, SITE_VERSION
 
 HERE = Path(__file__).parent
 DOCS = Path(os.environ.get("REINTRO_DOCS", HERE.parents[1] / "docs"))
@@ -38,11 +39,13 @@ PDF_MIN_COST = 50_000
 PDF_RENDERS = threading.Semaphore(int(os.environ.get("REINTRO_PDF_CONCURRENCY", "1")))
 PAGE = 25
 
-app = FastAPI(title="Reintroductions", docs_url="/api/docs", redoc_url=None)
+app = FastAPI(title="Reintroductions", version=SITE_VERSION, docs_url="/api/docs", redoc_url=None)
 app.mount("/static", StaticFiles(directory=HERE / "static"), name="static")
 templates = Jinja2Templates(directory=HERE / "templates")
 templates.env.globals["ordinal"] = ordinal
 templates.env.globals["citation"] = db.citation
+templates.env.globals["site_version"] = SITE_VERSION
+templates.env.globals["git_commit"] = GIT_COMMIT
 
 
 @lru_cache(maxsize=1)
@@ -125,7 +128,7 @@ def _doc(name: str) -> tuple[str, str]:
 
 @app.get("/healthz", include_in_schema=False)
 def healthz():
-    return {"ok": True, "congresses": db.congresses(con())}
+    return {"ok": True, "congresses": db.congresses(con()), "version": SITE_VERSION, "commit": GIT_COMMIT}
 
 
 @app.get("/", response_class=HTMLResponse)

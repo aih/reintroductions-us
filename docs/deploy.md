@@ -177,6 +177,17 @@ curl -s 'https://reintro.linkedlegislation.org/api/v1/search?q=hr206' | head -c 
 
 ## Later deploys
 
+`.github/workflows/deploy.yml` deploys every commit to `main` once CI passes on it: it runs
+`deploy/deploy-on-box.sh <sha>` on the box over SSM, as ec2-user, and then checks that
+`/healthz` reports that commit. It skips the deploy when every path changed since the commit
+`/healthz` reports is one the site does not read (`deploy/deploy-gate.sh`: top-level `*.md`,
+`.github/`, `tests/`, `lambda/`, `deploy/aws-setup.sh`, `deploy/lambda-deploy.sh`). Actions →
+deploy → Run workflow deploys `main` without the check. It uses the role in
+`AWS_DEPLOY_ROLE_ARN`, which needs the SSM statements `deploy/aws-setup.sh` adds; re-run the
+script once if the role was created before them.
+
+By hand, on the box:
+
 ```bash
 cd ~/reintroductions-us && bash deploy/deploy-on-box.sh            # origin/main
 bash deploy/deploy-on-box.sh <sha>                                 # a commit, or a rollback

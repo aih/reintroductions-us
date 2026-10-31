@@ -49,6 +49,8 @@ echo "=== $(date -u +%FT%TZ) deploying $REF ==="
 git fetch --quiet origin
 git checkout --quiet --detach "$REF"
 echo "at $(git rev-parse --short HEAD)"
+# The build argument behind the footer's commit and /healthz's `commit`.
+export GIT_COMMIT="$(git rev-parse HEAD)"
 
 echo "=== validating deploy/Caddyfile ==="
 docker run --rm \
