@@ -16,6 +16,7 @@ from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.responses import HTMLResponse, JSONResponse, PlainTextResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from markupsafe import Markup
 
 from .. import db, generate, render
 from ..pregen import pdf_name
@@ -71,6 +72,42 @@ templates.env.globals["bill_label"] = bill_label
 templates.env.filters["loads"] = lambda s: json.loads(s) if s else None
 
 
+def _stem(term: str) -> str:
+    t = term.lower()
+    for suf in ("ing", "ed", "es", "s"):
+        if t.endswith(suf) and len(t) - len(suf) >= 3:
+            return t[: -len(suf)]
+    return t
+
+
+def highlight(text: str | None, terms: list[str]) -> Markup:
+    """`text` escaped, with each word that starts like a query term (or each quoted phrase) in <mark>."""
+    if not text:
+        return Markup("")
+    if not terms:
+        return Markup.escape(text)
+    pats = [re.escape(t) if " " in t else re.escape(_stem(t)) + r"\w*" for t in terms]
+    rx = re.compile(r"\b(?:" + "|".join(sorted(pats, key=len, reverse=True)) + ")", re.I)
+    out, last = [], 0
+    for m in rx.finditer(text):
+        out += [str(Markup.escape(text[last:m.start()])), "<mark>", str(Markup.escape(m.group(0))), "</mark>"]
+        last = m.end()
+    out.append(str(Markup.escape(text[last:])))
+    return Markup("".join(out))
+
+
+def snippet_html(s: str | None) -> Markup:
+    """An FTS snippet (matches between db.MARK_START and db.MARK_END) as escaped HTML with <mark>."""
+    if not s or db.MARK_START not in s:
+        return Markup("")
+    s = re.sub(r"\s+", " ", s).strip()
+    return Markup(str(Markup.escape(s)).replace(db.MARK_START, "<mark>").replace(db.MARK_END, "</mark>"))
+
+
+templates.env.filters["highlight"] = highlight
+templates.env.filters["snippet"] = snippet_html
+
+
 def _doc(name: str) -> tuple[str, str]:
     p = DOCS / name
     if not p.exists():
@@ -103,17 +140,30 @@ def home(request: Request):
 @app.get("/search", response_class=HTMLResponse)
 def search_page(request: Request, q: str = "", congress: int | None = None, chamber: str | None = None,
                 subject: str | None = None, sponsor: str | None = None, cosponsor: str | None = None,
-                status: str | None = None, page: int = Query(1, ge=1)):
+                status: str | None = None, type: str | None = None, introduced_from: str | None = Query(None, alias="from"),
+                introduced_to: str | None = Query(None, alias="to"), sort: str | None = None,
+                page: int = Query(1, ge=1)):
     c = con()
     congress = congress if congress is not None else latest_congress()
+    sort = sort if sort in db.SORTS else None
     res = db.search(c, q=q, congress=congress, chamber=chamber, subject=subject or None, sponsor=sponsor or None,
-                    cosponsor=cosponsor or None, status=status or None, limit=PAGE, offset=(page - 1) * PAGE)
+                    cosponsor=cosponsor or None, status=status or None, bill_type=type or None,
+                    introduced_from=_date(introduced_from), introduced_to=_date(introduced_to), sort=sort,
+                    limit=PAGE, offset=(page - 1) * PAGE)
     pages = max(1, (res.total + PAGE - 1) // PAGE)
-    params = {k: v for k, v in dict(q=q, congress=congress, chamber=chamber, subject=subject, sponsor=sponsor,
-                                     cosponsor=cosponsor, status=status).items() if v}
+    params = {k: v for k, v in {"q": q, "congress": congress, "chamber": chamber, "subject": subject, "sponsor": sponsor,
+                                "cosponsor": cosponsor, "status": status, "type": type, "from": _date(introduced_from),
+                                "to": _date(introduced_to), "sort": sort}.items() if v}
+    text_query = bool(q.strip()) and db.parse_number(q) is None
     return templates.TemplateResponse(request, "search.html", {
         "res": res, "params": params, "page": page, "pages": pages, "congresses": db.congresses(c),
-        "subjects": db.subject_list(c, congress)})
+        "subjects": db.subject_list(c, congress), "types": db.TYPE_LABEL, "terms": db.query_terms(q) if text_query else [],
+        "text_query": text_query, "first": (page - 1) * PAGE + 1})
+
+
+def _date(s: str | None) -> str | None:
+    """A YYYY-MM-DD date from a form field, or None."""
+    return s if s and re.fullmatch(r"\d{4}-\d{2}-\d{2}", s) else None
 
 
 @app.get("/bills/{bill_id}", response_class=HTMLResponse)
@@ -299,6 +349,12 @@ def plan(request: Request):
     return templates.TemplateResponse(request, "doc.html", {"title": title, "body": body})
 
 
+@app.get("/about", response_class=HTMLResponse)
+def about(request: Request):
+    title, body = _doc("about.md")
+    return templates.TemplateResponse(request, "doc.html", {"title": title, "body": body})
+
+
 # ---------------------------------------------------------------- JSON API
 
 
@@ -314,9 +370,15 @@ def _bill_json(row) -> dict:
 @app.get("/api/v1/search")
 def api_search(q: str = "", congress: int | None = None, chamber: str | None = None, subject: str | None = None,
                sponsor: str | None = None, cosponsor: str | None = None, status: str | None = None,
+               type: str | None = None, introduced_from: str | None = Query(None, alias="from"),
+               introduced_to: str | None = Query(None, alias="to"),
+               sort: str | None = Query(None, description="relevance, number, number-desc, introduced, "
+                                                          "introduced-desc, action-desc"),
                limit: int = Query(25, le=100), offset: int = 0):
     res = db.search(con(), q=q, congress=congress, chamber=chamber, subject=subject, sponsor=sponsor,
-                    cosponsor=cosponsor, status=status, limit=limit, offset=offset)
+                    cosponsor=cosponsor, status=status, bill_type=type, introduced_from=_date(introduced_from),
+                    introduced_to=_date(introduced_to), sort=sort if sort in db.SORTS else None,
+                    limit=limit, offset=offset)
     return {"total": res.total, "results": [_bill_json(r) for r in res.rows]}
 
 

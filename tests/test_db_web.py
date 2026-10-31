@@ -36,6 +36,22 @@ def test_search(database):
     assert db.search(con, chamber="senate", congress=119).total == 1
 
 
+def test_search_filters_sorts_and_snippets(database):
+    con = db.connect(database)
+    ids = lambda res: [r["bill_id"] for r in res.rows]
+    assert ids(db.search(con, congress=119, bill_type="s")) == ["s231-119"]
+    assert ids(db.search(con, congress=119, introduced_from="2025-01-10")) == ["hr695-119", "s231-119"]
+    assert ids(db.search(con, congress=119, introduced_to="2025-01-03")) == ["hr206-119"]
+    assert ids(db.search(con, congress=119, bill_type="hr", sort="number")) == ["hr8-119", "hr206-119", "hr695-119"]
+    assert ids(db.search(con, congress=119, bill_type="hr", sort="number-desc")) == ["hr695-119", "hr206-119", "hr8-119"]
+    assert ids(db.search(con, congress=118, sort="introduced-desc")) == ["s3401-118", "hr1514-118"]
+    assert ids(db.search(con, congress=119, sort="action-desc"))[0] == "hr695-119"
+    snip = db.search(con, q="landlord").rows[0]["snippet"]
+    assert db.MARK_START + "Landlord" + db.MARK_END in snip
+    assert db.search(con, congress=119).rows[0]["snippet"] is None
+    assert db.query_terms('landlord "housing vouchers" and tenant') == ["landlord", "housing vouchers", "tenant"]
+
+
 def test_same_title_in_next_congress(database):
     con = db.connect(database)
     later = db.same_title_in(con, "hr1514-118", 119)
@@ -62,8 +78,36 @@ def test_pages(client):
     assert "Draft for the 120th Congress" in r.text and 'class="warning' in r.text
     r = client.get("/bills/hr695-119")
     assert "This bill became law as Public Law 119-43" in r.text and "Draft for the" not in r.text
-    for p in ("/guideline", "/research", "/plan", "/selection"):
+    for p in ("/guideline", "/research", "/plan", "/selection", "/about"):
         assert client.get(p).status_code == 200
+    home = client.get("/").text
+    assert 'id="related"' in home and "Congressional Research" in home
+    assert 'href="https://aih.github.io"' in home and "proof of concept" in home
+    assert "Ari Hershowitz" in client.get("/about").text
+
+
+def test_search_page_marks_matches_and_offers_checkboxes(client):
+    r = client.get("/search", params={"q": "landlord"}).text
+    assert "<mark>Landlord</mark>" in r
+    assert 'class="sel-check"' in r and 'data-sel="hr206-119"' in r and "data-sel-all" in r
+    assert "data-busy" in r and "/static/search.js" in r
+    assert "Add to selection" not in r
+    r = client.get("/search", params={"congress": 119, "status": "enacted"}).text
+    assert 'data-sel="hr695-119"' not in r
+    r = client.get("/search", params={"congress": 119, "type": "hr", "sort": "number-desc"}).text
+    assert r.index("H.R. 695") < r.index("H.R. 206")
+    assert 'value="relevance"' not in r
+    r = client.get("/search", params={"congress": 119, "from": "2025-01-10", "sort": "bogus"})
+    assert r.status_code == 200 and "H.R. 206" not in r.text
+    assert 'class="sel-check"' in client.get("/bills/hr206-119").text
+
+
+def test_highlight_escapes():
+    from reintro.web.app import highlight, snippet_html
+    assert str(highlight("<b>Tenants</b> & landlords", ["tenant", "landlord"])) == \
+        "&lt;b&gt;<mark>Tenants</mark>&lt;/b&gt; &amp; <mark>landlords</mark>"
+    assert str(snippet_html("a <x> \x02b\x03")) == "a &lt;x&gt; <mark>b</mark>"
+    assert str(snippet_html("no match here")) == ""
 
 
 def test_downloads(client):

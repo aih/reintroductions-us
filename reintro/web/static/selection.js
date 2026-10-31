@@ -12,10 +12,13 @@
   function update() {
     var list = read();
     document.querySelectorAll("[data-sel-count]").forEach(function (el) { el.textContent = list.length; });
-    document.querySelectorAll(".sel-toggle").forEach(function (b) {
-      var on = has(list, b.dataset.sel);
-      b.setAttribute("aria-pressed", on ? "true" : "false");
-      b.textContent = on ? "Remove from selection" : "Add to selection";
+    var boxes = Array.prototype.slice.call(document.querySelectorAll(".sel-check"));
+    boxes.forEach(function (c) { c.checked = has(list, c.dataset.sel); });
+    document.querySelectorAll("[data-sel-all]").forEach(function (all) {
+      var n = boxes.filter(function (c) { return c.checked; }).length;
+      all.disabled = boxes.length === 0;
+      all.checked = boxes.length > 0 && n === boxes.length;
+      all.indeterminate = n > 0 && n < boxes.length;
     });
     var ul = document.querySelector("[data-sel-list]");
     if (ul) {
@@ -43,15 +46,24 @@
       if (dx) dx.href = "/download?pdf=0&ids=" + encodeURIComponent(ids);
     }
   }
-  document.addEventListener("click", function (e) {
-    var b = e.target.closest(".sel-toggle");
-    if (b) {
-      var list = read();
-      if (has(list, b.dataset.sel)) list = list.filter(function (x) { return x.id !== b.dataset.sel; });
-      else list.push({ id: b.dataset.sel, label: b.dataset.label });
+  function set(list, box, on) {
+    var rest = list.filter(function (x) { return x.id !== box.dataset.sel; });
+    if (on) rest.push({ id: box.dataset.sel, label: box.dataset.label });
+    return rest;
+  }
+  document.addEventListener("change", function (e) {
+    if (e.target.matches(".sel-check")) write(set(read(), e.target, e.target.checked));
+    if (e.target.matches("[data-sel-all]")) {
+      var on = e.target.checked, list = read();
+      document.querySelectorAll(".sel-check").forEach(function (c) { list = set(list, c, on); });
       write(list);
     }
+  });
+  document.addEventListener("click", function (e) {
     if (e.target.closest("[data-sel-clear]")) write([]);
   });
+  // Another tab changed the selection.
+  window.addEventListener("storage", function (e) { if (e.key === KEY) update(); });
+  window.addEventListener("pageshow", update);
   document.addEventListener("DOMContentLoaded", update);
 })();
