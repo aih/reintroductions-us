@@ -103,9 +103,12 @@ the types:
   meaning".
 - **Procedurally-related:** a measure "that affects consideration of other
   legislation", such as the rule for considering a bill.
-- These relationships "refer only to same-Congress measures". They are assigned
-  by people at CRS, the House or the Senate reading the texts; Congress.gov does
-  not publish a similarity score or a threshold.
+- These relationships "refer only to same-Congress measures".
+- CRS identifies the relationships it records with its Text Analysis Program,
+  which built on the bill-similarity algorithms that Ari Hershowitz developed with
+  Daniel Schuman and Charlotte Lee for
+  [BillMap](https://github.com/unitedstates/BillMap). Congress.gov does not
+  publish the program's similarity scores or thresholds.
 
 In August 2026 Congress.gov added three types:
 [Contained in public law and Reintroduction](https://content.govdelivery.com/accounts/USLOC/bulletins/423a378),

@@ -82,6 +82,7 @@ def test_pages(client):
         assert client.get(p).status_code == 200
     home = client.get("/").text
     assert 'id="related" hidden' in home and "Congressional Research" in home
+    assert "Text Analysis Program" in home and 'href="https://github.com/unitedstates/BillMap"' in home
     assert 'class="info" data-toggle="related" aria-expanded="false" aria-controls="related"' in home
     assert '<span class="sitename">Reintroductions</span>' in home and 'rel="icon" href="/static/favicon.svg"' in home
     r = client.get("/favicon.ico")
