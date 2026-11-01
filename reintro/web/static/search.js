@@ -1,6 +1,16 @@
-// The search page: a "Searching…" state while the next page loads, and the sort
-// menu submitting the form when it changes.
+// The search form: a "Searching…" state while the next page loads, the sort menu
+// submitting the form when it changes, and empty fields left out of the address.
 (function () {
+  function trim(form) {
+    Array.prototype.forEach.call(form.elements, function (el) {
+      if (el.name && el.value === "" && !el.disabled) { el.disabled = true; el.dataset.trimmed = "1"; }
+    });
+  }
+  function untrim() {
+    document.querySelectorAll("[data-trimmed]").forEach(function (el) {
+      el.disabled = false; delete el.dataset.trimmed;
+    });
+  }
   function busy() {
     var form = document.querySelector("[data-busy-form]");
     var status = document.querySelector("[data-busy]");
@@ -24,7 +34,7 @@
     document.body.classList.remove("is-busy");
   }
   document.addEventListener("submit", function (e) {
-    if (e.target.matches("[data-busy-form]")) busy();
+    if (e.target.matches("[data-busy-form]")) { trim(e.target); busy(); }
   });
   document.addEventListener("click", function (e) {
     var a = e.target.closest("[data-busy-link]");
@@ -32,10 +42,11 @@
   });
   document.addEventListener("change", function (e) {
     if (e.target.matches("[data-autosubmit]") && e.target.form) {
+      trim(e.target.form);
       busy();
       e.target.form.submit();
     }
   });
   // A page restored from the back/forward cache comes back in its busy state.
-  window.addEventListener("pageshow", idle);
+  window.addEventListener("pageshow", function () { untrim(); idle(); });
 })();

@@ -62,8 +62,18 @@ templates.env.globals["site_version"] = SITE_VERSION
 templates.env.globals["git_commit"] = GIT_COMMIT
 
 
-@lru_cache(maxsize=1)
+_CON_LOCK = threading.Lock()
+
+
 def con():
+    """The one connection. The first call can take seconds (`db.connect` adds indexes and fills
+    `bills_fts_rows` in a database loaded before they existed); the others wait for it."""
+    with _CON_LOCK:
+        return _connect()
+
+
+@lru_cache(maxsize=1)
+def _connect():
     Path(DB_PATH).parent.mkdir(parents=True, exist_ok=True)
     return db.connect(DB_PATH)
 
@@ -166,19 +176,21 @@ def home(request: Request):
     c = con()
     counts = c.execute("select congress, count(*) n, sum(enacted) enacted, sum(related_enacted is not null) related "
                        "from bills group by congress order by congress desc").fetchall()
+    subjects = db.subject_list(c)
     return templates.TemplateResponse(request, "home.html", {
-        "counts": counts, "latest": latest_congress(), "subjects": db.subject_list(c, latest_congress())})
+        "counts": counts, "latest": latest_congress(), "subjects": subjects, "congresses": db.congresses(c),
+        "types": db.TYPE_LABEL, "params": {}, "labels": {}})
 
 
 @app.get("/search", response_class=HTMLResponse)
-def search_page(request: Request, q: str = "", congress: int | None = None, chamber: str | None = None,
+def search_page(request: Request, q: str = "", congress: str | None = None, chamber: str | None = None,
                 subject: str | None = None, sponsor: str | None = None, cosponsor: str | None = None,
                 status: str | None = None, type: str | None = None, introduced_from: str | None = Query(None, alias="from"),
                 introduced_to: str | None = Query(None, alias="to"), sort: str | None = None,
                 page: int = Query(1, ge=1)):
     c = con()
-    congress = congress if congress is not None else latest_congress()
-    sort = sort if sort in db.SORTS else None
+    congress = int(congress) if congress and congress.isdigit() else None
+    sort = sort if sort in db.SORTS and sort != "relevance" else None
     res = db.search(c, q=q, congress=congress, chamber=chamber, subject=subject or None, sponsor=sponsor or None,
                     cosponsor=cosponsor or None, status=status or None, bill_type=type or None,
                     introduced_from=_date(introduced_from), introduced_to=_date(introduced_to), sort=sort,

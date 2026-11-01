@@ -46,12 +46,18 @@ create table if not exists bills (
     updated_at text
 );
 create index if not exists bills_congress on bills(congress, bill_type, number);
+create index if not exists bills_by_number on bills(congress desc, bill_type, number);
+create index if not exists bills_by_number_desc on bills(congress desc, bill_type, number desc);
+create index if not exists bills_by_introduced on bills(introduced_at, bill_type, number, congress);
+create index if not exists bills_by_introduced_desc on bills(introduced_at desc, bill_type, number, congress);
+create index if not exists bills_by_action on bills(latest_action_date desc, bill_type, number, congress);
 create table if not exists bill_people (
     bill_id text not null, bioguide_id text, name text, party text, state text,
     role text not null, original integer, sponsored_at text
 );
 create index if not exists bill_people_bill on bill_people(bill_id);
 create index if not exists bill_people_person on bill_people(bioguide_id);
+create index if not exists bill_people_role on bill_people(bioguide_id, role, bill_id);
 create table if not exists bill_subjects (bill_id text not null, subject text not null);
 create index if not exists bill_subjects_subject on bill_subjects(subject);
 create table if not exists bill_titles (bill_id text not null, title text not null, type text, as_of text);
@@ -59,6 +65,9 @@ create virtual table if not exists bills_fts using fts5(
     bill_id unindexed, number, titles, subjects, people, body,
     tokenize = 'porter unicode61'
 );
+-- Each bills_fts row's bills row, so a text search joins on integers and never reads the
+-- stored bill text of the rows it does not show.
+create table if not exists bills_fts_rows (fts_rowid integer primary key, bill_rowid integer not null);
 create table if not exists loads (congress integer primary key, loaded_at text, bills integer, with_text integer);
 """
 
@@ -75,7 +84,26 @@ def connect(path: str | Path) -> sqlite3.Connection:
     if str(path) != ":memory:":
         con.execute("pragma journal_mode=wal")
     con.executescript(SCHEMA)
+    try:
+        _fill_fts_rows(con)
+    except sqlite3.OperationalError:  # locked by a load, which fills it itself
+        con.rollback()
     return con
+
+
+def _fill_fts_rows(con: sqlite3.Connection) -> None:
+    """Fills `bills_fts_rows` in a database loaded before it existed (a pass over the text table)."""
+    if fts_rows_complete(con):
+        return
+    con.execute("begin immediate")
+    if not fts_rows_complete(con):
+        con.execute("delete from bills_fts_rows")
+        con.execute("insert into bills_fts_rows select f.rowid, b.rowid from bills_fts f join bills b on b.bill_id = f.bill_id")
+    con.commit()
+
+
+def fts_rows_complete(con: sqlite3.Connection) -> bool:
+    return con.execute("select (select count(*) from bills_fts_rows) = (select count(*) from bills)").fetchone()[0] == 1
 
 
 def citation(bill_type: str, number: int | str, congress: int | None = None) -> str:
@@ -128,6 +156,7 @@ def load_congress(con: sqlite3.Connection, data_dir: Path, congress: int, *, typ
     recs = [r for r in iter_bills(data_dir, congress, types)]
     ids = [r.bill_id for r in recs]
     cur = con.cursor()
+    cur.execute("delete from bills_fts_rows where bill_rowid in (select rowid from bills where congress = ?)", (congress,))
     cur.execute("delete from bills where congress = ?", (congress,))
     for table in ("bill_people", "bill_subjects", "bill_titles"):
         cur.execute(f"delete from {table} where bill_id like ?", (f"%-{congress}",))
@@ -163,6 +192,7 @@ def load_congress(con: sqlite3.Connection, data_dir: Path, congress: int, *, typ
              len([c for c in d.get("cosponsors") or [] if not c.get("withdrawn_at")]),
              d.get("subjects_top_term"), latest.get("text"), (latest.get("acted_at") or "")[:10] or None,
              text_version, text_date, text_path, None, d.get("updated_at")))
+        bill_rowid = cur.lastrowid
         cur.executemany("insert into bill_people values (?,?,?,?,?,?,?,?)", [(r.bill_id, *p) for p in ppl])
         cur.executemany("insert into bill_subjects values (?,?)", [(r.bill_id, s) for s in (d.get("subjects") or [])])
         cur.executemany("insert into bill_titles values (?,?,?,?)",
@@ -172,6 +202,7 @@ def load_congress(con: sqlite3.Connection, data_dir: Path, congress: int, *, typ
         number = f"{r.bill_type}{r.number} {TYPE_LABEL.get(r.bill_type, '')} {r.number}"
         cur.execute("insert into bills_fts values (?,?,?,?,?,?)",
                     (r.bill_id, number, titles, " ".join(d.get("subjects") or []), people, body))
+        cur.execute("insert into bills_fts_rows values (?, ?)", (cur.lastrowid, bill_rowid))
         if progress and i % 500 == 0:
             progress(i, len(recs))
     _mark_related_enacted(con, recs)
@@ -229,7 +260,7 @@ def _record_from_db(con, bill_id):
 @dataclass
 class SearchResult:
     total: int
-    rows: list[sqlite3.Row]
+    rows: list[dict]
 
 
 def fts_query(q: str) -> str:
@@ -246,16 +277,20 @@ def fts_query(q: str) -> str:
     return " ".join(out)
 
 
-# Result orders: the relevance order needs a text query; the others do not.
+# Result orders: the relevance order needs a text query; the others do not. Each ends in a
+# unique key, so a page boundary falls in the same place every time, and each has an index
+# of its own (SCHEMA), so a page past the first costs an index walk rather than a sort.
 SORTS = {
     "relevance": None,
     "number": "b.congress desc, b.bill_type, b.number",
     "number-desc": "b.congress desc, b.bill_type, b.number desc",
-    "introduced-desc": "b.introduced_at desc, b.bill_type, b.number",
-    "introduced": "b.introduced_at, b.bill_type, b.number",
-    "action-desc": "b.latest_action_date desc, b.bill_type, b.number",
+    "introduced-desc": "b.introduced_at desc, b.bill_type, b.number, b.congress",
+    "introduced": "b.introduced_at, b.bill_type, b.number, b.congress",
+    "action-desc": "b.latest_action_date desc, b.bill_type, b.number, b.congress",
 }
+RELEVANCE = "bm25(bills_fts, 0, 10.0, 8.0, 3.0, 2.0, 1.0), b.congress desc, b.bill_type, b.number"
 MARK_START, MARK_END = "\x02", "\x03"
+BIOGUIDE_RX = re.compile(r"[A-Z]\d{6}")
 
 
 def search(con: sqlite3.Connection, *, q: str = "", congress: int | None = None, chamber: str | None = None,
@@ -263,12 +298,14 @@ def search(con: sqlite3.Connection, *, q: str = "", congress: int | None = None,
            status: str | None = None, bill_type: str | None = None, introduced_from: str | None = None,
            introduced_to: str | None = None, sort: str | None = None,
            limit: int = 25, offset: int = 0) -> SearchResult:
-    """Bills matching the filters. With a text query each row carries `snippet`: the passage of
-    the bill text that matched, its matched words between MARK_START and MARK_END."""
+    """Bills matching the filters; with no query and no filters, every bill. With a text query
+    each row carries `snippet`: the passage of the bill text that matched, its matched words
+    between MARK_START and MARK_END.
+
+    A page is found in three steps: the rowids of the page in order, then the snippets of
+    those rows alone, then their bill rows."""
     where, args = [], []
-    order = SORTS["number"]
-    join = ""
-    cols = "b.*, null as snippet"
+    fts = None
     num = parse_number(q) if q else None
     if num:
         t, n, c = num
@@ -277,12 +314,8 @@ def search(con: sqlite3.Connection, *, q: str = "", congress: int | None = None,
         if c:
             where.append("b.congress = ?")
             args.append(c)
-    elif q:
-        join = "join bills_fts f on f.bill_id = b.bill_id"
-        where.append("bills_fts match ?")
-        args.append(fts_query(q))
-        order = "bm25(bills_fts, 0, 10.0, 8.0, 3.0, 2.0, 1.0)"
-        cols = f"b.*, snippet(bills_fts, 5, '{MARK_START}', '{MARK_END}', '…', 28) as snippet"
+    elif q and fts_query(q):
+        fts = fts_query(q)
     if congress:
         where.append("b.congress = ?")
         args.append(congress)
@@ -293,9 +326,12 @@ def search(con: sqlite3.Connection, *, q: str = "", congress: int | None = None,
         where.append("(b.policy_area = ? or b.bill_id in (select bill_id from bill_subjects where subject = ?))")
         args += [subject, subject]
     for role, who in (("sponsor", sponsor), ("cosponsor", cosponsor)):
-        if who:
-            where.append(f"b.bill_id in (select bill_id from bill_people where role = '{role}' and (bioguide_id = ? or name like ?))")
-            args += [who, f"%{who}%"]
+        if who and BIOGUIDE_RX.fullmatch(who):
+            where.append(f"b.bill_id in (select bill_id from bill_people where bioguide_id = ? and role = '{role}')")
+            args.append(who)
+        elif who:
+            where.append(f"b.bill_id in (select bill_id from bill_people where role = '{role}' and name like ?)")
+            args.append(f"%{who}%")
     if status == "enacted":
         where.append("b.enacted = 1")
     elif status == "not-enacted":
@@ -311,12 +347,37 @@ def search(con: sqlite3.Connection, *, q: str = "", congress: int | None = None,
     if introduced_to:
         where.append("b.introduced_at <= ?")
         args.append(introduced_to)
-    if SORTS.get(sort or ""):
-        order = SORTS[sort]
+    order = SORTS.get(sort or "") or (RELEVANCE if fts else SORTS["number"])
+    if fts:
+        where.insert(0, "bills_fts match ?")
+        args.insert(0, fts)
+        source = ("bills_fts f join bills_fts_rows m on m.fts_rowid = f.rowid join bills b on b.rowid = m.bill_rowid"
+                  if fts_rows_complete(con) else "bills_fts f join bills b on b.bill_id = f.bill_id")
+        ids = "f.rowid, b.rowid"
+    else:
+        source = "bills b"
+        ids = "null, b.rowid"
     sql_where = ("where " + " and ".join(where)) if where else ""
-    total = con.execute(f"select count(*) from bills b {join} {sql_where}", args).fetchone()[0]
-    rows = con.execute(f"select {cols} from bills b {join} {sql_where} order by {order} limit ? offset ?",
+    total = con.execute(f"select count(*) from {source} {sql_where}", args).fetchone()[0]
+    page = con.execute(f"select {ids} from {source} {sql_where} order by {order} limit ? offset ?",
                        [*args, limit, offset]).fetchall()
+    snippets = {}
+    if fts and page:
+        marks = ",".join("?" * len(page))
+        snippets = dict(con.execute(
+            f"select rowid, snippet(bills_fts, 5, '{MARK_START}', '{MARK_END}', '…', 28) from bills_fts "
+            f"where bills_fts match ? and rowid in ({marks})", [fts, *(r[0] for r in page)]).fetchall())
+    by_rowid = {}
+    if page:
+        marks = ",".join("?" * len(page))
+        by_rowid = {r["rowid"]: r for r in con.execute(f"select rowid, * from bills where rowid in ({marks})",
+                                                        [r[1] for r in page])}
+    rows = []
+    for fts_rowid, rowid in page:
+        d = dict(by_rowid[rowid])
+        d.pop("rowid", None)
+        d["snippet"] = snippets.get(fts_rowid)
+        rows.append(d)
     return SearchResult(total, rows)
 
 
