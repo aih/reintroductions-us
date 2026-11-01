@@ -31,7 +31,7 @@ h1 .sub { font-weight: 400; color: var(--muted); font-size: .6em; }
 .lede { font-size: 1.1rem; }
 label { display: block; font-weight: 600; margin-bottom: .2rem; }
 input, select, button, .button { font: inherit; padding: .45rem .6rem; border: 1px solid var(--edge); border-radius: 4px; background: var(--bg); color: var(--ink); }
-button, .button { cursor: pointer; background: var(--link); color: #fff; border-color: var(--link); text-decoration: none; display: inline-block; }
+button, .button { cursor: pointer; background: var(--link); color: var(--bg); border-color: var(--link); text-decoration: none; display: inline-block; }
 .button--plain, button.button--plain { background: var(--bg); color: var(--link); }
 .check { display: inline-flex; gap: .45rem; align-items: center; font-weight: 400; margin: 0; cursor: pointer; }
 .check input, .sel-check { width: 1.15rem; height: 1.15rem; margin: 0; padding: 0; accent-color: var(--link); cursor: pointer; }
@@ -50,6 +50,19 @@ body.is-busy .results, body.is-busy .total, body.is-busy .results-bar { opacity:
 .filters .field.wide { flex: 1 1 100%; }
 .filters .field.wide input { width: 100%; }
 .filters .field { min-width: 0; max-width: 100%; }
+.searchrow { display: flex; gap: .5rem; }
+.filters .field.wide .searchrow input { flex: 1; width: auto; min-width: 0; }
+.advanced { flex: 1 1 100%; }
+.advanced > summary { display: inline-flex; align-items: center; gap: .55rem; cursor: pointer; list-style: none;
+                      padding: .45rem .9rem; border: 2px solid var(--link); border-radius: 4px; background: var(--bg);
+                      color: var(--link); font-weight: 700; }
+.advanced > summary::-webkit-details-marker { display: none; }
+.advanced > summary::before { content: ""; width: .45em; height: .45em; border-right: 2px solid currentColor;
+                              border-bottom: 2px solid currentColor; transform: rotate(-45deg); }
+.advanced[open] > summary::before { transform: rotate(45deg) translate(-.1em, -.1em); }
+.advanced[open] > summary { background: var(--link); color: var(--bg); }
+.advanced__count { font-weight: 400; font-size: .85em; padding: 0 .45em; border-radius: 1em; border: 1px solid currentColor; }
+.advanced__fields { display: flex; flex-wrap: wrap; gap: .75rem 1rem; align-items: flex-end; margin-top: 1rem; }
 .filters select { max-width: 100%; }
 .combo { position: relative; }
 .combo input { width: 17rem; max-width: 100%; }

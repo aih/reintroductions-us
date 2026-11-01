@@ -179,7 +179,8 @@ def home(request: Request):
     subjects = db.subject_list(c)
     return templates.TemplateResponse(request, "home.html", {
         "counts": counts, "latest": latest_congress(), "subjects": subjects, "congresses": db.congresses(c),
-        "types": db.TYPE_LABEL, "committees": db.committee_list(c), "params": {}, "labels": {}})
+        "types": db.TYPE_LABEL, "committees": db.committee_list(c), "params": {}, "labels": {},
+        "advanced_open": False})
 
 
 @app.get("/search", response_class=HTMLResponse)
@@ -204,7 +205,7 @@ def search_page(request: Request, q: str = "", congress: str | None = None, cham
     labels = {role: (db.member_name(c, v) if re.fullmatch(r"[A-Z]\d{6}", v) else None) or v
               for role, v in (("sponsor", sponsor), ("cosponsor", cosponsor)) if v}
     return templates.TemplateResponse(request, "search.html", {
-        "labels": labels,
+        "labels": labels, "advanced_open": True,
         "res": res, "params": params, "page": page, "pages": pages, "congresses": db.congresses(c),
         "subjects": db.subject_list(c, congress), "committees": db.committee_list(c, congress),
         "types": db.TYPE_LABEL, "terms": db.query_terms(q) if text_query else [],
