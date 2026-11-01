@@ -1,6 +1,13 @@
-{# The search form, on the home page and the search page. Without words, Relevance is bill-number order. #}
+{# The search form, on the home page and the search page: the words box, and every other field under
+   "Advanced search", closed on the home page (`advanced_open`). Without words, Relevance is
+   bill-number order. #}
 <form class="filters" id="filters" action="/search" method="get" role="search" data-busy-form>
-  <div class="field wide"><label for="q">Words, title or number</label><input id="q" name="q" type="search" value="{{ params.q or '' }}"></div>
+  <div class="field wide"><label for="q">Words, title or number</label>
+    <div class="searchrow"><input id="q" name="q" type="search" value="{{ params.q or '' }}"><button type="submit" data-busy-label="Searching…">Search</button></div></div>
+  {% set n_set = params.keys()|reject('in', ['q', 'sort'])|list|length %}
+  <details class="advanced"{% if advanced_open %} open{% endif %}>
+  <summary>Advanced search{% if n_set %} <span class="advanced__count">{{ n_set }} set</span>{% endif %}</summary>
+  <div class="advanced__fields">
   <div class="field"><label for="congress">Congress</label>
     <select id="congress" name="congress"><option value="">Any</option>{% for c in congresses %}<option value="{{ c }}" {% if params.congress == c %}selected{% endif %}>{{ ordinal(c) }}</option>{% endfor %}</select></div>
   <div class="field"><label for="chamber">Chamber</label>
@@ -43,6 +50,8 @@
       {% endfor %}
     </select></div>
   <div class="field"><button type="submit" data-busy-label="Searching…">Search</button></div>
+  </div>
+  </details>
 </form>
 <p class="busy" role="status" aria-live="polite" data-busy hidden><span class="spinner" aria-hidden="true"></span> Searching…</p>
 <script src="/static/search.js" defer></script>

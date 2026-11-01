@@ -17,8 +17,9 @@
     if (status) status.hidden = false;
     if (form) {
       form.setAttribute("aria-busy", "true");
-      var b = form.querySelector("[data-busy-label]");
-      if (b) { b.dataset.idle = b.textContent; b.textContent = b.dataset.busyLabel; b.disabled = true; }
+      form.querySelectorAll("[data-busy-label]").forEach(function (b) {
+        b.dataset.idle = b.textContent; b.textContent = b.dataset.busyLabel; b.disabled = true;
+      });
     }
     document.body.classList.add("is-busy");
   }
@@ -28,8 +29,9 @@
     if (status) status.hidden = true;
     if (form) {
       form.removeAttribute("aria-busy");
-      var b = form.querySelector("[data-busy-label]");
-      if (b && b.dataset.idle) { b.textContent = b.dataset.idle; b.disabled = false; }
+      form.querySelectorAll("[data-busy-label]").forEach(function (b) {
+        if (b.dataset.idle) { b.textContent = b.dataset.idle; b.disabled = false; }
+      });
     }
     document.body.classList.remove("is-busy");
   }

@@ -146,6 +146,9 @@ def test_home_has_the_full_search_and_search_defaults_to_every_congress(client):
     home = client.get("/").text
     assert 'id="filters" action="/search"' in home and 'data-member-combo="sponsor"' in home
     assert '<select id="congress" name="congress"><option value="">Any</option>' in home
+    assert '<details class="advanced">' in home and "advanced__count" not in home
+    page = client.get("/search", params={"congress": 119, "status": "enacted", "q": "x"}).text
+    assert '<details class="advanced" open>' in page and '<span class="advanced__count">2 set</span>' in page
     r = client.get("/search").text
     assert "H.R. 1514" in r and "H.R. 206" in r
     r = client.get("/search", params={"congress": "", "q": "landlord", "sort": ""})
