@@ -5,13 +5,9 @@
 <p class="lede">Find bills of the {% if latest %}{{ ordinal(latest) }}{% else %}most recent{% endif %} Congress that did not become law,
 and download each as a draft for the next Congress in USLM 2.0 XML and PDF. Each draft marks the places that need review:
 cited law amended since the bill was written, words it strikes that are no longer in the law, dates and fiscal years to move.</p>
-<form class="searchbox" action="/search" method="get" role="search">
-  <label for="q">Search by words, title or number</label>
-  <div class="row">
-    <input id="q" name="q" type="search" placeholder="e.g. pet food, H.R. 597, Medal of Honor">
-    <button type="submit">Search</button>
-  </div>
-</form>
+<h2 class="search-heading">Search bills</h2>
+{% include "_search_form.html" %}
+<p class="note">Without words, the search lists every bill that matches the other fields, and with every field empty it lists all bills.</p>
 {% if counts %}
 <table class="counts">
   <caption>Bills loaded</caption>

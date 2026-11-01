@@ -18,7 +18,7 @@ compose project, `reintroductions`, behind the shared edge Caddy that statutes-a
 | `docker-compose.prod.yml` | `app` (uvicorn, 1 GB), `proxy` (Caddy, 64 MB, alias `reintro-proxy` on `edge`), `jobs` (the update, 1 GB, profile `jobs`) |
 | `deploy/Caddyfile` | robots `Disallow: /`, crawler User-Agents refused, the cookie gate, security headers |
 | `deploy/deploy-on-box.sh` | Checkout, Caddyfile validation, build, `up -d --wait`, a check through the edge |
-| `deploy/update.sh` | `reintro update` for the current Congress, then `reintro link` against the one before |
+| `deploy/update.sh` | `reintro update` for the current Congress, then `reintro link` against the one before and `reintro progress` for it |
 | `deploy/install-crons.sh` | `/etc/cron.d/reintro`: the update daily at 08:17 UTC, the PDF sync every 30 minutes |
 | `deploy/aws-setup.sh` | One-time AWS setup for the pre-generated PDFs (CloudShell) |
 | `lambda/Dockerfile`, `deploy/lambda-deploy.sh`, `.github/workflows/pdf-lambda.yml` | The PDF renderer on Lambda |

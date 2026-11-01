@@ -68,6 +68,13 @@ def cmd_load(a) -> int:
     return 0
 
 
+def cmd_progress(a) -> int:
+    con = db.connect(DB_PATH)
+    n = db.load_progress(con, _data_dir(), a.congress)
+    print(json.dumps({"congress": a.congress, "progress_rows": n}))
+    return 0
+
+
 def cmd_update(a) -> int:
     cmd_fetch(a)
     return cmd_load(a)
@@ -152,6 +159,9 @@ def main(argv=None) -> int:
         p.add_argument("--congress", type=int, required=True)
         p.add_argument("--types", default=None, help="comma-separated bill types, e.g. hr,s")
         p.set_defaults(fn=fn)
+    p = sub.add_parser("progress", help="committee reports and chamber passage from data.json, without a full load")
+    p.add_argument("--congress", type=int, required=True)
+    p.set_defaults(fn=cmd_progress)
     p = sub.add_parser("link")
     p.add_argument("--older", type=int, required=True)
     p.add_argument("--newer", type=int, required=True)

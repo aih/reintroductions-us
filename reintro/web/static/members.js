@@ -47,9 +47,11 @@
     }).join(" · ");
   }
 
+  // Bills in this role in the chosen Congress, or in every Congress when none is chosen.
   function count(m, role, congress) {
-    var c = m.counts[congress];
-    return c ? c[role] || 0 : 0;
+    return Object.keys(m.counts).reduce(function (n, k) {
+      return !congress || k === congress ? n + (m.counts[k][role] || 0) : n;
+    }, 0);
   }
 
   // Every typed word must begin a word of the name, the state or the bioguide id. A match on
@@ -147,7 +149,7 @@
         meta.className = "combo__meta";
         var n = count(m, role, c);
         meta.textContent = [m.party && m.state ? m.party + "-" + m.state : m.state, served(m),
-          c ? n + " " + (role === "sponsor" ? "sponsored" : "cosponsored") + " in the " + ordinal(+c) : ""]
+          n + " " + (role === "sponsor" ? "sponsored" : "cosponsored") + (c ? " in the " + ordinal(+c) : "")]
           .filter(Boolean).join(" · ");
         li.appendChild(name);
         li.appendChild(document.createTextNode(" "));

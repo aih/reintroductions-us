@@ -125,6 +125,84 @@ def test_search_page_marks_matches_and_offers_checkboxes(client):
     assert 'class="sel-check"' in client.get("/bills/hr206-119").text
 
 
+def test_search_without_words_lists_every_bill_and_pages_by_rowid(database):
+    con = db.connect(database)
+    every = con.execute("select count(*) from bills").fetchone()[0]
+    res = db.search(con)
+    assert res.total == every == len(res.rows) and res.rows[0]["congress"] == 119
+    assert [r["bill_id"] for r in db.search(con, limit=2, offset=1).rows] == [r["bill_id"] for r in res.rows[1:3]]
+    assert db.fts_rows_complete(con)
+    db.load_congress(con, CONGRESS, 119)
+    assert db.fts_rows_complete(con)
+    fast = db.search(con, q="housing")
+    con.execute("delete from bills_fts_rows where fts_rowid = (select max(fts_rowid) from bills_fts_rows)")
+    assert not db.fts_rows_complete(con)
+    slow = db.search(con, q="housing")
+    assert [(r["bill_id"], r["snippet"]) for r in slow.rows] == [(r["bill_id"], r["snippet"]) for r in fast.rows]
+    con.rollback()
+
+
+def test_home_has_the_full_search_and_search_defaults_to_every_congress(client):
+    home = client.get("/").text
+    assert 'id="filters" action="/search"' in home and 'data-member-combo="sponsor"' in home
+    assert '<select id="congress" name="congress"><option value="">Any</option>' in home
+    r = client.get("/search").text
+    assert "H.R. 1514" in r and "H.R. 206" in r
+    r = client.get("/search", params={"congress": "", "q": "landlord", "sort": ""})
+    assert r.status_code == 200 and "<mark>Landlord</mark>" in r.text
+
+
+def test_progress_reads_committee_reports_and_passage():
+    from pathlib import Path
+
+    from reintro.congress_data import BillRecord
+    data = {
+        "committees": [
+            {"activity": ["Reported By", "Markup By", "Referred To"], "committee": "House Oversight and Government Reform",
+             "committee_id": "HSGO"},
+            {"activity": ["Reported By"], "committee": "House Oversight and Government Reform",
+             "committee_id": "HSGO", "subcommittee": "Cybersecurity", "subcommittee_id": "15"},
+            {"activity": ["Markup By", "Reported By"], "committee": "House Foreign Affairs", "committee_id": "HSFA"},
+            {"activity": ["Referred To"], "committee": "Senate Homeland Security and Governmental Affairs",
+             "committee_id": "SSGA"},
+            {"activity": ["reporting"], "committee": "Senate Foreign Relations", "committee_id": "SSFR"},
+        ],
+        "actions": [
+            {"acted_at": "2025-05-21", "committees": ["HSGO"], "text": "Ordered to be Reported by the Yeas and Nays: 23 - 18."},
+            {"acted_at": "2025-06-04", "committees": ["HSGO"], "text": "Reported (Amended) by the Committee on Oversight. H. Rept. 119-138."},
+            {"acted_at": "2025-05-13", "committees": ["HSFA"], "text": "Ordered to be Reported Unfavorably by the Yeas and Nays: 23 - 23."},
+        ],
+        "history": {"house_passage_result": "pass", "house_passage_result_at": "2025-06-10T17:32:05-04:00",
+                    "senate_passage_result": "fail", "senate_passage_result_at": "2025-07-01"},
+    }
+    rec = BillRecord("hr2096-119", 119, "hr", 2096, data, Path("."), None)
+    assert list(db._progress(rec)) == [
+        ("reported", "house", "HSGO", "House Oversight and Government Reform", "2025-06-04"),
+        ("reported", "senate", "SSFR", "Senate Foreign Relations", None),
+        ("passed", "house", None, None, "2025-06-10"),
+    ]
+
+
+def test_reported_and_passed_filters(database, client):
+    con = db.connect(database)
+    con.execute("insert into bill_progress values ('hr206-119', 119, 'reported', 'house', 'HSBA', 'House Financial Services', '2025-03-01')")
+    con.commit()
+    ids = lambda r: sorted(x["bill_id"] for x in r.rows)  # noqa: E731
+    assert ids(db.search(con, passed="house")) == ids(db.search(con, passed="both")) == ["hr695-119"]
+    assert ids(db.search(con, reported="HSBA")) == ids(db.search(con, reported="any")) == ["hr206-119"]
+    assert db.search(con, reported="SSFR").total == 0
+    assert [tuple(m) for m in db.committee_list(con)] == [("HSBA", "house", 1, "House Financial Services")]
+    page = client.get("/search", params={"reported": "HSBA"}).text
+    assert '<option value="HSBA" selected>House Financial Services (1)</option>' in page and "H.R. 206" in page
+    assert "H.R. 695" in client.get("/search", params={"passed": "senate"}).text
+    bill = client.get("/bills/hr695-119").text
+    assert 'Passed the <a href="/search?passed=house">House</a>, 2025-02-26' in bill
+    assert client.get("/api/v1/search", params={"reported": "HSBA"}).json()["total"] == 1
+    assert client.get("/api/v1/bills/hr206-119").json()["progress"][0]["committee_id"] == "HSBA"
+    con.execute("delete from bill_progress where committee_id = 'HSBA'")
+    con.commit()
+
+
 def test_members(database):
     con = db.connect(database)
     ms = {m["id"]: m for m in db.members(con)}

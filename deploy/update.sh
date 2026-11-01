@@ -4,7 +4,8 @@
 #   bash deploy/update.sh [congress]
 #
 # `reintro update` for the current Congress (usc-run downloads only what
-# changed, then the load), then `reintro link` against the Congress before, in
+# changed, then the load), then `reintro link` against the Congress before and
+# `reintro progress` for it (committee reports and passage, 1.5 s), in
 # the `jobs` container while the site keeps serving. With REINTRO_PREGEN_BUCKET
 # in .env, `reintro pregen` then queues the PDFs of new and changed drafts for
 # the Lambda renderer (deploy/aws-setup.sh). The Congress is
@@ -39,6 +40,7 @@ echo "=== $(date -u +%FT%TZ) update, Congress $CONGRESS ==="
 start=$(date +%s)
 $COMPOSE run --rm --no-deps jobs reintro update --congress "$CONGRESS"
 $COMPOSE run --rm --no-deps jobs reintro link --older "$(( CONGRESS - 1 ))" --newer "$CONGRESS"
+$COMPOSE run --rm --no-deps jobs reintro progress --congress "$(( CONGRESS - 1 ))"
 if grep -qE '^REINTRO_PREGEN_BUCKET=.+' .env 2>/dev/null; then
     $COMPOSE run --rm --no-deps jobs reintro pregen --congress "$CONGRESS"
 fi

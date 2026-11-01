@@ -1,0 +1,49 @@
+{# The search form, on the home page and the search page. Without words, Relevance is bill-number order. #}
+<form class="filters" id="filters" action="/search" method="get" role="search" data-busy-form>
+  <div class="field wide"><label for="q">Words, title or number</label><input id="q" name="q" type="search" value="{{ params.q or '' }}"></div>
+  <div class="field"><label for="congress">Congress</label>
+    <select id="congress" name="congress"><option value="">Any</option>{% for c in congresses %}<option value="{{ c }}" {% if params.congress == c %}selected{% endif %}>{{ ordinal(c) }}</option>{% endfor %}</select></div>
+  <div class="field"><label for="chamber">Chamber</label>
+    <select id="chamber" name="chamber"><option value="">Both</option>
+      <option value="house" {% if params.chamber == 'house' %}selected{% endif %}>House</option>
+      <option value="senate" {% if params.chamber == 'senate' %}selected{% endif %}>Senate</option></select></div>
+  <div class="field"><label for="type">Type</label>
+    <select id="type" name="type"><option value="">Any</option>
+      {% for t, label in types.items() %}<option value="{{ t }}" {% if params.type == t %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+  <div class="field"><label for="subject">Policy area</label>
+    <select id="subject" name="subject"><option value="">Any</option>
+      {% for s in subjects %}<option {% if params.subject == s.s %}selected{% endif %}>{{ s.s }}</option>{% endfor %}</select></div>
+  {% for role, label in [('sponsor', 'Sponsor'), ('cosponsor', 'Cosponsor')] %}
+  <div class="field combo"><label for="{{ role }}">{{ label }}</label><input id="{{ role }}" name="{{ role }}" type="search" value="{{ params[role] or '' }}"
+    data-member-combo="{{ role }}" data-label="{{ labels[role] or '' }}" placeholder="Type a name" autocomplete="off" spellcheck="false"></div>
+  {% endfor %}
+  <div class="field"><label for="status">Status</label>
+    <select id="status" name="status"><option value="">Any</option>
+      <option value="not-enacted" {% if params.status == 'not-enacted' %}selected{% endif %}>Not law, no related law</option>
+      <option value="enacted" {% if params.status == 'enacted' %}selected{% endif %}>Became law</option>
+      <option value="related-enacted" {% if params.status == 'related-enacted' %}selected{% endif %}>A related bill became law</option></select></div>
+  <div class="field"><label for="reported">Reported by committee</label>
+    <select id="reported" name="reported"><option value="">Any or none</option>
+      <option value="any" {% if params.reported == 'any' %}selected{% endif %}>Any committee</option>
+      {% for chamber, group in committees|groupby('chamber') %}<optgroup label="{{ chamber|capitalize }}">
+      {% for m in group %}<option value="{{ m.id }}" {% if params.reported == m.id %}selected{% endif %}>{{ m.name }} ({{ "{:,}".format(m.n) }})</option>{% endfor %}
+      </optgroup>{% endfor %}</select></div>
+  <div class="field"><label for="passed">Passed</label>
+    <select id="passed" name="passed"><option value="">Any or none</option>
+      {% for v, label in [('either', 'Either chamber'), ('house', 'The House'), ('senate', 'The Senate'), ('both', 'Both chambers')] %}
+      <option value="{{ v }}" {% if params.passed == v %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+  <div class="field"><label for="from">Introduced from</label><input id="from" name="from" type="date" value="{{ params['from'] or '' }}"></div>
+  <div class="field"><label for="to">Introduced to</label><input id="to" name="to" type="date" value="{{ params.to or '' }}"></div>
+  <div class="field"><label for="sort">Sort by</label>
+    <select id="sort" name="sort" data-autosubmit>
+      {% for v, label in [('', 'Relevance'), ('number', 'Bill number, ascending'), ('number-desc', 'Bill number, descending'),
+                          ('introduced-desc', 'Introduced, newest first'), ('introduced', 'Introduced, oldest first'),
+                          ('action-desc', 'Latest action, newest first')] %}
+      <option value="{{ v }}" {% if (params.sort or '') == v %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select></div>
+  <div class="field"><button type="submit" data-busy-label="Searching…">Search</button></div>
+</form>
+<p class="busy" role="status" aria-live="polite" data-busy hidden><span class="spinner" aria-hidden="true"></span> Searching…</p>
+<script src="/static/search.js" defer></script>
+<script src="/static/members.js" defer></script>
