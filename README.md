@@ -23,6 +23,7 @@ years and dates the bill sets, renamed committees and findings.
 uv sync --extra ingest                 # unitedstates/congress's usc-run comes with the extra
 uv run reintro update --congress 119   # usc-run govinfo (BILLSTATUS, BILLS) + usc-run bills, then load
 uv run reintro update --congress 118   # optional: the Congress before, for "already reintroduced" links
+uv run reintro progress --congress 118 # committee reports and chamber passage from data.json alone (1.5 s)
 uv run reintro serve                   # http://127.0.0.1:8020
 ```
 

@@ -58,6 +58,15 @@ create table if not exists bill_people (
 create index if not exists bill_people_bill on bill_people(bill_id);
 create index if not exists bill_people_person on bill_people(bioguide_id);
 create index if not exists bill_people_role on bill_people(bioguide_id, role, bill_id);
+-- Committee reports and passage by each chamber (`progress`). kind 'reported': the committee
+-- reported the bill and no action records the report as unfavorable; kind 'passed': the
+-- chamber passed it. `at` is the date when an action gives one.
+create table if not exists bill_progress (
+    bill_id text not null, congress integer not null, kind text not null, chamber text not null,
+    committee_id text, committee text, at text
+);
+create index if not exists bill_progress_bill on bill_progress(bill_id);
+create index if not exists bill_progress_kind on bill_progress(kind, committee_id, chamber, bill_id);
 create table if not exists bill_subjects (bill_id text not null, subject text not null);
 create index if not exists bill_subjects_subject on bill_subjects(subject);
 create table if not exists bill_titles (bill_id text not null, title text not null, type text, as_of text);
@@ -137,6 +146,36 @@ def _people(rec: BillRecord, parties: dict[str, str]):
 _PARTY_RX = re.compile(r"<bioguideId>(\w+)</bioguideId>.*?<party>(\w+)</party>", re.S)
 
 
+REPORTED_ACTIVITIES = {"reported by", "reporting", "reported original measure"}
+_UNFAVORABLE_RX = re.compile(r"unfavorabl|adverse", re.I)
+_REPORTED_RX = re.compile(r"\breported\b", re.I)
+_ORDERED_RX = re.compile(r"ordered to be reported", re.I)
+CHAMBERS = {"h": "house", "s": "senate", "j": "joint"}
+
+
+def _progress(rec: BillRecord):
+    """(kind, chamber, committee_id, committee, at) rows: each full committee that reported the
+    bill favorably, and each chamber that passed it."""
+    d = rec.data or {}
+    actions = d.get("actions") or []
+    for c in d.get("committees") or []:
+        cid = c.get("committee_id")
+        if not cid or c.get("subcommittee") or c.get("subcommittee_id"):
+            continue
+        if not {a.lower() for a in c.get("activity") or []} & REPORTED_ACTIVITIES:
+            continue
+        mine = [a for a in actions if cid in (a.get("committees") or [])]
+        if any(_UNFAVORABLE_RX.search(a.get("text") or "") for a in mine):
+            continue
+        at = next(((a.get("acted_at") or "")[:10] for a in mine
+                   if _REPORTED_RX.search(a.get("text") or "") and not _ORDERED_RX.search(a.get("text") or "")), None)
+        yield "reported", CHAMBERS.get(cid[:1].lower(), "joint"), cid, c.get("committee"), at or None
+    h = d.get("history") or {}
+    for chamber in ("house", "senate"):
+        if h.get(f"{chamber}_passage_result") == "pass":
+            yield "passed", chamber, None, None, (h.get(f"{chamber}_passage_result_at") or "")[:10] or None
+
+
 def _parties(rec: BillRecord) -> dict[str, str]:
     """Party by bioguide id, from the bill status XML (`data.json` leaves it out)."""
     f = rec.path / "fdsys_billstatus.xml"
@@ -158,7 +197,7 @@ def load_congress(con: sqlite3.Connection, data_dir: Path, congress: int, *, typ
     cur = con.cursor()
     cur.execute("delete from bills_fts_rows where bill_rowid in (select rowid from bills where congress = ?)", (congress,))
     cur.execute("delete from bills where congress = ?", (congress,))
-    for table in ("bill_people", "bill_subjects", "bill_titles"):
+    for table in ("bill_people", "bill_subjects", "bill_titles", "bill_progress"):
         cur.execute(f"delete from {table} where bill_id like ?", (f"%-{congress}",))
     cur.execute("delete from bills_fts where bill_id like ?", (f"%-{congress}",))
     n_text = 0
@@ -195,6 +234,8 @@ def load_congress(con: sqlite3.Connection, data_dir: Path, congress: int, *, typ
         bill_rowid = cur.lastrowid
         cur.executemany("insert into bill_people values (?,?,?,?,?,?,?,?)", [(r.bill_id, *p) for p in ppl])
         cur.executemany("insert into bill_subjects values (?,?)", [(r.bill_id, s) for s in (d.get("subjects") or [])])
+        cur.executemany("insert into bill_progress values (?,?,?,?,?,?,?)",
+                        [(r.bill_id, congress, *p) for p in _progress(r)])
         cur.executemany("insert into bill_titles values (?,?,?,?)",
                         [(r.bill_id, t.get("title"), t.get("type"), t.get("as")) for t in d.get("titles") or [] if t.get("title")])
         titles = " ".join(dict.fromkeys([r.official_title, *r.short_titles]))
@@ -209,6 +250,16 @@ def load_congress(con: sqlite3.Connection, data_dir: Path, congress: int, *, typ
     cur.execute("insert or replace into loads values (?, datetime('now'), ?, ?)", (congress, len(ids), n_text))
     con.commit()
     return {"congress": congress, "bills": len(ids), "with_text": n_text}
+
+
+def load_progress(con: sqlite3.Connection, data_dir: Path, congress: int, *, types=BILL_TYPES) -> int:
+    """Replace one Congress's `bill_progress` rows from its data.json files alone, without a full
+    load (1.5 s for a Congress)."""
+    rows = [(r.bill_id, congress, *p) for r in iter_bills(data_dir, congress, types) for p in _progress(r)]
+    con.execute("delete from bill_progress where congress = ?", (congress,))
+    con.executemany("insert into bill_progress values (?,?,?,?,?,?,?)", rows)
+    con.commit()
+    return len(rows)
 
 
 def _mark_related_enacted(con, recs: list[BillRecord]):
@@ -296,8 +347,8 @@ BIOGUIDE_RX = re.compile(r"[A-Z]\d{6}")
 def search(con: sqlite3.Connection, *, q: str = "", congress: int | None = None, chamber: str | None = None,
            subject: str | None = None, sponsor: str | None = None, cosponsor: str | None = None,
            status: str | None = None, bill_type: str | None = None, introduced_from: str | None = None,
-           introduced_to: str | None = None, sort: str | None = None,
-           limit: int = 25, offset: int = 0) -> SearchResult:
+           introduced_to: str | None = None, reported: str | None = None, passed: str | None = None,
+           sort: str | None = None, limit: int = 25, offset: int = 0) -> SearchResult:
     """Bills matching the filters; with no query and no filters, every bill. With a text query
     each row carries `snippet`: the passage of the bill text that matched, its matched words
     between MARK_START and MARK_END.
@@ -332,6 +383,19 @@ def search(con: sqlite3.Connection, *, q: str = "", congress: int | None = None,
         elif who:
             where.append(f"b.bill_id in (select bill_id from bill_people where role = '{role}' and name like ?)")
             args.append(f"%{who}%")
+    if reported == "any":
+        where.append("b.bill_id in (select bill_id from bill_progress where kind = 'reported')")
+    elif reported:
+        where.append("b.bill_id in (select bill_id from bill_progress where kind = 'reported' and committee_id = ?)")
+        args.append(reported)
+    if passed in ("house", "senate"):
+        where.append("b.bill_id in (select bill_id from bill_progress where kind = 'passed' and chamber = ?)")
+        args.append(passed)
+    elif passed == "either":
+        where.append("b.bill_id in (select bill_id from bill_progress where kind = 'passed')")
+    elif passed == "both":
+        where.append("b.bill_id in (select bill_id from bill_progress where kind = 'passed' group by bill_id "
+                     "having count(distinct chamber) = 2)")
     if status == "enacted":
         where.append("b.enacted = 1")
     elif status == "not-enacted":
@@ -397,6 +461,23 @@ def get_bill(con, bill_id: str):
 
 def people(con, bill_id: str):
     return con.execute("select * from bill_people where bill_id = ? order by role desc, original desc, name", (bill_id,)).fetchall()
+
+
+def progress(con, bill_id: str):
+    return con.execute("select * from bill_progress where bill_id = ? order by kind desc, at, chamber", (bill_id,)).fetchall()
+
+
+def committee_list(con, congress: int | None = None):
+    """The committees that reported a bill, with the name of their latest Congress and the
+    number of bills they reported (in `congress`, or in all)."""
+    where, args = "kind = 'reported'", []
+    if congress:
+        where += " and congress = ?"
+        args.append(congress)
+    return con.execute(
+        f"select committee_id id, chamber, count(distinct bill_id) n, (select committee from bill_progress q "
+        f"where q.committee_id = p.committee_id and q.kind = 'reported' order by q.congress desc limit 1) name "
+        f"from bill_progress p where {where} group by committee_id order by chamber, name", args).fetchall()
 
 
 def subjects(con, bill_id: str):

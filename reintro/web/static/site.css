@@ -84,6 +84,7 @@ body.is-busy .results, body.is-busy .total, body.is-busy .results-bar { opacity:
 .facts dt { font-weight: 600; }
 .facts dd { margin: 0; }
 .cos { columns: 2 16rem; padding-left: 1.2rem; }
+.plain { list-style: none; padding: 0; margin: 0; }
 .draft-actions { display: flex; flex-wrap: wrap; gap: .5rem; margin: .75rem 0; }
 .pager { display: flex; gap: 1rem; justify-content: center; margin: 1rem 0; }
 .counts { border-collapse: collapse; margin: 1rem 0; }

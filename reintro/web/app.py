@@ -179,33 +179,35 @@ def home(request: Request):
     subjects = db.subject_list(c)
     return templates.TemplateResponse(request, "home.html", {
         "counts": counts, "latest": latest_congress(), "subjects": subjects, "congresses": db.congresses(c),
-        "types": db.TYPE_LABEL, "params": {}, "labels": {}})
+        "types": db.TYPE_LABEL, "committees": db.committee_list(c), "params": {}, "labels": {}})
 
 
 @app.get("/search", response_class=HTMLResponse)
 def search_page(request: Request, q: str = "", congress: str | None = None, chamber: str | None = None,
                 subject: str | None = None, sponsor: str | None = None, cosponsor: str | None = None,
                 status: str | None = None, type: str | None = None, introduced_from: str | None = Query(None, alias="from"),
-                introduced_to: str | None = Query(None, alias="to"), sort: str | None = None,
-                page: int = Query(1, ge=1)):
+                introduced_to: str | None = Query(None, alias="to"), reported: str | None = None,
+                passed: str | None = None, sort: str | None = None, page: int = Query(1, ge=1)):
     c = con()
     congress = int(congress) if congress and congress.isdigit() else None
     sort = sort if sort in db.SORTS and sort != "relevance" else None
     res = db.search(c, q=q, congress=congress, chamber=chamber, subject=subject or None, sponsor=sponsor or None,
                     cosponsor=cosponsor or None, status=status or None, bill_type=type or None,
-                    introduced_from=_date(introduced_from), introduced_to=_date(introduced_to), sort=sort,
-                    limit=PAGE, offset=(page - 1) * PAGE)
+                    introduced_from=_date(introduced_from), introduced_to=_date(introduced_to),
+                    reported=reported or None, passed=passed or None, sort=sort, limit=PAGE, offset=(page - 1) * PAGE)
     pages = max(1, (res.total + PAGE - 1) // PAGE)
     params = {k: v for k, v in {"q": q, "congress": congress, "chamber": chamber, "subject": subject, "sponsor": sponsor,
                                 "cosponsor": cosponsor, "status": status, "type": type, "from": _date(introduced_from),
-                                "to": _date(introduced_to), "sort": sort}.items() if v}
+                                "to": _date(introduced_to), "reported": reported, "passed": passed,
+                                "sort": sort}.items() if v}
     text_query = bool(q.strip()) and db.parse_number(q) is None
     labels = {role: (db.member_name(c, v) if re.fullmatch(r"[A-Z]\d{6}", v) else None) or v
               for role, v in (("sponsor", sponsor), ("cosponsor", cosponsor)) if v}
     return templates.TemplateResponse(request, "search.html", {
         "labels": labels,
         "res": res, "params": params, "page": page, "pages": pages, "congresses": db.congresses(c),
-        "subjects": db.subject_list(c, congress), "types": db.TYPE_LABEL, "terms": db.query_terms(q) if text_query else [],
+        "subjects": db.subject_list(c, congress), "committees": db.committee_list(c, congress),
+        "types": db.TYPE_LABEL, "terms": db.query_terms(q) if text_query else [],
         "text_query": text_query, "first": (page - 1) * PAGE + 1})
 
 
@@ -230,7 +232,7 @@ def bill_page(request: Request, bill_id: str, check: int = 1):
             error = f"The draft could not be built: {e}"
     later = db.same_title_in(c, bill_id, row["congress"] + 1) if row["congress"] + 1 in db.congresses(c) else []
     ctx = {
-        "b": row, "people": db.people(c, bill_id), "subjects": db.subjects(c, bill_id),
+        "b": row, "people": db.people(c, bill_id), "subjects": db.subjects(c, bill_id), "progress": db.progress(c, bill_id),
         "related_enacted": json.loads(row["related_enacted"]) if row["related_enacted"] else [],
         "enacted_as": json.loads(row["enacted_as"]) if row["enacted_as"] else None,
         "draft": draft, "draft_html": render.render(draft.tree) if draft else None, "error": error,
@@ -420,12 +422,16 @@ def api_search(q: str = "", congress: int | None = None, chamber: str | None = N
                sponsor: str | None = None, cosponsor: str | None = None, status: str | None = None,
                type: str | None = None, introduced_from: str | None = Query(None, alias="from"),
                introduced_to: str | None = Query(None, alias="to"),
+               reported: str | None = Query(None, description="a committee id (HSGO, SSFR, …) that reported the bill "
+                                                               "favorably, or `any`"),
+               passed: str | None = Query(None, description="house, senate, either or both"),
                sort: str | None = Query(None, description="relevance, number, number-desc, introduced, "
                                                           "introduced-desc, action-desc"),
                limit: int = Query(25, le=100), offset: int = 0):
     res = db.search(con(), q=q, congress=congress, chamber=chamber, subject=subject, sponsor=sponsor,
                     cosponsor=cosponsor, status=status, bill_type=type, introduced_from=_date(introduced_from),
-                    introduced_to=_date(introduced_to), sort=sort if sort in db.SORTS else None,
+                    introduced_to=_date(introduced_to), reported=reported, passed=passed,
+                    sort=sort if sort in db.SORTS else None,
                     limit=limit, offset=offset)
     return {"total": res.total, "results": [_bill_json(r) for r in res.rows]}
 
@@ -447,6 +453,8 @@ def api_bill(bill_id: str):
     d = _bill_json(row)
     d["people"] = [dict(p) for p in db.people(con(), bill_id)]
     d["subjects"] = db.subjects(con(), bill_id)
+    d["progress"] = [{k: p[k] for k in ("kind", "chamber", "committee_id", "committee", "at")}
+                     for p in db.progress(con(), bill_id)]
     return d
 
 

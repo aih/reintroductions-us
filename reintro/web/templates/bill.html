@@ -20,6 +20,7 @@
   <dt>Policy area</dt><dd>{% if b.policy_area %}<a href="/search?congress={{ b.congress }}&subject={{ b.policy_area|urlencode }}">{{ b.policy_area }}</a>{% else %}—{% endif %}</dd>
   <dt>Sponsor</dt><dd>{% for p in people if p.role == 'sponsor' %}<a href="/search?congress={{ b.congress }}&sponsor={{ p.bioguide_id }}">{{ p.name }}</a>{% if p.party %} ({{ p.party }}-{{ p.state }}){% endif %}{% endfor %}</dd>
   <dt>Cosponsors</dt><dd>{% set cos = people|selectattr('role', 'equalto', 'cosponsor')|list %}{% if cos %}<details><summary>{{ cos|length }} cosponsor{{ '' if cos|length == 1 else 's' }}</summary><ul class="cos">{% for p in cos %}<li><a href="/search?congress={{ b.congress }}&cosponsor={{ p.bioguide_id }}">{{ p.name }}</a>{% if p.party %} ({{ p.party }}-{{ p.state }}){% endif %}{% if p.original %} · original{% endif %}</li>{% endfor %}</ul></details>{% else %}None{% endif %}</dd>
+  {% if progress %}<dt>Progress</dt><dd><ul class="plain">{% for p in progress %}<li>{% if p.kind == 'reported' %}Reported by <a href="/search?reported={{ p.committee_id }}">{{ p.committee }}</a>{% else %}Passed the <a href="/search?passed={{ p.chamber }}">{{ p.chamber|capitalize }}</a>{% endif %}{% if p.at %}, {{ p.at }}{% endif %}</li>{% endfor %}</ul></dd>{% endif %}
   {% if subjects %}<dt>Subjects</dt><dd>{{ subjects|join("; ") }}</dd>{% endif %}
   <dt>Source text</dt><dd>{% if b.text_version %}{{ b.text_version|upper }}{% if b.text_date %}, {{ b.text_date }}{% endif %}{% else %}Not published{% endif %}</dd>
 </dl>
