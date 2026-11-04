@@ -1,0 +1,82 @@
+# The roster of the 120th Congress, rebuilt every Monday until the Congress convenes:
+# `reintro roster fetch` (Wikipedia and unitedstates/congress-legislators) and
+# `reintro roster build` into reintro/data/congress120.json. When a member's status, a seat
+# or a member-elect changed, it opens a pull request with the file; merging it deploys, and
+# the site loads the file on its next connection (db.sync_roster). After 2027-01-10 the job
+# does nothing. Needs "Allow GitHub Actions to create and approve pull requests" in the
+# repository's Settings → Actions → General.
+name: roster
+
+on:
+  schedule:
+    - cron: "23 15 * * 1"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: roster
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Still before the 120th Congress settles
+        id: window
+        run: |
+          if [ "$(date -u +%Y%m%d)" -gt 20270110 ] && [ "${{ github.event_name }}" = "schedule" ]; then
+            echo "run=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/checkout@v6
+        if: steps.window.outputs.run == 'true'
+      - uses: astral-sh/setup-uv@v7
+        if: steps.window.outputs.run == 'true'
+        with:
+          python-version: "3.13"
+      - if: steps.window.outputs.run == 'true'
+        run: uv sync --frozen
+      - name: Fetch and build
+        if: steps.window.outputs.run == 'true'
+        run: |
+          cp reintro/data/congress120.json /tmp/before.json
+          uv run reintro roster fetch --to data/roster
+          uv run reintro roster build --from data/roster | tee /tmp/summary.json
+      - name: Changed?
+        id: diff
+        if: steps.window.outputs.run == 'true'
+        run: |
+          uv run python - <<'PY' >> "$GITHUB_OUTPUT"
+          import json
+          keep = ("seats", "members")
+          a = json.load(open("/tmp/before.json"))
+          b = json.load(open("reintro/data/congress120.json"))
+          print("changed=" + ("true" if any(a.get(k) != b.get(k) for k in keep) else "false"))
+          PY
+      - name: Open a pull request
+        if: steps.diff.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          day="$(date -u +%Y-%m-%d)"
+          branch="roster/$day"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+          git add reintro/data/congress120.json
+          git commit -m "Roster of the 120th Congress as of $day"
+          git push -u origin "$branch"
+          {
+            echo "The weekly rebuild of the roster of the 120th Congress (\`.github/workflows/roster.yml\`)."
+            echo
+            echo '```json'
+            cat /tmp/summary.json
+            echo '```'
+            echo
+            echo "Sources: the Wikipedia revisions in the file's \`sources\`."
+          } > /tmp/body.md
+          gh pr create --base main --head "$branch" --title "Roster of the 120th Congress as of $day" --body-file /tmp/body.md

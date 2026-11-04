@@ -24,7 +24,7 @@
     </div>
     <p class="result__title">{{ (b.display_title or b.official_title or "(no title)")|highlight(terms) }}</p>
     {% set snip = b.snippet|snippet %}{% if snip %}<p class="result__snippet">{{ snip }}</p>{% endif %}
-    <p class="result__meta">{% if b.sponsor_name %}{{ b.sponsor_name|highlight(terms) }}{% if b.sponsor_party %} ({{ b.sponsor_party }}-{{ b.sponsor_state }}){% endif %}{% endif %}
+    <p class="result__meta">{% if b.sponsor_name %}{{ b.sponsor_name|highlight(terms) }}{% if b.sponsor_party %} ({{ b.sponsor_party }}-{{ b.sponsor_state }}){% endif %}{% set ms = sponsors.get(b.sponsor_id) %}{% if ms %} <span class="next next--{{ ms.status }}">{{ next_label(ms.status) }}</span>{% elif roster and b.sponsor_id %} <span class="next next--former">{{ next_label('former') }}</span>{% endif %}{% endif %}
       {% if b.cosponsor_count %} · {{ b.cosponsor_count }} cosponsor{{ '' if b.cosponsor_count == 1 else 's' }}{% endif %}
       {% if b.introduced_at %} · introduced {{ b.introduced_at }}{% endif %}{% if b.latest_action_date %} · latest action {{ b.latest_action_date }}{% endif %}{% if b.policy_area %} · {{ b.policy_area|highlight(terms) }}{% endif %}</p>
     </div>

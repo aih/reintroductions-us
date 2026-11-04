@@ -48,6 +48,30 @@ uv run reintro draft hr206-119 --out hr206.xml --pdf hr206.pdf
 The variables can be kept in `.env` (copied from `.env.example`, gitignored) and passed with
 `uv run --env-file .env reintro …`.
 
+## Party and the 120th Congress
+
+The search filters a bill by its sponsor's party and by whether any cosponsor is Democratic,
+Republican, or independent or of another party (Congress.gov's party letter, stored at load).
+
+It also filters by where the sponsor, or any cosponsor, stands in the 120th Congress after the
+elections of November 3, 2026: returning, in a race not yet called, outgoing (serving in the
+119th, not in the 120th), or already gone (not a member of the 119th at its end). The list is
+`reintro/data/congress120.json`, built from Wikipedia's
+[120th United States Congress](https://en.wikipedia.org/wiki/120th_United_States_Congress) roster
+(a seat shows `TBD` until its race is called), the 2026 House and Senate election articles (the
+candidates in each race and why an incumbent left), and
+[congress-legislators](https://github.com/unitedstates/congress-legislators), whose Wikipedia titles
+map a member-elect to a bioguide id. `/congress/120` shows it.
+
+```
+uv run reintro roster fetch --to data/roster     # the sources
+uv run reintro roster build --from data/roster   # → reintro/data/congress120.json
+```
+
+The site loads the file into `member_status` on its next connection when `generated_at` differs.
+`.github/workflows/roster.yml` rebuilds it every Monday until 2027-01-10 and opens a pull request
+when a seat or a member's status changed.
+
 ## Layout
 
 | Module | |
@@ -58,9 +82,10 @@ The variables can be kept in `.env` (copied from `.env.example`, gitignored) and
 | `reintro/reintroduce.py` | The draft: Congress, session, short titles, warnings |
 | `reintro/citations.py`, `reintro/linkedleg.py` | Citation checks and the API clients |
 | `reintro/db.py` | SQLite schema, load, search, enacted and related-law marking |
+| `reintro/roster.py` | Who sits in the 120th Congress, from Wikipedia and congress-legislators → `reintro/data/congress120.json` |
 | `reintro/render.py`, `reintro/pdf.py` | HTML and the watermarked PDF (WeasyPrint) |
 | `reintro/pregen.py` | PDFs rendered ahead of time on Lambda: the planner, the handler, the sync |
-| `reintro/web/` | The FastAPI site and its JSON API (`/api/v1/search`, `/api/v1/members`, `/api/v1/bills/{id}`, `/api/v1/bills/{id}/draft`) |
+| `reintro/web/` | The FastAPI site and its JSON API (`/api/v1/search`, `/api/v1/members`, `/api/v1/congress/120`, `/api/v1/bills/{id}`, `/api/v1/bills/{id}/draft`) |
 | `research/compare_reintroductions.py` | The research comparison |
 | `reintro/schema/` | USLM 2.1.0 schema from [usgpo/uslm](https://github.com/usgpo/uslm) |
 
