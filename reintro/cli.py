@@ -7,6 +7,9 @@
     reintro draft hr1514-118 [--to 120] [--out F.xml] [--pdf F.pdf] [--no-check]
     reintro pregen --congress 119 [--limit N]       queue PDFs for the Lambda renderer (reintro/pregen.py)
     reintro pregen-sync                             copy rendered PDFs from S3 into the cache
+    reintro roster fetch --to DIR                   Wikipedia and congress-legislators → DIR
+    reintro roster build --from DIR [--no-resolve]  DIR → reintro/data/congress120.json (reintro/roster.py)
+    reintro roster load                             the roster file → the database (also done on connect)
     reintro serve [--port 8020]
 """
 
@@ -145,6 +148,20 @@ def cmd_pregen_sync(a) -> int:
     return 0
 
 
+def cmd_roster(a) -> int:
+    from . import roster
+    if a.action == "fetch":
+        roster.fetch(Path(a.to))
+        print(json.dumps({"fetched": a.to}))
+    elif a.action == "build":
+        print(json.dumps(roster.build(Path(a.source), out=Path(a.out) if a.out else roster.DATA_FILE,
+                                      resolve=not a.no_resolve)))
+    else:
+        con = db.connect(DB_PATH)
+        print(json.dumps({"loaded": db.sync_roster(con, force=True), **(db.roster_info(con) or {})}))
+    return 0
+
+
 def cmd_serve(a) -> int:
     import uvicorn
     uvicorn.run("reintro.web.app:app", host=a.host, port=a.port, reload=a.reload)
@@ -183,6 +200,13 @@ def main(argv=None) -> int:
     p.set_defaults(fn=cmd_pregen)
     p = sub.add_parser("pregen-sync", help="copy rendered PDFs from S3 into the cache")
     p.set_defaults(fn=cmd_pregen_sync)
+    p = sub.add_parser("roster", help="who sits in the 120th Congress (reintro/roster.py)")
+    p.add_argument("action", choices=["fetch", "build", "load"])
+    p.add_argument("--to", default="data/roster", help="fetch: the directory to write the sources to")
+    p.add_argument("--from", dest="source", default="data/roster", help="build: the directory fetch wrote")
+    p.add_argument("--out", default=None, help="build: the data file (default reintro/data/congress120.json)")
+    p.add_argument("--no-resolve", action="store_true", help="build: skip Wikipedia's redirect lookup")
+    p.set_defaults(fn=cmd_roster)
     p = sub.add_parser("serve")
     p.add_argument("--host", default="127.0.0.1")
     p.add_argument("--port", type=int, default=8020)

@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}The 120th Congress{% endblock %}
+{% block main %}
+{% set s = data.summary %}
+<h1>The 120th Congress</h1>
+<p class="lede">Who returns after the elections of November 3, 2026, whose races are not yet called, and who leaves.
+The search filters “Sponsor in the 120th Congress” and “A cosponsor in the 120th Congress” read this list.</p>
+<p class="note">As of {{ data.generated_at[:16]|replace("T", " ") }} UTC, from
+{% for src in data.sources %}<a href="{{ src.url }}">{{ src.title }}</a>{{ ", " if not loop.last else "." }}{% endfor %}
+Members-elect are matched to current and former members by their Wikipedia article. The list is rebuilt weekly until
+the Congress convenes on January 3, 2027.</p>
+
+<table class="counts">
+  <caption>Seats</caption>
+  <thead><tr><th scope="col"></th><th scope="col">Called</th><th scope="col">Not yet called</th></tr></thead>
+  <tbody>
+    <tr><th scope="row">Senate</th><td>{{ s.seats_called.senate }}</td><td>{{ s.seats_pending.senate }}</td></tr>
+    <tr><th scope="row">House, with delegates</th><td>{{ s.seats_called.house }}</td><td>{{ s.seats_pending.house }}</td></tr>
+  </tbody>
+</table>
+<p>Members of the 119th Congress and former members elected again:
+<a href="/search?sponsor_status=returning">{{ s.members.returning or 0 }} returning</a>,
+<a href="/search?sponsor_status=pending">{{ s.members.pending or 0 }} in races not yet called</a>,
+<a href="/search?sponsor_status=outgoing">{{ s.members.outgoing or 0 }} outgoing</a>.
+{{ s.new_members_elect }} members-elect have not served in Congress before.
+<a href="/search?sponsor_status=not-returning&amp;status=not-enacted">Bills whose sponsor is not returning</a>.</p>
+
+<h2>Outgoing members</h2>
+<table class="roster-table">
+  <thead><tr><th scope="col">Member</th><th scope="col">Seat now</th><th scope="col">Reason</th></tr></thead>
+  <tbody>{% for bid, m in outgoing %}
+  <tr><td><a href="/search?sponsor={{ bid }}">{{ m.name }}</a> ({{ m.party }})</td>
+      <td>{{ seat(m.now) }}</td><td>{{ m.detail }}</td></tr>{% endfor %}</tbody>
+</table>
+
+<h2>Races not yet called</h2>
+<table class="roster-table">
+  <thead><tr><th scope="col">Seat</th><th scope="col">Incumbents running</th></tr></thead>
+  <tbody>{% for st, who in pending_seats %}
+  <tr><td>{{ seat(st) }}{% if st.party %} ({{ st.party }}){% endif %}</td>
+      <td>{% for bid, m in who %}<a href="/search?sponsor={{ bid }}">{{ m.name }}</a> ({{ m.party }}){{ ", " if not loop.last }}{% else %}—{% endfor %}</td></tr>{% endfor %}</tbody>
+</table>
+
+<h2>Members changing seats or returning</h2>
+<table class="roster-table">
+  <thead><tr><th scope="col">Member</th><th scope="col">Seat in the 120th</th><th scope="col"></th></tr></thead>
+  <tbody>{% for bid, m in changed %}
+  <tr><td><a href="/search?sponsor={{ bid }}">{{ m.name }}</a> ({{ m.party }})</td><td>{{ seat(m.next) }}</td><td>{{ m.detail }}</td></tr>{% endfor %}</tbody>
+</table>
+
+<h2>New members-elect</h2>
+<table class="roster-table">
+  <thead><tr><th scope="col">Seat</th><th scope="col">Member-elect</th></tr></thead>
+  <tbody>{% for st in new_members %}
+  <tr><td>{{ seat(st) }}</td><td>{{ st.name }}{% if st.party %} ({{ st.party }}){% endif %}</td></tr>{% endfor %}</tbody>
+</table>
+{% endblock %}

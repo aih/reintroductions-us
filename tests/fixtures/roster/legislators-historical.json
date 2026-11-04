@@ -1,0 +1,91 @@
+[
+{
+"id": {
+"bioguide": "B000944",
+"thomas": "00136",
+"lis": "S307",
+"govtrack": 400050,
+"opensecrets": "N00003535",
+"votesmart": 27018,
+"fec": [
+"H2OH13033",
+"S6OH00163"
+],
+"cspan": 5051,
+"wikipedia": "Sherrod Brown",
+"house_history": 9996,
+"ballotpedia": "Sherrod Brown",
+"maplight": 168,
+"icpsr": 29389,
+"wikidata": "Q381880",
+"google_entity_id": "kg:/m/034s80",
+"pictorial": 13413
+},
+"name": {
+"first": "Sherrod",
+"last": "Brown",
+"official_full": "Sherrod Brown"
+},
+"bio": {
+"birthday": "1952-11-09",
+"gender": "M"
+},
+"terms": [
+{
+"type": "sen",
+"start": "2019-01-03",
+"end": "2025-01-03",
+"state": "OH",
+"class": 1,
+"party": "Democrat",
+"state_rank": "senior",
+"url": "https://www.brown.senate.gov",
+"rss_url": "http://www.brown.senate.gov/rss/feeds/?type=all&amp;",
+"contact_form": "https://www.brown.senate.gov/contact/",
+"address": "503 Hart Senate Office Building Washington DC 20510",
+"office": "503 Hart Senate Office Building",
+"phone": "202-224-2315"
+}
+]
+},
+{
+"id": {
+"bioguide": "A000376",
+"fec": [
+"H8TX32098"
+],
+"govtrack": 412828,
+"opensecrets": "N00040989",
+"wikipedia": "Colin Allred",
+"wikidata": "Q5144845",
+"votesmart": 177357,
+"icpsr": 21900,
+"ballotpedia": "Colin Allred",
+"pictorial": 13289
+},
+"name": {
+"first": "Colin",
+"middle": "Z.",
+"last": "Allred",
+"official_full": "Colin Z. Allred"
+},
+"bio": {
+"gender": "M",
+"birthday": "1983-04-15"
+},
+"terms": [
+{
+"type": "rep",
+"start": "2023-01-03",
+"end": "2025-01-03",
+"state": "TX",
+"district": 32,
+"party": "Democrat",
+"url": "https://allred.house.gov",
+"address": "348 Cannon House Office Building Washington DC 20515-4332",
+"office": "348 Cannon House Office Building",
+"phone": "202-225-2231"
+}
+]
+}
+]

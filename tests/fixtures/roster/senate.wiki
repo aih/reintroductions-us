@@ -1,0 +1,71 @@
+== Race summary ==
+
+=== Special elections during the preceding Congress ===
+Special U.S. Senate elections in Florida and Ohio are scheduled for November 3, 2026. Florida voters will elect a candidate to serve the remaining two years of former Senator [[Marco Rubio]]'s unexpired term;<ref>{{Cite web|url=https://news.bgov.com/bloomberg-government-news/new-florida-senator-moody-faces-first-election-test-in-2026|title=New Florida Senator Moody Faces First Election Test in 2026|website=bgov.com|last=Giroux|first=Greg|date=January 17, 2025}}</ref> Rubio resigned his seat in 2025 to become [[United States Secretary of State]].<ref>{{Cite web |last=Beggin |first=Riley |title=Trump taps Marco Rubio for Secretary of State |url=https://www.usatoday.com/story/news/politics/2024/11/13/trump-marco-rubio-secretary-state/76198371007/ |website=[[USA Today]] |language=en-US}}</ref> Ohio voters will elect a candidate to serve the remaining two years of former Senator [[JD Vance]]'s unexpired term; Vance resigned in 2025 to become [[2024 United States presidential election|Vice President of the United States]].<ref>{{Cite web|url=https://apnews.com/article/senate-ohio-governor-dewine-vance-5dc31a64a23a798dd7e6915783e7a395|title=Ohio Lt. Gov. Jon Husted will succeed JD Vance in the US Senate|first1=Julie Carr|last1=Smyth|first2=Stephen|last2=Groves|date=January 17, 2025|publisher=Associated Press}}</ref>
+
+Elections are sorted by date then state.
+
+{| class="wikitable sortable"
+
+|-
+! [[2026 United States Senate special election in Ohio|Ohio]]<br />(Class 3)
+| {{Shading PVI|R|5}}
+| [[Jon Husted]]
+| {{Party shading/Republican}} | Republican
+| 2025 {{small|(appointed)}}
+| {{Party shading/Democratic}} | Interim appointee lost election.<br/>'''Democratic gain.'''
+| nowrap | {{Plainlist | 
+*{{Party stripe|Democratic Party (US)}}{{aye}} '''[[Sherrod Brown]]''' (Democratic)
+*{{Party stripe|Republican Party (US)}}[[Jon Husted]] (Republican)
+*{{Party stripe|Independent}}Greg Levy (Independent)
+*{{Party stripe|Libertarian Party (US)}}William Redpath (Libertarian)
+}}
+|}
+
+=== Elections leading to the next Congress ===
+In these general elections, the winners will be elected for the term beginning January 3, 2027.
+{{sticky header}}
+{| class="wikitable sortable sticky-header-multi"
+
+|-
+! [[2026 United States Senate election in Mississippi|Mississippi]]
+| {{Shading PVI|R|11}}
+| {{sortname|Cindy|Hyde-Smith}}
+| {{Party shading/Republican}} | Republican
+| data-sort-value=2018 | 2018 {{Small|(appointed)}}<br />[[2018 United States Senate special election in Mississippi|2018 {{Small|(special)}}]]<br />[[2020 United States Senate election in Mississippi|2020]]
+| {{Party shading/Republican}} data-sort-value=54.1 | 54.1% R
+| data-sort-value=1 | Incumbent renominated
+| nowrap | {{Plainlist | 
+*{{Party stripe|Democratic Party (US)}}[[Scott Colom]] (Democratic)<ref name="MS2026" />
+*{{Party stripe|Republican Party (US)}}[[Cindy Hyde-Smith]] (Republican)<ref name="MS2026">{{cite news |title=2026 Primary Election Candidate Qualifying List |url=https://www.sos.ms.gov/elections-voting/candidate-referenda-information |access-date=December 29, 2025 |publisher=Mississippi Secretary of State |date=December 29, 2025}}</ref>
+*{{Party stripe|Independent}}Ty Pinkins (Independent)<ref name="MS2026" />
+}}
+
+|-
+! [[2026 United States Senate election in Texas|Texas]]
+| {{Shading PVI|R|6}}
+| {{sortname|John|Cornyn}}
+| {{Party shading/Republican}} | Republican
+| data-sort-value=2002 | [[2002 United States Senate election in Texas|2002]]<br />[[2008 United States Senate election in Texas|2008]]<br />[[2014 United States Senate election in Texas|2014]]<br />[[2020 United States Senate election in Texas|2020]]
+| {{Party shading/Republican}} data-sort-value=53.5 | 53.5% R
+| {{Party shading/Democratic}} data-sort-value=-1 | Incumbent lost renomination in runoff.<br/>'''Democratic gain.'''
+| nowrap | {{Plainlist | 
+*{{Party stripe|Democratic Party (US)}}{{aye}} '''[[James Talarico]]''' (Democratic)
+*{{Party stripe|Libertarian Party (US)}}Ted Brown (Libertarian)
+*{{Party stripe|Republican Party (US)}}[[Ken Paxton]] (Republican)
+}}
+
+|-
+! [[2026 United States Senate election in Wyoming|Wyoming]]
+| {{Shading PVI|R|23}}
+| {{sortname|Cynthia|Lummis}}
+| {{Party shading/Republican}} | Republican
+| data-sort-value=2020 | [[2020 United States Senate election in Wyoming|2020]]
+| {{Party shading/Republican}} data-sort-value=72.9 | 72.9% R
+| {{Party shading/Republican/Hold}} data-sort-value=-1 | Incumbent retiring.<ref name="Lummis" /><br/>Republican hold.
+| nowrap | {{Plainlist | 
+*{{Party stripe|Republican Party (US)}}{{aye}} '''[[Harriet Hageman]]''' (Republican)
+*{{Party stripe|Democratic Party (US)}}[[James W. Byrd]] (Democratic)
+}}
+
+|}

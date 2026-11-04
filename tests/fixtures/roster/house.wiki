@@ -1,0 +1,895 @@
+==Alabama==
+
+==Colorado==
+{{main|2026 United States House of Representatives elections in Colorado}}
+
+{{see also|List of United States representatives from Colorado}}
+
+{|class="wikitable sortable"
+|-
+!colspan=2 |District
+!colspan=4 |Incumbent
+!rowspan=2 class="unsortable" |Candidates<ref>{{cite web |title=2026 General Election Unofficial Candidate List |url=https://www.coloradosos.gov/pubs/elections/vote/generalCandidates.html |access-date=2026-08-27 |publisher=Colorado Secretary of State}}</ref>
+|- style="vertical-align:bottom"
+!Location
+![[Cook Partisan Voting Index|2026<br>PVI]]<ref name="new pvi"/>
+!Member
+!Party
+!First<br>elected
+!Status
+|-
+!{{ushr|CO|1|X}}
+|{{shading PVI|D|29}}
+|{{sortname|Diana|DeGette}}
+|style="color:black;background-color:#B0CEFF" |Democratic
+|[[1996 United States House of Representatives elections in Colorado|1996]]
+| {{Party shading/Democratic/Hold}} |Incumbent lost renomination.<br>Democratic hold.
+|nowrap |{{plainlist}}
+*{{Party stripe|Democratic Party (US)}}{{aye}} '''[[Melat Kiros]]''' (Democratic)
+*{{Party stripe|Republican Party (US)}}Christy Peterson (Republican)
+**{{Party stripe|Independent}}Shimon Blau (Independent)
+*{{Party stripe|Libertarian Party (US)}}Chad Humphrey (Libertarian)
+*{{Party stripe|Unity Party of America}}Critter Milton (Unity)
+{{endplainlist}}
+|-
+!{{ushr|CO|2|X}}
+|{{shading PVI|D|20}}
+|{{sortname|Joe|Neguse}}
+|style="color:black;background-color:#B0CEFF" |Democratic
+|[[2018 United States House of Representatives elections in Colorado|2018]]
+|Incumbent re-elected.
+|nowrap |{{plainlist}}
+*{{Party stripe|Democratic Party (US)}}{{aye}} '''[[Joe Neguse]]''' (Democratic)
+*{{Party stripe|Republican Party (US)}}Kelley Dennison (Republican)
+*{{Party stripe|Libertarian Party (US)}}Gaylon Kent (Libertarian)
+{{endplainlist}}
+|-
+!{{ushr|CO|3|X}}
+|{{shading PVI|R|5}}
+|{{sortname|Jeff|Hurd}}
+|style="background-color:#FFB6B6" |Republican
+|[[2024 United States House of Representatives elections in Colorado|2024]]
+|Incumbent renominated
+|nowrap |{{plainlist}}
+*{{Party stripe|Independent}}Clifton Brown (Independent)
+*{{Party stripe|Republican Party (US)}}[[Jeff Hurd]] (Republican)
+*{{Party stripe|Libertarian Party (US)}}Cory Robertson (Libertarian)
+*{{Party stripe|Democratic Party (US)}}[[Dwayne Romero]] (Democratic)
+{{endplainlist}}
+|-
+!{{ushr|CO|4|X}}
+|{{shading PVI|R|9}}
+|{{sortname|Lauren|Boebert}}
+|style="background-color:#FFB6B6" |Republican
+|[[2020 United States House of Representatives elections in Colorado|2020]]
+|Incumbent renominated
+|nowrap |{{plainlist}}
+*{{Party stripe|Republican Party (US)}}[[Lauren Boebert]] (Republican)
+*{{Party stripe|Democratic Party (US)}}[[Eileen Laubacher]] (Democratic)
+*{{Party stripe|Libertarian Party (US)}}Douglas Mangeris (Libertarian)
+{{endplainlist}}
+|-
+!{{ushr|CO|5|X}}
+|{{shading PVI|R|5}}
+|{{sortname|Jeff|Crank}}
+|style="background-color:#FFB6B6" |Republican
+|[[2024 United States House of Representatives elections in Colorado|2024]]
+|Incumbent renominated
+|nowrap |{{plainlist}}
+*{{Party stripe|Republican Party (US)}}[[Jeff Crank]] (Republican)
+*{{Party stripe|Libertarian Party (US)}}Mark Elworth (Libertarian)
+*{{Party stripe|Democratic Party (US)}}Jessica Killin (Democratic)
+*{{Party stripe|Constitution Party (US)}}Christopher Mitchell (Constitution)
+{{endplainlist}}
+|-
+!{{ushr|CO|6|X}}
+|{{shading PVI|D|11}}
+|{{sortname|Jason|Crow}}
+|style="color:black;background-color:#B0CEFF" |Democratic
+|[[2018 United States House of Representatives elections in Colorado|2018]]
+|Incumbent re-elected.
+|nowrap |{{plainlist}}
+*{{Party stripe|Democratic Party (US)}}{{aye}} '''[[Jason Crow]]''' (Democratic)
+*{{Party stripe|Republican Party (US)}}Jason Clark (Republican)
+*{{Party stripe|Libertarian Party (US)}}Patty McMahon (Libertarian)
+*{{Party stripe|Independent}}Samir Ezzeldin Witta (Independent)
+*{{Party stripe|Unity Party of America}}Meredith Ryan (Unity)
+{{endplainlist}}
+|-
+!{{ushr|CO|7|X}}
+|{{shading PVI|D|8}}
+|{{sortname|Brittany|Pettersen}}
+|style="color:black;background-color:#B0CEFF" |Democratic
+|[[2022 United States House of Representatives elections in Colorado|2022]]
+|Incumbent re-elected.
+|nowrap |{{plainlist}}
+*{{Party stripe|Democratic Party (US)}}{{aye}} '''[[Brittany Pettersen]]''' (Democratic)
+*{{Party stripe|Republican Party (US)}}Tim Bennett (Republican)
+*{{Party stripe|Independent}}Joe Krzeczkowski (Independent)
+*{{Party stripe|Libertarian Party (US)}}Dan Sallis (Libertarian)
+*{{Party stripe|Unity Party of America}}Susan Hall (Unity)
+*{{Party stripe|Constitution Party (US)}}Lawrence Clark (Constitution)
+{{endplainlist}}
+|-
+!{{ushr|CO|8|X}}
+|{{shading PVI|EVEN}}
+|{{sortname|Gabe|Evans}}
+|style="background-color:#FFB6B6" |Republican
+|[[2024 United States House of Representatives elections in Colorado|2024]]
+| {{Party shading/Democratic/Gain}} |Incumbent lost re-election.<br>'''Democratic gain.'''
+|nowrap |{{plainlist}}
+*{{Party stripe|Democratic Party (US)}}{{aye}} '''[[Manny Rutinel]]''' (Democratic)
+*{{Party stripe|Republican Party (US)}}[[Gabe Evans]] (Republican)
+*{{Party stripe|Libertarian Party (US)}}Dave Wood (Libertarian)
+{{endplainlist}}
+|}
+
+
+==New York==
+{{main|2026 United States House of Representatives elections in New York}}
+
+{{see also|List of United States representatives from New York}}
+
+{|class="wikitable sortable"
+|-
+!colspan=2 |District
+!colspan=4 |Incumbent
+!rowspan=2 class="unsortable" |Candidates<ref name=NY2026>{{cite web |title=Amended Certification for the November 3, 2026 General Election |url=https://elections.ny.gov/system/files/documents/2026/10/accessible-2026-general-ballot-certification-10.7.2026.pdf |work=New York State Board of Elections |access-date=September 17, 2026}}</ref>
+|- style="vertical-align:bottom"
+!Location
+![[Cook Partisan Voting Index|2026<br>PVI]]<ref name="new pvi"/>
+!Member
+!Party
+!First<br>elected
+!Status
+|-
+!{{ushr|NY|1|X}}
+|{{shading PVI|R|4}}
+|{{sortname|Nick|LaLota}}
+|style="background-color:#FFB6B6" |Republican
+|[[2022 United States House of Representatives elections in New York|2022]]
+|Incumbent renominated
+|nowrap |{{plainlist}}
+*{{Party stripe|Democratic Party (US)}}{{Party stripe|Working Families Party}}[[Chris Gallant]] (Democratic)
+*{{Party stripe|Republican Party (US)}}{{Party stripe|Conservative Party (US)}}[[Nick LaLota]] (Republican)
+{{endplainlist}}
+|-
+!{{ushr|NY|2|X}}
+|{{shading PVI|R|6}}
+|{{sortname|Andrew|Garbarino}}
+|style="background-color:#FFB6B6" |Republican
+|[[2020 United States House of Representatives elections in New York|2020]]
+|Incumbent renominated
+|nowrap |{{plainlist}}
+*{{Party stripe|Republican Party (US)}}{{Party stripe|Conservative Party (US)}}[[Andrew Garbarino]] (Republican)
+*{{Party stripe|Democratic Party (US)}}{{Party stripe|Working Families Party}}[[Patrick G. Halpin|Patrick Halpin]] (Democratic)
+{{endplainlist}}
+|-
+!{{ushr|NY|3|X}}
+|{{shading PVI|EVEN}}
+|{{sortname|Tom|Suozzi}}
+|style="color:black;background-color:#B0CEFF" |Democratic
+|[[2016 United States House of Representatives elections in New York|2016]]<br>2022 {{small|(retired)}}<br>[[2024 New York's 3rd congressional district special election|2024 {{small|(special)}}]]
+|Incumbent renominated
+|nowrap |{{plainlist}}
+*{{Party stripe|Republican Party (US)}}{{Party stripe|Conservative Party (US)}}[[Mike LiPetri]] (Republican)
+*{{Party stripe|Democratic Party (US)}}[[Tom Suozzi]] (Democratic)
+{{endplainlist}}
+|-
+!{{ushr|NY|4|X}}
+|{{shading PVI|D|2}}
+|{{sortname|Laura|Gillen}}
+|style="color:black;background-color:#B0CEFF" |Democratic
+|[[2024 United States House of Representatives elections in New York|2024]]
+|Incumbent renominated
+|nowrap |{{plainlist}}
+*{{Party stripe|Republican Party (US)}}{{Party stripe|Conservative Party (US)}}Jeanine Driscoll (Republican)
+*{{Party stripe|Democratic Party (US)}}[[Laura Gillen]] (Democratic)
+*{{Party stripe|Libertarian Party (US)}}Blay Tarnoff (Libertarian)
+{{endplainlist}}
+|-
+!{{ushr|NY|5|X}}
+|{{shading PVI|D|24}}
+|{{sortname|Gregory|Meeks}}
+|style="color:black;background-color:#B0CEFF" |Democratic
+|[[1998 New York's 6th congressional district special election|1998 {{small|(special)}}]]
+|Incumbent re-elected.
+|nowrap |{{plainlist}}
+*{{Party stripe|Democratic Party (US)}}{{aye}} '''[[Gregory Meeks]]''' (Democratic)
+*{{Party stripe|Republican Party (US)}}George Marsh (Republican)
+{{endplainlist}}
+|-
+!{{ushr|NY|6|X}}
+|{{shading PVI|D|6}}
+|{{sortname|Grace|Meng}}
+|style="color:black;background-color:#B0CEFF" |Democratic
+|[[2012 United States House of Representatives elections in New York|2012]]
+|Incumbent re-elected.
+|nowrap |{{plainlist}}
+*{{Party stripe|Democratic Party (US)}}{{aye}} '''[[Grace Meng]]''' (Democratic)
+*{{Party stripe|Republican Party (US)}}{{Party stripe|Conservative Party (US)}}Joseph Chou (Republican)
+{{endplainlist}}
+|-
+!{{ushr|NY|7|X}}
+|{{shading PVI|D|25}}
+|{{sortname|Nydia|Velázquez}}
+|style="color:black;background-color:#B0CEFF" |Democratic
+|[[1992 United States House of Representatives elections in New York|1992]]
+| {{Party shading/Democratic/Hold}} |Incumbent retired.<ref name="Velázquez"/><br>Democratic hold.
+|nowrap |{{plainlist}}
+*{{Party stripe|Democratic Party (US)}}{{Party stripe|Working Families Party}}{{aye}} '''[[Claire Valdez]]''' (Democratic)
+*{{Party stripe|Republican Party (US)}}{{Party stripe|Conservative Party (US)}}Melvin Rivera (Republican)
+*{{Party stripe|Independent}}Priscilla Ghaznavi (Independent)
+{{endplainlist}}
+|-
+!{{ushr|NY|8|X}}
+|{{shading PVI|D|24}}
+|{{sortname|Hakeem|Jeffries}}
+|style="color:black;background-color:#B0CEFF" |Democratic
+|[[2012 United States House of Representatives elections in New York|2012]]
+|Incumbent re-elected.
+|nowrap |{{plainlist}}
+*{{Party stripe|Democratic Party (US)}}{{aye}} '''[[Hakeem Jeffries]]''' (Democratic)
+*{{Party stripe|Republican Party (US)}}{{Party stripe|Conservative Party (US)}}Lewis Mizrahi (Republican)
+{{endplainlist}}
+|-
+!{{ushr|NY|9|X}}
+|{{shading PVI|D|22}}
+|{{sortname|Yvette|Clarke}}
+|style="color:black;background-color:#B0CEFF" |Democratic
+|[[2006 United States House of Representatives elections in New York|2006]]
+|Incumbent re-elected.
+|nowrap |{{plainlist}}
+*{{Party stripe|Democratic Party (US)}}{{aye}} '''[[Yvette Clarke]]''' (Democratic)
+*{{Party stripe|Republican Party (US)}}{{Party stripe|Conservative Party (US)}}Joel Azumah (Republican)
+{{endplainlist}}
+|-
+!{{ushr|NY|10|X}}
+|{{shading PVI|D|32}}
+|{{sortname|Dan|Goldman}}
+|style="color:black;background-color:#B0CEFF" |Democratic
+|[[2022 United States House of Representatives elections in New York|2022]]
+| {{Party shading/Democratic/Hold}} |Incumbent lost renomination.<br>Democratic hold.
+|nowrap |{{plainlist}}
+*{{Party stripe|Democratic Party (US)}}{{Party stripe|Working Families Party}}{{aye}} '''[[Brad Lander]]''' (Democratic)
+*{{Party stripe|Republican Party (US)}}{{Party stripe|Conservative Party (US)}}Jennifer Moore (Republican)
+{{endplainlist}}
+|-
+!{{ushr|NY|11|X}}
+|{{shading PVI|R|10}}
+|{{sortname|Nicole|Malliotakis}}
+|style="background-color:#FFB6B6" |Republican
+|[[2020 United States House of Representatives elections in New York|2020]]
+|Incumbent re-elected.
+|nowrap |{{plainlist}}
+*{{Party stripe|Republican Party (US)}}{{Party stripe|Conservative Party (US)}}{{aye}} '''[[Nicole Malliotakis]]''' (Republican)
+*{{Party stripe|Democratic Party (US)}}Michael DeCillis (Democratic)
+{{endplainlist}}
+|-
+!{{ushr|NY|12|X}}
+|{{shading PVI|D|33}}
+|{{sortname|Jerry|Nadler}}
+|style="color:black;background-color:#B0CEFF" |Democratic
+|[[1992 New York's 17th congressional district special election|1992 {{small|(special)}}]]
+| {{Party shading/Democratic/Hold}} |Incumbent retired.<ref name="Retire"/><br>Democratic hold.
+|nowrap |{{plainlist}}
+*{{Party stripe|Democratic Party (US)}}{{aye}} '''[[Micah Lasher]]''' (Democratic)
+*{{Party stripe|Republican Party (US)}}{{Party stripe|Conservative Party (US)}}Caroline Shinkle (Republican)
+*{{Party stripe|Independent}}Karen Ortiz (Independent)
+*{{Party stripe|Independent}}Wilneida Negron (Independent)
+{{endplainlist}}
+|-
+!{{ushr|NY|13|X}}
+|{{shading PVI|D|32}}
+|{{sortname|Adriano|Espaillat}}
+|style="color:black;background-color:#B0CEFF" |Democratic
+|[[2016 United States House of Representatives elections in New York|2016]]
+| {{Party shading/Democratic/Hold}} |Incumbent lost renomination.<br>Democratic hold.
+|nowrap |{{plainlist}}
+*{{Party stripe|Democratic Party (US)}}{{Party stripe|Working Families Party}}{{aye}} '''[[Darializa Avila Chevalier]]''' (Democratic)
+*{{Party stripe|Republican Party (US)}}{{Party stripe|Conservative Party (US)}}Jomo Williams (Republican)
+{{endplainlist}}
+|-
+!{{ushr|NY|14|X}}
+|{{shading PVI|D|19}}
+|{{sortname|Alexandria|Ocasio-Cortez}}
+|style="color:black;background-color:#B0CEFF" |Democratic
+|[[2018 New York's 14th congressional district election|2018]]
+|Incumbent re-elected.
+|nowrap |{{plainlist}}
+*{{Party stripe|Democratic Party (US)}}{{Party stripe|Working Families Party}}{{aye}} '''[[Alexandria Ocasio-Cortez]]''' (Democratic)
+*{{Party stripe|Republican Party (US)}}{{Party stripe|Conservative Party (US)}}Diamant Hysenaj (Republican)
+{{endplainlist}}
+|-
+!{{ushr|NY|15|X}}
+|{{shading PVI|D|27}}
+|{{sortname|Ritchie|Torres}}
+|style="color:black;background-color:#B0CEFF" |Democratic
+|[[2020 United States House of Representatives elections in New York|2020]]
+|Incumbent re-elected.
+|nowrap |{{plainlist}}
+*{{Party stripe|Democratic Party (US)}}{{aye}} '''[[Ritchie Torres]]''' (Democratic)
+*{{Party stripe|Republican Party (US)}}Stylo Sapaskis (Republican)
+*{{Party stripe|Independent}}Andre Easton (Independent)
+*{{Party stripe|Independent}}Jose Vega (Independent)
+*{{Party stripe|Conservative Party (US)}}[[Gonzalo Duran]] (Conservative)
+{{endplainlist}}
+|-
+!{{ushr|NY|16|X}}
+|{{shading PVI|D|18}}
+|{{sortname|George|Latimer|dab=New York politician}}
+|style="color:black;background-color:#B0CEFF" |Democratic
+|[[2024 United States House of Representatives elections in New York|2024]]
+|Incumbent re-elected.
+|nowrap |{{plainlist}}
+*{{Party stripe|Democratic Party (US)}}{{aye}} '''[[George Latimer (New York politician)|George Latimer]]''' (Democratic)
+*{{Party stripe|Republican Party (US)}}Joseph Cinquemani (Republican)
+{{endplainlist}}
+|-
+!{{ushr|NY|17|X}}
+|{{shading PVI|D|1}}
+|{{sortname|Mike|Lawler}}
+|style="background-color:#FFB6B6" |Republican
+|[[2022 United States House of Representatives elections in New York|2022]]
+| {{Party shading/Democratic}} | Incumbent lost re-election.<br />'''Democratic gain.'''
+|nowrap |{{plainlist}}
+*{{Party stripe|Democratic Party (US)}}{{Party stripe|Working Families Party}}{{aye}} '''[[Cait Conley]]''' (Democratic)
+*{{Party stripe|Republican Party (US)}}{{Party stripe|Conservative Party (US)}}[[Mike Lawler]] (Republican)
+{{endplainlist}}
+|-
+!{{ushr|NY|18|X}}
+|{{shading PVI|D|2}}
+|{{sortname|Pat|Ryan|dab=politician}}
+|style="color:black;background-color:#B0CEFF" |Democratic
+|[[2022 New York's 19th congressional district special election|2022 {{small|(special)}}]]
+|Incumbent re-elected.
+|nowrap |{{plainlist}}
+*{{Party stripe|Democratic Party (US)}}{{Party stripe|Working Families Party}}{{aye}} '''[[Pat Ryan (politician)|Pat Ryan]]''' (Democratic)
+*{{Party stripe|Republican Party (US)}}{{Party stripe|Conservative Party (US)}}Jacqueline Auringer (Republican)
+{{endplainlist}}
+|-
+!{{ushr|NY|19|X}}
+|{{shading PVI|D|1}}
+|{{sortname|Josh|Riley}}
+|style="color:black;background-color:#B0CEFF" |Democratic
+|[[2024 United States House of Representatives elections in New York|2024]]
+|Incumbent re-elected.
+|nowrap |{{plainlist}}
+*{{Party stripe|Democratic Party (US)}}{{Party stripe|Working Families Party}}{{aye}} '''[[Josh Riley]]''' (Democratic)
+*{{Party stripe|Republican Party (US)}}{{Party stripe|Conservative Party (US)}}[[Peter Oberacker]] (Republican)
+{{endplainlist}}
+|-
+!{{ushr|NY|20|X}}
+|{{shading PVI|D|8}}
+|{{sortname|Paul|Tonko}}
+|style="color:black;background-color:#B0CEFF" |Democratic
+|[[2008 United States House of Representatives elections in New York|2008]]
+|Incumbent re-elected.
+|nowrap |{{plainlist}}
+*{{Party stripe|Democratic Party (US)}}{{Party stripe|Working Families Party}}{{aye}} '''[[Paul Tonko]]''' (Democratic)
+*{{Party stripe|Republican Party (US)}}{{Party stripe|Conservative Party (US)}}Ralph Ambrosio (Republican)
+{{endplainlist}}
+|-
+!{{ushr|NY|21|X}}
+|{{shading PVI|R|10}}
+|{{sortname|Elise|Stefanik}}
+|style="background-color:#FFB6B6" |Republican
+|[[2014 United States House of Representatives elections in New York|2014]]
+|style="background:#DDDDDD" |Incumbent retiring.<ref name=StefanikNY/>
+|nowrap |{{plainlist}}
+*{{Party stripe|Republican Party (US)}}Anthony Constantino (Republican)
+*{{Party stripe|Democratic Party (US)}}Blake Gendebien (Democratic)
+{{endplainlist}}
+|-
+!{{ushr|NY|22|X}}
+|{{shading PVI|D|4}}
+|{{sortname|John|Mannion|dab=American politician}}
+|style="color:black;background-color:#B0CEFF" |Democratic
+|[[2024 United States House of Representatives elections in New York|2024]]
+|Incumbent re-elected.
+|nowrap |{{plainlist}}
+*{{Party stripe|Democratic Party (US)}}{{Party stripe|Working Families Party}}{{aye}} '''[[John Mannion (American politician)|John Mannion]]''' (Democratic)
+*{{Party stripe|Republican Party (US)}}{{Party stripe|Conservative Party (US)}}Kailee Buller (Republican)
+*{{endplainlist}}
+|-
+!{{ushr|NY|23|X}}
+|{{shading PVI|R|10}}
+|{{sortname|Nick|Langworthy}}
+|style="background-color:#FFB6B6" |Republican
+|[[2022 United States House of Representatives elections in New York|2022]]
+|Incumbent re-elected.
+|nowrap |{{plainlist}}
+*{{Party stripe|Republican Party (US)}}{{Party stripe|Conservative Party (US)}}{{aye}} '''[[Nick Langworthy]]''' (Republican)
+*{{Party stripe|Democratic Party (US)}}{{Party stripe|Working Families Party}}Aaron Gies (Democratic)
+{{endplainlist}}
+|-
+!{{ushr|NY|24|X}}
+|{{shading PVI|R|11}}
+|{{sortname|Claudia|Tenney}}
+|style="background-color:#FFB6B6" |Republican
+|[[2016 United States House of Representatives elections in New York|2016]]<br>2018 {{small|(lost)}}<br>[[2020 New York's 22nd congressional district election|2020]]
+|Incumbent re-elected.
+|nowrap |{{plainlist}}
+*{{Party stripe|Republican Party (US)}}{{Party stripe|Conservative Party (US)}}{{aye}} '''[[Claudia Tenney]]''' (Republican)
+*{{Party stripe|Democratic Party (US)}}{{Party stripe|Working Families Party}}Alissa Ellman (Democratic)
+{{endplainlist}}
+|-
+!{{ushr|NY|25|X}}
+|{{shading PVI|D|10}}
+|{{sortname|Joseph|Morelle}}
+|style="color:black;background-color:#B0CEFF" |Democratic
+|[[2018 New York's 25th congressional district special election|2018 {{small|(special)}}]]
+|Incumbent re-elected.
+|nowrap |{{plainlist}}
+*{{Party stripe|Democratic Party (US)}}{{Party stripe|Working Families Party}}{{aye}} '''[[Joseph Morelle]]''' (Democratic)
+*{{Party stripe|Republican Party (US)}}{{Party stripe|Conservative Party (US)}}Virginia McIntyre (Republican)
+{{endplainlist}}
+|-
+!{{ushr|NY|26|X}}
+|{{shading PVI|D|11}}
+|{{sortname|Tim|Kennedy|dab=politician}}
+|style="color:black;background-color:#B0CEFF" |Democratic
+|[[2024 New York's 26th congressional district special election|2024 {{small|(special)}}]]
+|Incumbent re-elected.
+|nowrap |{{plainlist}}
+*{{Party stripe|Democratic Party (US)}}{{aye}} '''[[Tim Kennedy (politician)|Tim Kennedy]]''' (Democratic)
+*{{Party stripe|Republican Party (US)}}{{Party stripe|Conservative Party (US)}}Dennis Hannon (Republican)
+{{endplainlist}}
+|}
+
+
+==Texas==
+{{main|2026 United States House of Representatives elections in Texas}}
+
+{{see also|List of United States representatives from Texas}}
+
+{|class="wikitable sortable"
+|-
+!colspan=2 |District
+!colspan=4 |Incumbent
+!rowspan=2 class="unsortable" |Candidates<ref name=TX2026>{{cite web |title=Candidate Information|url=https://goelect.txelections.civixapps.com/ivis-cbp-ui/candidate-information|publisher=Texas Secretary of State|access-date=November 11, 2025}}</ref>
+|- style="vertical-align:bottom"
+!Location
+![[Cook Partisan Voting Index|2026<br>PVI]]<ref name="new pvi"/>
+!Member
+!Party
+!First<br>elected
+!Status
+|-
+!{{ushr|TX|1|X}}
+|{{shading PVI|R|24}}
+|{{sortname|Nathaniel|Moran}}
+|style="background-color:#FFB6B6" |Republican
+|[[2022 United States House of Representatives elections in Texas|2022]]
+|Incumbent re-elected.
+|nowrap |{{plainlist}}
+*{{Party stripe|Republican Party (US)}}{{aye}} '''[[Nathaniel Moran]]''' (Republican)
+*{{Party stripe|Democratic Party (US)}}Yolanda Prince (Democratic)
+{{endplainlist}}
+|-
+!{{ushr|TX|2|X}}
+|{{shading PVI|R|11}}
+|{{sortname|Dan|Crenshaw}}
+|style="background-color:#FFB6B6" |Republican
+|[[2018 United States House of Representatives elections in Texas|2018]]
+|style="background:#DDDDDD" |Incumbent lost renomination.<ref name=Crenshaw/>
+|nowrap |{{plainlist}}
+*{{Party stripe|Democratic Party (US)}}Shaun Finnie (Democratic)
+*{{Party stripe|Republican Party (US)}}[[Steve Toth]] (Republican)
+{{endplainlist}}
+|-
+!{{ushr|TX|3|X}}
+|{{shading PVI|R|11}}
+|{{sortname|Keith|Self}}
+|style="background-color:#FFB6B6" |Republican
+|[[2022 United States House of Representatives elections in Texas|2022]]
+|Incumbent re-elected.
+|nowrap |{{plainlist}}
+*{{Party stripe|Republican Party (US)}}{{aye}} '''[[Keith Self]]''' (Republican)
+*{{Party stripe|Democratic Party (US)}}Evan Hunt (Democratic)
+{{endplainlist}}
+|-
+!{{ushr|TX|4|X}}
+|{{shading PVI|R|12}}
+|{{sortname|Pat|Fallon}}
+|style="background-color:#FFB6B6" |Republican
+|[[2020 United States House of Representatives elections in Texas|2020]]
+|Incumbent re-elected.
+|nowrap |{{plainlist}}
+*{{Party stripe|Republican Party (US)}}{{aye}} '''[[Pat Fallon]]''' (Republican)
+*{{Party stripe|Democratic Party (US)}}Jason Pearce (Democratic)
+{{endplainlist}}
+|-
+!{{ushr|TX|5|X}}
+|{{shading PVI|R|10}}
+|{{sortname|Lance|Gooden}}
+|style="background-color:#FFB6B6" |Republican
+|[[2018 United States House of Representatives elections in Texas|2018]]
+|Incumbent renominated.
+|nowrap |{{plainlist}}
+*{{Party stripe|Republican Party (US)}}[[Lance Gooden]] (Republican)
+*{{Party stripe|Democratic Party (US)}}Chelsey Hockett (Democratic)
+{{endplainlist}}
+|-
+!{{ushr|TX|6|X}}
+|{{shading PVI|R|11}}
+|{{sortname|Jake|Ellzey}}
+|style="background-color:#FFB6B6" |Republican
+|[[2021 Texas's 6th congressional district special election|2021 {{small|(special)}}]]
+|Incumbent re-elected.
+|nowrap |{{plainlist}}
+*{{Party stripe|Republican Party (US)}}{{aye}} '''[[Jake Ellzey]]''' (Republican)
+*{{Party stripe|Democratic Party (US)}}Danny Minton (Democratic)
+{{endplainlist}}
+|-
+!{{ushr|TX|7|X}}
+|{{shading PVI|D|13}}
+|{{sortname|Lizzie|Fletcher}}
+|style="color:black;background-color:#B0CEFF" |Democratic
+|[[2018 United States House of Representatives elections in Texas|2018]]
+|Incumbent re-elected.
+|nowrap |{{plainlist}}
+*{{Party stripe|Democratic Party (US)}}{{aye}} '''[[Lizzie Fletcher]]''' (Democratic) 
+*{{Party stripe|Republican Party (US)}}Alexander Hale (Republican)
+*{{Party stripe|Green Party (US)}}Espoir Ngabo (Green)
+{{endplainlist}}
+|-
+!{{ushr|TX|8|X}}
+|{{shading PVI|R|13}}
+|{{sortname|Morgan|Luttrell}}
+|style="background-color:#FFB6B6" |Republican
+|[[2022 United States House of Representatives elections in Texas|2022]]
+|{{Party shading/Republican/Hold}} |Incumbent retired.<ref name="Luttrell"/><br>Republican hold.
+|nowrap |{{plainlist}}
+*{{Party stripe|Republican Party (US)}}{{aye}} '''[[Jessica Steinmann]]''' (Republican)
+*{{Party stripe|Democratic Party (US)}}Laura Jones (Democratic)
+{{endplainlist}}
+|-
+!{{ushr|TX|9|X}}
+|{{shading PVI|R|9}}
+|colspan=3 |None {{small|(new seat)}}
+|{{Party shading/Democratic/Gain}} |New member elected.<br>'''Democratic gain.'''
+|nowrap |{{plainlist}}
+*{{Party stripe|Democratic Party (US)}}{{aye}} '''[[Leticia Gutierrez]]''' (Democratic)
+*{{Party stripe|Republican Party (US)}}[[Alex Mealer]] (Republican)
+{{endplainlist}}
+|-
+!{{ushr|TX|10|X}}
+|{{shading PVI|R|10}}
+|{{sortname|Michael|McCaul}}
+|style="background-color:#FFB6B6" |Republican
+|[[2004 United States House of Representatives elections in Texas|2004]]
+|{{Party shading/Republican/Hold}} |Incumbent retired.<ref name="McCaul"/><br>Republican hold.
+|nowrap |{{plainlist}}
+*{{Party stripe|Republican Party (US)}}{{aye}} '''[[Chris Gober]]''' (Republican)
+*{{Party stripe|Democratic Party (US)}}Caitlin Rourk (Democratic)
+{{endplainlist}}
+|-
+!{{ushr|TX|11|X}}
+|{{shading PVI|R|17}}
+|{{sortname|August|Pfluger}}
+|style="background-color:#FFB6B6" |Republican
+|[[2020 United States House of Representatives elections in Texas|2020]]
+|Incumbent re-elected.
+|nowrap |{{plainlist}}
+*{{Party stripe|Republican Party (US)}}{{aye}} '''[[August Pfluger]]''' (Republican)
+*{{Party stripe|Democratic Party (US)}}Claire Reynolds (Democratic)
+{{endplainlist}}
+|-
+!{{ushr|TX|12|X}}
+|{{shading PVI|R|11}}
+|{{sortname|Craig|Goldman}}
+|style="background-color:#FFB6B6" |Republican
+|[[2024 United States House of Representatives elections in Texas|2024]]
+|Incumbent re-elected.
+|nowrap |{{plainlist}}
+*{{Party stripe|Republican Party (US)}}{{aye}} '''[[Craig Goldman]]''' (Republican)
+*{{Party stripe|Democratic Party (US)}}Angela Rodriguez Prilliman (Democratic)
+{{endplainlist}}
+|-
+!{{ushr|TX|13|X}}
+|{{shading PVI|R|23}}
+|{{sortname|Ronny|Jackson}}
+|style="background-color:#FFB6B6" |Republican
+|[[2020 United States House of Representatives elections in Texas|2020]]
+|Incumbent re-elected.
+|nowrap |{{plainlist}}
+*{{Party stripe|Republican Party (US)}}{{aye}} '''[[Ronny Jackson]]''' (Republican)
+*{{Party stripe|Democratic Party (US)}}Mark Nair (Democratic)
+{{endplainlist}}
+|-
+!{{ushr|TX|14|X}}
+|{{shading PVI|R|12}}
+|{{sortname|Randy|Weber}}
+|style="background-color:#FFB6B6" |Republican
+|[[2012 United States House of Representatives elections in Texas|2012]]
+|Incumbent re-elected.
+|nowrap |{{plainlist}}
+*{{Party stripe|Republican Party (US)}}{{aye}} '''[[Randy Weber]]''' (Republican)
+*{{Party stripe|Democratic Party (US)}}Thurman Bartie (Democratic)
+{{endplainlist}}
+|-
+!{{ushr|TX|15|X}}
+|{{shading PVI|R|7}}
+|{{sortname|Monica|De La Cruz}}
+|style="background-color:#FFB6B6" |Republican
+|[[2022 United States House of Representatives elections in Texas|2022]]
+|{{Party shading/Democratic/Gain}} | Incumbent lost re-election.<br>'''Democratic gain.'''
+|nowrap |{{plainlist}}
+*{{Party stripe|Democratic Party (US)}}{{aye}} '''[[Bobby Pulido]]''' (Democratic)
+*{{Party stripe|Republican Party (US)}}[[Monica De La Cruz]] (Republican)
+{{endplainlist}}
+|-
+!{{ushr|TX|16|X}}
+|{{shading PVI|D|11}}
+|{{sortname|Veronica|Escobar}}
+|style="color:black;background-color:#B0CEFF" |Democratic
+|[[2018 United States House of Representatives elections in Texas|2018]]
+|Incumbent re-elected.
+|nowrap |{{plainlist}}
+*{{Party stripe|Democratic Party (US)}}{{aye}} '''[[Veronica Escobar]]''' (Democratic)
+*{{Party stripe|Republican Party (US)}}Adam Bauman (Republican)
+{{endplainlist}}
+|-
+!{{ushr|TX|17|X}}
+|{{shading PVI|R|10}}
+|{{sortname|Pete|Sessions}}
+|style="background-color:#FFB6B6" |Republican
+|[[1996 United States House of Representatives elections in Texas|1996]]<br>2018 {{small|(lost)}}<br>[[2020 United States House of Representatives elections in Texas|2020]]
+|Incumbent re-elected.
+|{{plainlist}}
+*{{Party stripe|Republican Party (US)}}{{aye}} '''[[Pete Sessions]]''' (Republican)
+*{{Party stripe|Democratic Party (US)}}Casey Shepard (Democratic)
+{{endplainlist}}
+|-
+!rowspan=2 |{{ushr|TX|18|X}}
+|rowspan=2 {{shading PVI|D|29}}
+|{{sortname|Christian|Menefee}}
+|style="color:black;background-color:#B0CEFF" |Democratic
+|[[2025–26 Texas's 18th congressional district special election|2026 {{small|(special)}}]]
+|Incumbent re-elected.
+|rowspan=2 |{{plainlist}}
+*{{Party stripe|Democratic Party (US)}}{{aye}} '''[[Christian Menefee]]''' (Democratic)
+*{{Party stripe|Republican Party (US)}}Ronald Whitfield (Republican)
+{{endplainlist}}
+|-
+|{{sortname|Al|Green|dab=politician}}<br>{{small|Redistricted from the {{ushr|TX|9|C}}}}
+|style="color:black;background-color:#B0CEFF" |Democratic
+|[[2004 United States House of Representatives elections in Texas|2004]]
+|{{Party shading/Loss}}|Incumbent lost renomination.<ref name=TX182026>{{cite web |title=Democratic Rep. Al Green unseated by Rep. Christian Menefee in Texas primary with two incumbents|url=https://www.nbcnews.com/politics/2026-election/tx-18-house-runoff-primary-election-winner-menefee-beats-green-rcna346549|publisher=[[NBC News]]|access-date=May 26, 2026}}</ref><br />Democratic loss.
+|-
+!{{ushr|TX|19|X}}
+|{{shading PVI|R|25}} 
+|
+{{sortname|Jodey|Arrington}}
+|style="background-color:#FFB6B6" |Republican
+|[[2016 United States House of Representatives elections in Texas|2016]]
+|{{Party shading/Republican/Hold}} |Incumbent retired.<ref name="Arrington"/><br>Republican hold.
+|nowrap |{{plainlist}}
+*{{Party stripe|Republican Party (US)}}{{aye}} '''[[Tom Sell]]''' (Republican)
+*{{Party stripe|Democratic Party (US)}}Kyle Rable (Democratic)
+{{endplainlist}}
+|-
+!{{ushr|TX|20|X}}
+|{{shading PVI|D|16}}
+|{{sortname|Joaquin|Castro}}
+|style="color:black;background-color:#B0CEFF" |Democratic
+|[[2012 United States House of Representatives elections in Texas|2012]]
+|Incumbent re-elected.
+|nowrap |{{plainlist}}
+*{{Party stripe|Democratic Party (US)}}{{aye}} '''[[Joaquin Castro]]''' (Democratic)
+*{{Party stripe|Republican Party (US)}}Edgardo Rafael Baez (Republican)
+{{endplainlist}}
+|-
+!{{ushr|TX|21|X}}
+|{{shading PVI|R|10}}
+|{{sortname|Chip|Roy}}
+|style="background-color:#FFB6B6" |Republican
+|[[2018 United States House of Representatives elections in Texas|2018]]
+|{{Party shading/Republican/Hold}} |Incumbent retired to [[2026 Texas Attorney General election|run for Texas attorney general]].<ref name=ChipRoy/><br>Republican hold.
+|nowrap |{{plainlist}}
+*{{Party stripe|Republican Party (US)}}{{aye}} '''[[Mark Teixeira]]''' (Republican)
+*{{Party stripe|Democratic Party (US)}}Kristin Hook (Democratic)
+{{endplainlist}}
+|-
+!{{ushr|TX|22|X}}
+|{{shading PVI|R|11}}
+|{{sortname|Troy|Nehls}}
+|style="background-color:#FFB6B6" |Republican
+|[[2020 United States House of Representatives elections in Texas|2020]]
+|style="background:#DDDDDD" |Incumbent retired.<ref name="Nehls"/>
+|nowrap |{{plainlist}}
+*{{Party stripe|Democratic Party (US)}}Marquette Greene-Scott (Democratic)
+*{{Party stripe|Republican Party (US)}}Trever Nehls (Republican)
+{{endplainlist}}
+|-
+!{{ushr|TX|23|X}}
+|{{shading PVI|R|7}}
+|colspan=3 |Vacant
+|{{Party shading/Democratic}} | Rep. [[Tony Gonzales]] (R) resigned April 14, 2026.<br> '''Democratic gain.'''
+|nowrap |{{plainlist}}
+*{{Party stripe|Democratic Party (US)}}{{aye}} '''[[Katy Padilla Stout]]''' (Democratic)
+*{{Party stripe|Republican Party (US)}}[[Brandon Herrera]] (Republican)
+*{{Party stripe|Independent}}Ben Mendoza (Independent)
+{{endplainlist}}
+|-
+!{{ushr|TX|24|X}}
+|{{shading PVI|R|8}}
+|{{sortname|Beth|Van Duyne}}
+|style="background-color:#FFB6B6" |Republican
+|[[2020 United States House of Representatives elections in Texas|2020]]
+|Incumbent re-elected.
+|nowrap |{{plainlist}}
+*{{Party stripe|Republican Party (US)}}{{aye}} '''[[Beth Van Duyne]]''' (Republican)
+*{{Party stripe|Democratic Party (US)}}Kevin Burge (Democratic)
+{{endplainlist}}
+|-
+!rowspan=2 |{{ushr|TX|25|X}}
+|rowspan=2 {{shading PVI|R|11}}
+|{{sortname|Roger|Williams|dab=Texas politician}}
+|style="background-color:#FFB6B6" |Republican
+|[[2012 United States House of Representatives elections in Texas|2012]]
+|Incumbent re-elected.
+|rowspan=2 |{{plainlist}}
+*{{Party stripe|Republican Party (US)}}{{aye}} '''[[Roger Williams (Texas politician)|Roger Williams]]''' (Republican)
+*{{Party stripe|Democratic Party (US)}}Dione Sims (Democratic)
+{{endplainlist}}
+|-
+|{{sortname|Marc|Veasey}}<br>{{small|Redistricted from the {{ushr|TX|33|C}}}}
+|style="color:black;background-color:#B0CEFF" |Democratic
+|[[2012 United States House of Representatives elections in Texas|2012]]
+|{{Party shading/Loss}}|Incumbent retired.<ref name=VeaseyTX/><br />Democratic loss.
+|-
+!{{ushr|TX|26|X}}
+|{{shading PVI|R|11}}
+|{{sortname|Brandon|Gill}}
+|style="background-color:#FFB6B6" |Republican
+|[[2024 United States House of Representatives elections in Texas|2024]]
+|Incumbent re-elected.
+|nowrap |{{plainlist}}
+*{{Party stripe|Republican Party (US)}}{{aye}} '''[[Brandon Gill]]''' (Republican)
+*{{Party stripe|Democratic Party (US)}}Steven Shook (Democratic)
+*{{Party stripe|Libertarian Party (US)}}Phil Gray (Libertarian)
+{{endplainlist}}
+|-
+!{{ushr|TX|27|X}}
+|{{shading PVI|R|10}}
+|{{sortname|Michael|Cloud}}
+|style="background-color:#FFB6B6" |Republican
+|[[2018 Texas's 27th congressional district special election|2018 {{small|(special)}}]]
+|Incumbent renominated
+|nowrap |{{plainlist}}
+*{{Party stripe|Republican Party (US)}}[[Michael Cloud]] (Republican)
+*{{Party stripe|Democratic Party (US)}}Tanya Lloyd (Democratic)
+{{endplainlist}}
+|-
+!{{ushr|TX|28|X}}
+|{{shading PVI|R|3}}
+|{{sortname|Henry|Cuellar}}
+|style="color:black;background-color:#B0CEFF" |Democratic
+|[[2004 United States House of Representatives elections in Texas|2004]]
+|Incumbent re-elected.
+|nowrap |{{plainlist}}
+*{{Party stripe|Democratic Party (US)}}{{aye}} '''[[Henry Cuellar]]''' (Democratic)
+*{{Party stripe|Republican Party (US)}}Tano Tijerina (Republican)
+*{{Party stripe|Green Party (US)}}Marlón Durán (Green)
+{{endplainlist}}
+|-
+!{{ushr|TX|29|X}}
+|{{shading PVI|D|17}}
+|{{sortname|Sylvia|Garcia}}
+|style="color:black;background-color:#B0CEFF" |Democratic
+|[[2018 United States House of Representatives elections in Texas|2018]]
+|Incumbent re-elected.
+|nowrap |{{plainlist}}
+*{{Party stripe|Democratic Party (US)}}{{aye}} '''[[Sylvia Garcia]]''' (Democratic)
+*{{Party stripe|Republican Party (US)}}Martha Fierro (Republican)
+{{endplainlist}}
+|-
+!{{ushr|TX|30|X}}
+|{{shading PVI|D|25}}
+|colspan=3 |None {{small|(new seat)}}
+|{{Party shading/Democratic/Gain}} |New member elected.<br>'''Democratic gain.'''
+|nowrap |{{plainlist}}
+*{{Party stripe|Democratic Party (US)}}{{aye}} '''[[Frederick Haynes III]]''' (Democratic)
+*{{Party stripe|Republican Party (US)}}Everett Jackson (Republican)
+{{endplainlist}}
+|-
+!{{ushr|TX|31|X}}
+|{{shading PVI|R|11}}
+|{{sortname|John|Carter|dab=Texas politician}}
+|style="background-color:#FFB6B6" |Republican
+|[[2002 United States House of Representatives elections in Texas|2002]]
+|Incumbent re-elected.
+|nowrap |{{plainlist}}
+*{{Party stripe|Republican Party (US)}}{{aye}} '''[[John Carter (Texas politician)|John Carter]]''' (Republican)
+*{{Party stripe|Democratic Party (US)}}Justin Early (Democratic)
+*{{Party stripe|Green Party (US)}}Greg Stoker (Green)
+{{endplainlist}}
+|-
+!{{ushr|TX|32|X}}
+|{{shading PVI|R|8}}
+|colspan=3 |None {{small|(new seat)}}
+|New representative to be elected
+|nowrap |{{plainlist}}
+*{{Party stripe|Democratic Party (US)}}Dan Barrios (Democratic)
+*{{Party stripe|Republican Party (US)}}Jace Yarbrough (Republican)
+{{endplainlist}}
+|-
+!rowspan=2 |{{ushr|TX|33|X}}
+|rowspan=2 {{shading PVI|D|18}}
+|{{sortname|Jasmine|Crockett}}<br>{{small|Redistricted from the {{ushr|TX|30|C}}}}
+|style="color:black;background-color:#B0CEFF" |Democratic
+|[[2022 United States House of Representatives elections in Texas|2022]]
+|{{Party shading/Democratic/Hold}}|Incumbent retired to [[2026 United States Senate election in Texas|run for U.S. Senate]].<ref name=CrockettTX/><br />Democratic hold.
+|rowspan=2 |{{plainlist}}
+*{{Party stripe|Democratic Party (US)}}{{aye}} '''[[Colin Allred]]''' (Democratic)
+*{{Party stripe|Republican Party (US)}}Patrick Gillespie (Republican)
+{{endplainlist}}
+|-
+|{{sortname|Julie|Johnson|dab=politician}}<br>{{small|Redistricted from the {{ushr|TX|32|C}}}}
+|style="color:black;background-color:#B0CEFF" |Democratic
+|[[2024 United States House of Representatives elections in Texas|2024]]
+|{{Party shading/Loss}} |Incumbent lost renomination.<ref name=TX332026>{{cite web |title=Former Rep. Colin Allred knocks off Rep. Julie Johnson in Texas House runoff|url=https://www.politico.com/news/2026/05/26/allred-wins-texas-house-runoff-00937465|website=[[Politico]]|access-date=May 26, 2026}}</ref><br>Democratic loss.
+|-
+!{{ushr|TX|34|X}}
+|{{shading PVI|R|3}}
+|{{sortname|Vicente|Gonzalez|dab=American politician}}
+|style="color:black;background-color:#B0CEFF" |Democratic
+|[[2016 United States House of Representatives elections in Texas|2016]]
+|Incumbent re-elected.
+|nowrap |{{plainlist}}
+*{{Party stripe|Democratic Party (US)}}{{aye}} '''[[Vicente Gonzalez (American politician)|Vicente Gonzalez]]''' (Democratic)
+*{{Party stripe|Republican Party (US)}}Eric Flores (Republican)
+*{{Party stripe|Green Party (US)}}Eddie Espinoza (Green)
+*{{Party stripe|Libertarian Party (US)}}Chris Royal (Libertarian)
+{{endplainlist}}
+|-
+!{{ushr|TX|35|X}}
+|{{shading PVI|R|4}}
+|colspan=3 |None {{small|(new seat)}}
+|{{Party shading/Democratic/Gain}} |New member elected.<br>'''Democratic gain.'''
+|nowrap |{{plainlist}}
+*{{Party stripe|Democratic Party (US)}}{{aye}} '''[[Johnny Garcia (politician)|Johnny Garcia]]''' (Democratic)
+*{{Party stripe|Republican Party (US)}}Carlos De La Cruz (Republican)
+{{endplainlist}}
+|-
+!{{ushr|TX|36|X}}
+|{{shading PVI|R|12}}
+|{{sortname|Brian|Babin}}
+|style="background-color:#FFB6B6" |Republican
+|[[2014 United States House of Representatives elections in Texas|2014]]
+|Incumbent re-elected.
+|nowrap |{{plainlist}}
+*{{Party stripe|Republican Party (US)}}{{aye}} '''[[Brian Babin]]''' (Republican)
+*{{Party stripe|Democratic Party (US)}}Rhonda Hart (Democratic)
+{{endplainlist}}
+|-
+!rowspan=2 |{{ushr|TX|37|X}}
+|rowspan=2 {{shading PVI|D|30}}
+|{{sortname|Lloyd|Doggett}}
+|style="color:black;background-color:#B0CEFF" |Democratic
+|[[1994 United States House of Representatives elections in Texas|1994]]
+|{{Party shading/Loss}}|Incumbent retired.<ref name=Doggett/><br />Democratic loss.
+|rowspan=2 |{{plainlist}}
+*{{Party stripe|Democratic Party (US)}}{{aye}} '''[[Greg Casar]]''' (Democratic)
+*{{Party stripe|Republican Party (US)}}Lauren Peña (Republican)
+{{endplainlist}}
+|-
+|{{sortname|Greg|Casar}}<br>{{small|Redistricted from the {{ushr|TX|35|C}}}}
+|style="color:black;background-color:#B0CEFF" |Democratic
+|[[2022 United States House of Representatives elections in Texas|2022]]
+|Incumbent re-elected.
+|-
+!{{ushr|TX|38|X}}
+|{{shading PVI|R|10}}
+|{{sortname|Wesley|Hunt}}
+|style="background-color:#FFB6B6" |Republican
+|[[2022 United States House of Representatives elections in Texas|2022]]
+|style="background:#DDDDDD" |Incumbent retired to [[2026 United States Senate election in Texas|run for U.S. Senate]]<ref name=WesleyHunt/>
+|{{plainlist}}
+*{{Party stripe|Republican Party (US)}}Jon Bonck (Republican)
+*{{Party stripe|Democratic Party (US)}}Melissa McDonough (Democratic)
+*{{Party stripe|Green Party (US)}}Alex McMenemy (Green)
+{{endplainlist}}
+|}

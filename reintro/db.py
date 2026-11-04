@@ -78,6 +78,15 @@ create virtual table if not exists bills_fts using fts5(
 -- stored bill text of the rows it does not show.
 create table if not exists bills_fts_rows (fts_rowid integer primary key, bill_rowid integer not null);
 create table if not exists loads (congress integer primary key, loaded_at text, bills integer, with_text integer);
+-- Each current member, and each former member elected again, in the next Congress
+-- (reintro/data/congress120.json, `sync_roster`): status returning, pending or outgoing. A
+-- person in bill_people who is not here is a former member.
+create table if not exists member_status (
+    bioguide_id text primary key, status text not null, detail text, name text, party text, party_group text,
+    next_chamber text, next_state text, next_seat text
+);
+create index if not exists member_status_status on member_status(status, bioguide_id);
+create table if not exists roster_meta (congress integer primary key, generated_at text, summary text, sources text);
 """
 
 TYPE_LABEL = {"hr": "H.R.", "s": "S.", "hres": "H.Res.", "sres": "S.Res.", "hjres": "H.J.Res.",
@@ -97,7 +106,56 @@ def connect(path: str | Path) -> sqlite3.Connection:
         _fill_fts_rows(con)
     except sqlite3.OperationalError:  # locked by a load, which fills it itself
         con.rollback()
+    try:
+        sync_roster(con)
+    except sqlite3.OperationalError:  # locked; the next connection syncs
+        con.rollback()
     return con
+
+
+def sync_roster(con: sqlite3.Connection, path: Path | None = None, force: bool = False) -> bool:
+    """Replace `member_status` from the roster file when its `generated_at` differs from the one
+    loaded. Returns whether it loaded."""
+    from . import roster
+    data = roster.load(path or roster.DATA_FILE)
+    if not data:
+        return False
+    row = con.execute("select generated_at from roster_meta where congress = ?", (data["congress"],)).fetchone()
+    if row and row[0] == data["generated_at"] and not force:
+        return False
+    con.execute("begin immediate")
+    con.execute("delete from member_status")
+    con.executemany("insert into member_status values (?,?,?,?,?,?,?,?,?)", [
+        (bid, m["status"], m.get("detail"), m.get("name"), m.get("party"), m.get("party_group"),
+         (m.get("next") or {}).get("chamber"), (m.get("next") or {}).get("state"), (m.get("next") or {}).get("seat"))
+        for bid, m in data["members"].items()])
+    con.execute("delete from roster_meta")
+    con.execute("insert into roster_meta values (?,?,?,?)", (data["congress"], data["generated_at"],
+                                                             json.dumps(data.get("summary")), json.dumps(data.get("sources"))))
+    con.commit()
+    return True
+
+
+def roster_info(con: sqlite3.Connection) -> dict | None:
+    """The loaded roster's Congress, `generated_at`, summary and sources, or None."""
+    r = con.execute("select * from roster_meta order by congress desc limit 1").fetchone()
+    if not r:
+        return None
+    return {"congress": r["congress"], "generated_at": r["generated_at"], "summary": json.loads(r["summary"] or "null"),
+            "sources": json.loads(r["sources"] or "null")}
+
+
+# Party filter values → SQL over a `party` column holding Congress.gov's letter (D, R, I, ID, L, …).
+PARTIES = {"democratic": "{c} = 'D'", "republican": "{c} = 'R'", "other": "{c} not in ('D', 'R')"}
+# Status in the next Congress → SQL over a bioguide id column. A person absent from member_status
+# is a former member; `not-returning` is outgoing and former together.
+MEMBER_STATUSES = {
+    "returning": "{c} in (select bioguide_id from member_status where status = 'returning')",
+    "pending": "{c} in (select bioguide_id from member_status where status = 'pending')",
+    "outgoing": "{c} in (select bioguide_id from member_status where status = 'outgoing')",
+    "former": "{c} not in (select bioguide_id from member_status)",
+    "not-returning": "{c} not in (select bioguide_id from member_status where status in ('returning', 'pending'))",
+}
 
 
 def _fill_fts_rows(con: sqlite3.Connection) -> None:
@@ -348,6 +406,8 @@ def search(con: sqlite3.Connection, *, q: str = "", congress: int | None = None,
            subject: str | None = None, sponsor: str | None = None, cosponsor: str | None = None,
            status: str | None = None, bill_type: str | None = None, introduced_from: str | None = None,
            introduced_to: str | None = None, reported: str | None = None, passed: str | None = None,
+           sponsor_party: str | None = None, cosponsor_party: str | None = None,
+           sponsor_status: str | None = None, cosponsor_status: str | None = None,
            sort: str | None = None, limit: int = 25, offset: int = 0) -> SearchResult:
     """Bills matching the filters; with no query and no filters, every bill. With a text query
     each row carries `snippet`: the passage of the bill text that matched, its matched words
@@ -396,6 +456,16 @@ def search(con: sqlite3.Connection, *, q: str = "", congress: int | None = None,
     elif passed == "both":
         where.append("b.bill_id in (select bill_id from bill_progress where kind = 'passed' group by bill_id "
                      "having count(distinct chamber) = 2)")
+    if sponsor_party in PARTIES:
+        where.append(PARTIES[sponsor_party].format(c="b.sponsor_party"))
+    if cosponsor_party in PARTIES:
+        where.append("b.bill_id in (select bill_id from bill_people where role = 'cosponsor' and "
+                     + PARTIES[cosponsor_party].format(c="party") + ")")
+    if sponsor_status in MEMBER_STATUSES:
+        where.append("b.sponsor_id is not null and " + MEMBER_STATUSES[sponsor_status].format(c="b.sponsor_id"))
+    if cosponsor_status in MEMBER_STATUSES:
+        where.append("b.bill_id in (select bill_id from bill_people where role = 'cosponsor' and bioguide_id is not null "
+                     "and " + MEMBER_STATUSES[cosponsor_status].format(c="bioguide_id") + ")")
     if status == "enacted":
         where.append("b.enacted = 1")
     elif status == "not-enacted":
@@ -460,7 +530,10 @@ def get_bill(con, bill_id: str):
 
 
 def people(con, bill_id: str):
-    return con.execute("select * from bill_people where bill_id = ? order by role desc, original desc, name", (bill_id,)).fetchall()
+    """The sponsor and cosponsors, each with `next_status` and `next_detail` (None for a former member)."""
+    return con.execute("select p.*, s.status next_status, s.detail next_detail, s.next_chamber, s.next_state "
+                       "from bill_people p left join member_status s on s.bioguide_id = p.bioguide_id "
+                       "where p.bill_id = ? order by p.role desc, p.original desc, p.name", (bill_id,)).fetchall()
 
 
 def progress(con, bill_id: str):
@@ -532,6 +605,9 @@ def members(con) -> list[dict]:
         m["chambers"][key] = "house" if r["ch"] == "h" else "senate"
         c = m["counts"].setdefault(key, {"sponsor": 0, "cosponsor": 0})
         c[r["role"]] = c.get(r["role"], 0) + r["n"]
+    status = {r[0]: r[1] for r in con.execute("select bioguide_id, status from member_status")}
+    for m in out.values():
+        m["next"] = status.get(m["id"], "former")
     return sorted(out.values(), key=lambda m: (m["name"] or "").lower())
 
 

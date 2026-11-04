@@ -24,6 +24,19 @@
   <div class="field combo"><label for="{{ role }}">{{ label }}</label><input id="{{ role }}" name="{{ role }}" type="search" value="{{ params[role] or '' }}"
     data-member-combo="{{ role }}" data-label="{{ labels[role] or '' }}" placeholder="Type a name" autocomplete="off" spellcheck="false"></div>
   {% endfor %}
+  {% for role, label in [('sponsor', 'Sponsor’s party'), ('cosponsor', 'A cosponsor’s party')] %}
+  <div class="field"><label for="{{ role }}_party">{{ label }}</label>
+    <select id="{{ role }}_party" name="{{ role }}_party"><option value="">Any</option>
+      {% for v, l in [('democratic', 'Democratic'), ('republican', 'Republican'), ('other', 'Independent or other')] %}
+      <option value="{{ v }}" {% if params[role ~ '_party'] == v %}selected{% endif %}>{{ l }}</option>{% endfor %}</select></div>
+  {% endfor %}
+  {% for role, label in [('sponsor', 'Sponsor in the 120th Congress'), ('cosponsor', 'A cosponsor in the 120th Congress')] %}
+  <div class="field"><label for="{{ role }}_status">{{ label }}</label>
+    <select id="{{ role }}_status" name="{{ role }}_status"><option value="">Any</option>
+      {% for v, l in [('returning', 'Returning'), ('pending', 'Race not yet called'), ('not-returning', 'Not returning'),
+                      ('outgoing', 'Outgoing: serving now, not returning'), ('former', 'Already left Congress')] %}
+      <option value="{{ v }}" {% if params[role ~ '_status'] == v %}selected{% endif %}>{{ l }}</option>{% endfor %}</select></div>
+  {% endfor %}
   <div class="field"><label for="status">Status</label>
     <select id="status" name="status"><option value="">Any</option>
       <option value="not-enacted" {% if params.status == 'not-enacted' %}selected{% endif %}>Not law, no related law</option>
@@ -50,6 +63,8 @@
       {% endfor %}
     </select></div>
   <div class="field"><button type="submit" data-busy-label="Searching…">Search</button></div>
+  {% if roster %}<p class="note advanced__note">The 120th Congress fields read the <a href="/congress/120">roster of the 120th Congress</a>
+    as of {{ roster.generated_at[:10] }}: {{ roster.summary.seats_pending.house + roster.summary.seats_pending.senate }} races not yet called.</p>{% endif %}
   </div>
   </details>
 </form>

@@ -300,3 +300,23 @@ def test_a_pregenerated_pdf_is_served_past_the_limit(client, monkeypatch):
     monkeypatch.setattr(appmod, "PDF_MAX_SOURCE", 10)
     assert "Download PDF" in client.get("/bills/hr206-119").text
     assert client.get("/bills/hr206-119/draft.pdf").content == first
+
+
+def test_party_and_next_congress_filters_on_the_site(client):
+    page = client.get("/search", params={"sponsor_party": "democratic", "sponsor_status": "outgoing", "congress": 119}).text
+    assert '<option value="democratic" selected>' in page and '<option value="outgoing" selected>' in page
+    assert "H.R. 206" in page and "S. 231" not in page  # Velázquez retires; Welch is not up until 2028
+    assert 'class="next next--outgoing">Outgoing</span>' in page
+    assert client.get("/search", params={"sponsor_party": "bogus"}).status_code == 200
+    bill = client.get("/bills/s231-119", params={"check": 0}).text
+    assert 'class="next next--returning"' in bill
+    r = client.get("/api/v1/search", params={"cosponsor_party": "other", "congress": 119}).json()
+    assert [b["bill_id"] for b in r["results"]] == ["s231-119"]
+
+
+def test_congress_120_page(client):
+    page = client.get("/congress/120")
+    assert page.status_code == 200 and "Races not yet called" in page.text and "Velázquez" in page.text
+    data = client.get("/api/v1/congress/120").json()
+    assert data["congress"] == 120 and data["members"]["V000081"]["status"] == "outgoing"
+    assert "120th Congress" in client.get("/").text

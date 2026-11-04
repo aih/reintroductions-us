@@ -1,0 +1,643 @@
+[
+{
+"id": {
+"bioguide": "S000033",
+"thomas": "01010",
+"lis": "S313",
+"govtrack": 400357,
+"opensecrets": "N00000528",
+"votesmart": 27110,
+"fec": [
+"H8VT01016",
+"S4VT00033"
+],
+"cspan": 994,
+"wikipedia": "Bernie Sanders",
+"ballotpedia": "Bernie Sanders",
+"maplight": 450,
+"icpsr": 29147,
+"house_history": 21173,
+"wikidata": "Q359442",
+"google_entity_id": "kg:/m/01_gbv",
+"pictorial": 13382
+},
+"name": {
+"first": "Bernard",
+"last": "Sanders",
+"nickname": "Bernie",
+"official_full": "Bernard Sanders"
+},
+"bio": {
+"birthday": "1941-09-08",
+"gender": "M"
+},
+"leadership_roles": [
+{
+"title": "Senate Democratic Outreach Chair",
+"chamber": "senate",
+"start": "2023-01-03",
+"end": "2025-01-03"
+},
+{
+"title": "Senate Democratic Outreach Chair",
+"chamber": "senate",
+"start": "2025-01-03"
+}
+],
+"terms": [
+{
+"type": "sen",
+"start": "2025-01-03",
+"end": "2031-01-03",
+"state": "VT",
+"class": 1,
+"state_rank": "senior",
+"party": "Independent",
+"caucus": "Democrat",
+"url": "https://www.sanders.senate.gov",
+"rss_url": "http://www.sanders.senate.gov/rss/",
+"contact_form": "https://www.sanders.senate.gov/contact/",
+"address": "332 Dirksen Senate Office Building Washington DC 20510",
+"office": "332 Dirksen Senate Office Building",
+"phone": "202-224-5141"
+}
+]
+},
+{
+"id": {
+"bioguide": "C001056",
+"thomas": "01692",
+"lis": "S287",
+"govtrack": 300027,
+"opensecrets": "N00024852",
+"votesmart": 15375,
+"fec": [
+"S2TX00106"
+],
+"cspan": 93131,
+"wikipedia": "John Cornyn",
+"ballotpedia": "John Cornyn",
+"maplight": 553,
+"icpsr": 40305,
+"wikidata": "Q719568",
+"google_entity_id": "kg:/m/01xcqs",
+"pictorial": 13403
+},
+"name": {
+"first": "John",
+"last": "Cornyn",
+"official_full": "John Cornyn"
+},
+"bio": {
+"birthday": "1952-02-02",
+"gender": "M"
+},
+"leadership_roles": [
+{
+"title": "Senate Minority Whip",
+"chamber": "senate",
+"start": "2013-01-03",
+"end": "2015-01-03"
+},
+{
+"title": "Senate Majority Whip",
+"chamber": "senate",
+"start": "2015-01-03",
+"end": "2017-01-03"
+},
+{
+"title": "Senate Majority Whip",
+"chamber": "senate",
+"start": "2017-01-03",
+"end": "2019-01-03"
+}
+],
+"terms": [
+{
+"type": "sen",
+"start": "2021-01-03",
+"end": "2027-01-03",
+"state": "TX",
+"class": 2,
+"state_rank": "senior",
+"party": "Republican",
+"url": "https://www.cornyn.senate.gov",
+"rss_url": "http://www.cornyn.senate.gov/public/?a=rss.feed",
+"contact_form": "https://www.cornyn.senate.gov/contact",
+"address": "517 Hart Senate Office Building Washington DC 20510",
+"office": "517 Hart Senate Office Building",
+"phone": "202-224-2934"
+}
+]
+},
+{
+"id": {
+"bioguide": "M001157",
+"thomas": "01804",
+"govtrack": 400654,
+"opensecrets": "N00026460",
+"votesmart": 49210,
+"fec": [
+"H4TX10093"
+],
+"cspan": 1013056,
+"wikipedia": "Michael McCaul",
+"house_history": 18786,
+"ballotpedia": "Michael McCaul",
+"maplight": 659,
+"icpsr": 20530,
+"wikidata": "Q539509",
+"google_entity_id": "kg:/m/0492cz",
+"pictorial": 13267
+},
+"name": {
+"first": "Michael",
+"middle": "T.",
+"last": "McCaul",
+"official_full": "Michael T. McCaul"
+},
+"bio": {
+"birthday": "1962-01-14",
+"gender": "M"
+},
+"terms": [
+{
+"type": "rep",
+"start": "2025-01-03",
+"end": "2027-01-03",
+"state": "TX",
+"district": 10,
+"party": "Republican",
+"url": "https://mccaul.house.gov",
+"address": "2300 Rayburn House Office Building Washington DC 20515-4310",
+"office": "2300 Rayburn House Office Building",
+"phone": "202-225-2401"
+}
+]
+},
+{
+"id": {
+"bioguide": "V000081",
+"thomas": "01184",
+"govtrack": 400416,
+"opensecrets": "N00001102",
+"votesmart": 26975,
+"fec": [
+"H2NY00010"
+],
+"cspan": 26160,
+"wikipedia": "Nydia Velázquez",
+"house_history": 20972,
+"maplight": 501,
+"icpsr": 29378,
+"wikidata": "Q434890",
+"google_entity_id": "kg:/m/03sjbt",
+"ballotpedia": "Nydia Velazquez",
+"pictorial": 13175
+},
+"name": {
+"first": "Nydia",
+"middle": "M.",
+"last": "Velázquez",
+"official_full": "Nydia M. Velázquez"
+},
+"bio": {
+"birthday": "1953-03-28",
+"gender": "F"
+},
+"terms": [
+{
+"type": "rep",
+"start": "2025-01-03",
+"end": "2027-01-03",
+"state": "NY",
+"district": 7,
+"party": "Democrat",
+"url": "https://velazquez.house.gov",
+"address": "2302 Rayburn House Office Building Washington DC 20515-3207",
+"office": "2302 Rayburn House Office Building",
+"phone": "202-225-2361"
+}
+]
+},
+{
+"id": {
+"bioguide": "W000800",
+"thomas": "01879",
+"lis": "S422",
+"govtrack": 412239,
+"opensecrets": "N00000515",
+"votesmart": 51272,
+"fec": [
+"H6VT00160",
+"H8VT00034",
+"S2VT00235"
+],
+"cspan": 1019990,
+"wikipedia": "Peter Welch",
+"ballotpedia": "Peter Welch",
+"maplight": 722,
+"icpsr": 20750,
+"house_history": 24183,
+"wikidata": "Q1112656",
+"google_entity_id": "kg:/m/0db4gl",
+"pictorial": 13355
+},
+"name": {
+"first": "Peter",
+"last": "Welch",
+"official_full": "Peter Welch"
+},
+"bio": {
+"gender": "M",
+"birthday": "1947-05-02"
+},
+"terms": [
+{
+"type": "sen",
+"start": "2023-01-03",
+"end": "2029-01-03",
+"state": "VT",
+"class": 3,
+"state_rank": "junior",
+"party": "Democrat",
+"url": "https://www.welch.senate.gov",
+"contact_form": "https://www.welch.senate.gov/email-peter/",
+"address": "115 Russell Senate Office Building Washington DC 20510",
+"office": "115 Russell Senate Office Building",
+"phone": "202-224-4242"
+}
+]
+},
+{
+"id": {
+"bioguide": "S001198",
+"thomas": "02290",
+"fec": [
+"S4AK00214"
+],
+"govtrack": 412665,
+"opensecrets": "N00035774",
+"lis": "S383",
+"maplight": 2121,
+"wikidata": "Q5218668",
+"wikipedia": "Dan Sullivan (U.S. senator)",
+"google_entity_id": "kg:/m/07s4r4q",
+"votesmart": 114964,
+"cspan": 1023262,
+"icpsr": 41500,
+"ballotpedia": "Daniel S. Sullivan",
+"pictorial": 13368
+},
+"name": {
+"first": "Dan",
+"last": "Sullivan",
+"official_full": "Dan Sullivan"
+},
+"bio": {
+"gender": "M",
+"birthday": "1964-11-13"
+},
+"terms": [
+{
+"type": "sen",
+"start": "2021-01-03",
+"end": "2027-01-03",
+"state": "AK",
+"class": 2,
+"state_rank": "junior",
+"party": "Republican",
+"url": "https://www.sullivan.senate.gov",
+"contact_form": "https://www.sullivan.senate.gov/contact/email",
+"address": "706 Hart Senate Office Building Washington DC 20510",
+"office": "706 Hart Senate Office Building",
+"phone": "202-224-3004"
+}
+]
+},
+{
+"id": {
+"bioguide": "E000297",
+"govtrack": 412718,
+"wikipedia": "Adriano Espaillat",
+"wikidata": "Q4685569",
+"google_entity_id": "kg:/m/06nfs2",
+"votesmart": 14379,
+"fec": [
+"H2NY13096"
+],
+"opensecrets": "N00034549",
+"maplight": 2230,
+"cspan": 68413,
+"icpsr": 21715,
+"ballotpedia": "Adriano Espaillat",
+"pictorial": 13181
+},
+"name": {
+"first": "Adriano",
+"last": "Espaillat",
+"official_full": "Adriano Espaillat"
+},
+"bio": {
+"gender": "M",
+"birthday": "1954-09-27"
+},
+"terms": [
+{
+"type": "rep",
+"start": "2025-01-03",
+"end": "2027-01-03",
+"state": "NY",
+"district": 13,
+"party": "Democrat",
+"url": "https://espaillat.house.gov",
+"address": "2332 Rayburn House Office Building Washington DC 20515-3213",
+"office": "2332 Rayburn House Office Building",
+"phone": "202-225-4365"
+}
+]
+},
+{
+"id": {
+"bioguide": "H001079",
+"lis": "S395",
+"govtrack": 412743,
+"votesmart": 20784,
+"fec": [
+"S8MS00261"
+],
+"cspan": 113208,
+"wikipedia": "Cindy Hyde-Smith",
+"ballotpedia": "Cindy Hyde-Smith",
+"wikidata": "Q5120540",
+"icpsr": 41707,
+"google_entity_id": "kg:/m/03wc2px",
+"opensecrets": "N00043298",
+"pictorial": 13424
+},
+"name": {
+"first": "Cindy",
+"last": "Hyde-Smith",
+"official_full": "Cindy Hyde-Smith"
+},
+"bio": {
+"gender": "F",
+"birthday": "1959-05-10"
+},
+"terms": [
+{
+"type": "sen",
+"start": "2021-01-03",
+"end": "2027-01-03",
+"state": "MS",
+"class": 2,
+"state_rank": "junior",
+"party": "Republican",
+"url": "https://www.hydesmith.senate.gov",
+"contact_form": "https://www.hydesmith.senate.gov/contact-senator",
+"address": "528 Hart Senate Office Building Washington DC 20510",
+"office": "528 Hart Senate Office Building",
+"phone": "202-224-5054"
+}
+]
+},
+{
+"id": {
+"bioguide": "C001120",
+"fec": [
+"H8TX02166"
+],
+"govtrack": 412820,
+"wikipedia": "Dan Crenshaw",
+"wikidata": "Q58301995",
+"opensecrets": "N00042224",
+"google_entity_id": "kg:/g/11fk40sjyz",
+"votesmart": 177270,
+"icpsr": 21911,
+"ballotpedia": "Daniel Crenshaw",
+"pictorial": 13259
+},
+"name": {
+"first": "Dan",
+"last": "Crenshaw",
+"official_full": "Dan Crenshaw"
+},
+"bio": {
+"gender": "M",
+"birthday": "1984-03-14"
+},
+"terms": [
+{
+"type": "rep",
+"start": "2025-01-03",
+"end": "2027-01-03",
+"state": "TX",
+"district": 2,
+"party": "Republican",
+"url": "https://crenshaw.house.gov",
+"address": "248 Cannon House Office Building Washington DC 20515-4302",
+"office": "248 Cannon House Office Building",
+"phone": "202-225-6565"
+}
+]
+},
+{
+"id": {
+"bioguide": "B000825",
+"fec": [
+"H0CO03165"
+],
+"opensecrets": "N00045974",
+"govtrack": 456805,
+"wikidata": "Q96761544",
+"wikipedia": "Lauren Boebert",
+"google_entity_id": "kg:/g/11j2v06x6p",
+"ballotpedia": "Lauren Boebert",
+"pictorial": 12969,
+"votesmart": 191290
+},
+"name": {
+"first": "Lauren",
+"middle": "Opal",
+"last": "Boebert",
+"official_full": "Lauren Boebert"
+},
+"bio": {
+"gender": "F",
+"birthday": "1986-12-15"
+},
+"terms": [
+{
+"type": "rep",
+"start": "2025-01-03",
+"end": "2027-01-03",
+"state": "CO",
+"district": 4,
+"party": "Republican",
+"url": "https://boebert.house.gov",
+"address": "1713 Longworth House Office Building Washington DC 20515-0604",
+"office": "1713 Longworth House Office Building",
+"phone": "202-225-4761"
+}
+]
+},
+{
+"id": {
+"bioguide": "N000026",
+"fec": [
+"H0TX22302"
+],
+"opensecrets": "N00046067",
+"govtrack": 456848,
+"wikidata": "Q96741441",
+"wikipedia": "Troy Nehls",
+"google_entity_id": "kg:/g/11c580_xf2",
+"votesmart": 188334,
+"ballotpedia": "Troy Nehls",
+"pictorial": 13279
+},
+"name": {
+"first": "Troy",
+"middle": "E.",
+"last": "Nehls",
+"official_full": "Troy E. Nehls"
+},
+"bio": {
+"gender": "M",
+"birthday": "1968-04-07"
+},
+"terms": [
+{
+"type": "rep",
+"start": "2025-01-03",
+"end": "2027-01-03",
+"state": "TX",
+"district": 22,
+"party": "Republican",
+"url": "https://nehls.house.gov",
+"address": "1104 Longworth House Office Building Washington DC 20515-4322",
+"office": "1104 Longworth House Office Building",
+"phone": "202-225-5951"
+}
+]
+},
+{
+"id": {
+"bioguide": "G000599",
+"fec": [
+"H2NY10308"
+],
+"govtrack": 456923,
+"opensecrets": "N00051424",
+"wikidata": "Q74849175",
+"wikipedia": "Dan Goldman",
+"google_entity_id": "kg:/g/11j0y32d4c",
+"votesmart": 208627,
+"pictorial": 13178,
+"ballotpedia": "Daniel Goldman"
+},
+"name": {
+"first": "Dan",
+"middle": "Sachs",
+"last": "Goldman",
+"official_full": "Daniel S. Goldman"
+},
+"bio": {
+"gender": "M",
+"birthday": "1976-02-26"
+},
+"terms": [
+{
+"type": "rep",
+"start": "2025-01-03",
+"end": "2027-01-03",
+"state": "NY",
+"district": 10,
+"party": "Democrat",
+"url": "https://goldman.house.gov",
+"address": "245 Cannon House Office Building Washington DC 20515-3210",
+"office": "245 Cannon House Office Building",
+"phone": "202-225-7944"
+}
+]
+},
+{
+"id": {
+"bioguide": "H001100",
+"fec": [
+"H4CO03357"
+],
+"govtrack": 456982,
+"opensecrets": "N00053367",
+"wikipedia": "Jeff Hurd",
+"wikidata": "Q131101500",
+"votesmart": 217034,
+"ballotpedia": "Jeff Hurd"
+},
+"name": {
+"first": "Jeff",
+"middle": "Stephen",
+"last": "Hurd",
+"official_full": "Jeff Hurd"
+},
+"bio": {
+"gender": "M",
+"birthday": "1979-08-15"
+},
+"terms": [
+{
+"type": "rep",
+"start": "2025-01-03",
+"end": "2027-01-03",
+"state": "CO",
+"district": 3,
+"party": "Republican",
+"address": "1641 Longworth House Office Building Washington DC 20515-0603",
+"office": "1641 Longworth House Office Building",
+"phone": "202-225-4676",
+"url": "https://hurd.house.gov"
+}
+]
+},
+{
+"id": {
+"bioguide": "H001104",
+"lis": "S438",
+"govtrack": 457032,
+"fec": [
+"S6OH00304"
+],
+"wikipedia": "Jon Husted",
+"wikidata": "Q6270269",
+"votesmart": 45796,
+"ballotpedia": "Jon Husted"
+},
+"name": {
+"first": "Jon",
+"middle": "Allen",
+"last": "Husted",
+"official_full": "Jon Husted"
+},
+"bio": {
+"gender": "M",
+"birthday": "1967-08-25"
+},
+"terms": [
+{
+"type": "sen",
+"start": "2025-01-21",
+"end": "2026-11-03",
+"how": "appointment",
+"end-type": "special-election",
+"state": "OH",
+"class": 3,
+"party": "Republican",
+"state_rank": "junior",
+"url": "https://www.husted.senate.gov",
+"address": "304 Russell Senate Office Building Washington DC 20510",
+"office": "304 Russell Senate Office Building",
+"phone": "202-224-3353"
+}
+]
+}
+]

@@ -19,7 +19,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from markupsafe import Markup
 
-from .. import db, generate, render
+from .. import db, generate, render, roster
 from ..pregen import pdf_name
 from ..linkedleg import default_clients
 from ..reintroduce import ordinal
@@ -106,6 +106,12 @@ def bill_label(row) -> str:
 
 
 templates.env.globals["bill_label"] = bill_label
+NEXT_LABELS = {"returning": "Returning", "pending": "Race not called", "outgoing": "Outgoing",
+               "former": "Left Congress"}
+templates.env.globals["seat"] = lambda x: "" if not x else (
+    f"Senate, {x['state']}" if x.get("chamber") == "senate"
+    else f"House, {x['state']}-{'at large' if x.get('seat') == 'AL' else x.get('seat')}")
+templates.env.globals["next_label"] = lambda s: NEXT_LABELS.get(s or "former", s)
 templates.env.filters["loads"] = lambda s: json.loads(s) if s else None
 
 
@@ -180,7 +186,7 @@ def home(request: Request):
     return templates.TemplateResponse(request, "home.html", {
         "counts": counts, "latest": latest_congress(), "subjects": subjects, "congresses": db.congresses(c),
         "types": db.TYPE_LABEL, "committees": db.committee_list(c), "params": {}, "labels": {},
-        "advanced_open": False})
+        "advanced_open": False, "roster": db.roster_info(c)})
 
 
 @app.get("/search", response_class=HTMLResponse)
@@ -188,28 +194,46 @@ def search_page(request: Request, q: str = "", congress: str | None = None, cham
                 subject: str | None = None, sponsor: str | None = None, cosponsor: str | None = None,
                 status: str | None = None, type: str | None = None, introduced_from: str | None = Query(None, alias="from"),
                 introduced_to: str | None = Query(None, alias="to"), reported: str | None = None,
-                passed: str | None = None, sort: str | None = None, page: int = Query(1, ge=1)):
+                passed: str | None = None, sponsor_party: str | None = None, cosponsor_party: str | None = None,
+                sponsor_status: str | None = None, cosponsor_status: str | None = None,
+                sort: str | None = None, page: int = Query(1, ge=1)):
     c = con()
     congress = int(congress) if congress and congress.isdigit() else None
     sort = sort if sort in db.SORTS and sort != "relevance" else None
     res = db.search(c, q=q, congress=congress, chamber=chamber, subject=subject or None, sponsor=sponsor or None,
                     cosponsor=cosponsor or None, status=status or None, bill_type=type or None,
                     introduced_from=_date(introduced_from), introduced_to=_date(introduced_to),
-                    reported=reported or None, passed=passed or None, sort=sort, limit=PAGE, offset=(page - 1) * PAGE)
+                    reported=reported or None, passed=passed or None, sponsor_party=sponsor_party or None,
+                    cosponsor_party=cosponsor_party or None, sponsor_status=sponsor_status or None,
+                    cosponsor_status=cosponsor_status or None, sort=sort, limit=PAGE, offset=(page - 1) * PAGE)
     pages = max(1, (res.total + PAGE - 1) // PAGE)
     params = {k: v for k, v in {"q": q, "congress": congress, "chamber": chamber, "subject": subject, "sponsor": sponsor,
                                 "cosponsor": cosponsor, "status": status, "type": type, "from": _date(introduced_from),
                                 "to": _date(introduced_to), "reported": reported, "passed": passed,
+                                "sponsor_party": _pick(sponsor_party, db.PARTIES),
+                                "cosponsor_party": _pick(cosponsor_party, db.PARTIES),
+                                "sponsor_status": _pick(sponsor_status, db.MEMBER_STATUSES),
+                                "cosponsor_status": _pick(cosponsor_status, db.MEMBER_STATUSES),
                                 "sort": sort}.items() if v}
     text_query = bool(q.strip()) and db.parse_number(q) is None
     labels = {role: (db.member_name(c, v) if re.fullmatch(r"[A-Z]\d{6}", v) else None) or v
               for role, v in (("sponsor", sponsor), ("cosponsor", cosponsor)) if v}
+    sponsors = {}
+    if res.rows:
+        ids = [r["sponsor_id"] for r in res.rows if r["sponsor_id"]]
+        marks = ",".join("?" * len(ids))
+        sponsors = {r["bioguide_id"]: r for r in c.execute(
+            f"select * from member_status where bioguide_id in ({marks})", ids)} if ids else {}
     return templates.TemplateResponse(request, "search.html", {
-        "labels": labels, "advanced_open": True,
+        "labels": labels, "advanced_open": True, "sponsors": sponsors, "roster": db.roster_info(c),
         "res": res, "params": params, "page": page, "pages": pages, "congresses": db.congresses(c),
         "subjects": db.subject_list(c, congress), "committees": db.committee_list(c, congress),
         "types": db.TYPE_LABEL, "terms": db.query_terms(q) if text_query else [],
         "text_query": text_query, "first": (page - 1) * PAGE + 1})
+
+
+def _pick(v: str | None, allowed) -> str | None:
+    return v if v in allowed else None
 
 
 def _date(s: str | None) -> str | None:
@@ -237,7 +261,7 @@ def bill_page(request: Request, bill_id: str, check: int = 1):
         "related_enacted": json.loads(row["related_enacted"]) if row["related_enacted"] else [],
         "enacted_as": json.loads(row["enacted_as"]) if row["enacted_as"] else None,
         "draft": draft, "draft_html": render.render(draft.tree) if draft else None, "error": error,
-        "later": later, "check": check, "to_congress": row["congress"] + 1,
+        "later": later, "check": check, "to_congress": row["congress"] + 1, "has_roster": db.roster_info(c) is not None,
         "pdf_allowed": pdf_allowed(row) or bool(draft and check and _pdf_path(draft, True).exists()),
     }
     return templates.TemplateResponse(request, "bill.html", ctx)
@@ -406,6 +430,50 @@ def about(request: Request):
     return templates.TemplateResponse(request, "doc.html", {"title": title, "body": body})
 
 
+@lru_cache(maxsize=2)
+def _roster_file(mtime: float) -> dict | None:
+    return roster.load()
+
+
+def roster_data() -> dict | None:
+    try:
+        return _roster_file(roster.DATA_FILE.stat().st_mtime)
+    except OSError:
+        return None
+
+
+@app.get("/congress/120", response_class=HTMLResponse)
+def congress_120(request: Request):
+    """Who sits in the 120th Congress: returning members, races not yet called, outgoing members
+    and members-elect, from reintro/data/congress120.json."""
+    data = roster_data()
+    if not data:
+        raise HTTPException(404, "the roster of the 120th Congress is not loaded")
+    members = data["members"]
+    seats = data["seats"]
+    by = lambda st: sorted(([bid, m] for bid, m in members.items() if m["status"] == st),  # noqa: E731
+                           key=lambda x: ((x[1].get("now") or {}).get("state") or "", x[1]["name"]))
+    def running(st):
+        return [(bid, m) for bid, m in by("pending") if (r := m.get("race")) and r["chamber"] == st["chamber"]
+                and r["state"] == st["state"] and (st["chamber"] == "senate" or r["seat"] == st["seat"])]
+    return templates.TemplateResponse(request, "congress120.html", {
+        "data": data, "pending_seats": [(s, running(s)) for s in seats if not s["called"]],
+        "new_members": [s for s in seats if s["called"] and not s.get("bioguide")],
+        "outgoing": by("outgoing"), "pending": by("pending"),
+        "changed": [x for x in by("returning") if x[1].get("detail")]})
+
+
+@app.get("/api/v1/congress/120")
+def api_congress_120():
+    """The roster of the 120th Congress: `seats` (each seat's member-elect, `called` false while the
+    race is not called) and `members` (bioguide id → `status` returning, pending or outgoing, with
+    `detail`, party, and the seat now and next). `sources` names the Wikipedia revisions read."""
+    data = roster_data()
+    if not data:
+        raise HTTPException(404)
+    return data
+
+
 # ---------------------------------------------------------------- JSON API
 
 
@@ -426,13 +494,24 @@ def api_search(q: str = "", congress: int | None = None, chamber: str | None = N
                reported: str | None = Query(None, description="a committee id (HSGO, SSFR, …) that reported the bill "
                                                                "favorably, or `any`"),
                passed: str | None = Query(None, description="house, senate, either or both"),
+               sponsor_party: str | None = Query(None, description="democratic, republican or other "
+                                                                    "(independents and every other party)"),
+               cosponsor_party: str | None = Query(None, description="bills with at least one cosponsor of this "
+                                                                      "party: democratic, republican or other"),
+               sponsor_status: str | None = Query(None, description="the sponsor in the 120th Congress: returning, "
+                                                                     "pending (race not called), outgoing, former "
+                                                                     "(left before), or not-returning (outgoing "
+                                                                     "or former)"),
+               cosponsor_status: str | None = Query(None, description="bills with at least one cosponsor of this "
+                                                                       "status (values as sponsor_status)"),
                sort: str | None = Query(None, description="relevance, number, number-desc, introduced, "
                                                           "introduced-desc, action-desc"),
                limit: int = Query(25, le=100), offset: int = 0):
     res = db.search(con(), q=q, congress=congress, chamber=chamber, subject=subject, sponsor=sponsor,
                     cosponsor=cosponsor, status=status, bill_type=type, introduced_from=_date(introduced_from),
                     introduced_to=_date(introduced_to), reported=reported, passed=passed,
-                    sort=sort if sort in db.SORTS else None,
+                    sponsor_party=sponsor_party, cosponsor_party=cosponsor_party, sponsor_status=sponsor_status,
+                    cosponsor_status=cosponsor_status, sort=sort if sort in db.SORTS else None,
                     limit=limit, offset=offset)
     return {"total": res.total, "results": [_bill_json(r) for r in res.rows]}
 
