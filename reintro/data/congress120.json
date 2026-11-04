@@ -1,25 +1,25 @@
 {
  "congress": 120,
  "election": "2026-11-03",
- "generated_at": "2026-11-04T18:26:14Z",
+ "generated_at": "2026-11-04T20:19:50Z",
  "sources": [
   {
    "title": "120th United States Congress",
-   "revid": null,
-   "timestamp": "2026-11-04T18:03:01Z",
-   "url": "https://en.wikipedia.org/wiki/120th_United_States_Congress"
+   "revid": 1383776211,
+   "timestamp": "2026-11-04T20:15:44Z",
+   "url": "https://en.wikipedia.org/w/index.php?oldid=1383776211"
   },
   {
    "title": "2026 United States House of Representatives elections",
-   "revid": null,
-   "timestamp": null,
-   "url": "https://en.wikipedia.org/wiki/2026_United_States_House_of_Representatives_elections"
+   "revid": 1383776541,
+   "timestamp": "2026-11-04T20:18:02Z",
+   "url": "https://en.wikipedia.org/w/index.php?oldid=1383776541"
   },
   {
    "title": "2026 United States Senate elections",
-   "revid": null,
-   "timestamp": null,
-   "url": "https://en.wikipedia.org/wiki/2026_United_States_Senate_elections"
+   "revid": 1383776225,
+   "timestamp": "2026-11-04T20:15:46Z",
+   "url": "https://en.wikipedia.org/w/index.php?oldid=1383776225"
   },
   {
    "title": "congress-legislators",
@@ -30,17 +30,17 @@
   "seats": 541,
   "seats_called": {
    "senate": 96,
-   "house": 396
+   "house": 400
   },
   "seats_pending": {
    "senate": 4,
-   "house": 45
+   "house": 41
   },
-  "new_members_elect": 98,
+  "new_members_elect": 99,
   "members": {
    "outgoing": 116,
-   "pending": 36,
-   "returning": 394
+   "pending": 33,
+   "returning": 397
   }
  },
  "seats": [
@@ -1228,11 +1228,11 @@
    "chamber": "house",
    "state": "AR",
    "seat": "2",
-   "called": false,
-   "name": null,
-   "wikipedia": null,
-   "party": null,
-   "bioguide": null
+   "called": true,
+   "name": "French Hill",
+   "wikipedia": "French Hill (politician)",
+   "party": "R",
+   "bioguide": "H001072"
   },
   {
    "chamber": "house",
@@ -1588,9 +1588,9 @@
    "chamber": "house",
    "state": "CA",
    "seat": "34",
-   "called": false,
-   "name": null,
-   "wikipedia": null,
+   "called": true,
+   "name": "Angela Gonzales-Torres",
+   "wikipedia": "Angela Gonzales-Torres",
    "party": "D",
    "bioguide": null
   },
@@ -1718,20 +1718,20 @@
    "chamber": "house",
    "state": "CA",
    "seat": "47",
-   "called": false,
-   "name": null,
-   "wikipedia": null,
-   "party": null,
-   "bioguide": null
+   "called": true,
+   "name": "Dave Min",
+   "wikipedia": "Dave Min",
+   "party": "D",
+   "bioguide": "M001241"
   },
   {
    "chamber": "house",
    "state": "CA",
    "seat": "48",
-   "called": false,
-   "name": null,
-   "wikipedia": null,
-   "party": null,
+   "called": true,
+   "name": "Marni von Wilpert",
+   "wikipedia": "Marni von Wilpert",
+   "party": "D",
    "bioguide": null
   },
   {
@@ -3060,7 +3060,7 @@
    "seat": "4",
    "called": true,
    "name": "Sean McCann",
-   "wikipedia": "Sean McCann",
+   "wikipedia": "Sean McCann (politician)",
    "party": "D",
    "bioguide": null
   },
@@ -3090,7 +3090,7 @@
    "seat": "7",
    "called": true,
    "name": "William Lawrence",
-   "wikipedia": "William Lawrence",
+   "wikipedia": "William Lawrence (activist)",
    "party": "D",
    "bioguide": null
   },
@@ -4350,7 +4350,7 @@
    "seat": "7",
    "called": true,
    "name": "Bob Brooks",
-   "wikipedia": "Bob Brooks",
+   "wikipedia": "Bob Brooks (Pennsylvania politician)",
    "party": "D",
    "bioguide": null
   },
@@ -4862,7 +4862,7 @@
    "name": "Trever Nehls",
    "wikipedia": "Trever Nehls",
    "party": "R",
-   "bioguide": null
+   "bioguide": "N000026"
   },
   {
    "chamber": "house",
@@ -6292,7 +6292,7 @@
     "seat": "7"
    },
    "status": "outgoing",
-   "detail": "Not elected to the 120th Congress"
+   "detail": "Incumbent lost re-election. Democratic gain."
   },
   "B001322": {
    "name": "Michael Baumgartner",
@@ -8278,14 +8278,8 @@
     "state": "CA",
     "seat": "34"
    },
-   "status": "pending",
-   "race": {
-    "chamber": "house",
-    "state": "CA",
-    "seat": "34",
-    "special": false
-   },
-   "detail": "Race not yet called (CA-34)"
+   "status": "outgoing",
+   "detail": "Incumbent lost re-election. Democratic hold."
   },
   "G000586": {
    "name": "Jesús G. \"Chuy\" García",
@@ -8681,7 +8675,7 @@
     "seat": "4"
    },
    "status": "outgoing",
-   "detail": "Not elected to the 120th Congress"
+   "detail": "Incumbent lost re-election. Democratic gain."
   },
   "H001061": {
    "name": "John Hoeven",
@@ -8752,14 +8746,12 @@
     "state": "AR",
     "seat": "2"
    },
-   "status": "pending",
-   "race": {
+   "status": "returning",
+   "next": {
     "chamber": "house",
     "state": "AR",
-    "seat": "2",
-    "special": false
-   },
-   "detail": "Race not yet called (AR-2)"
+    "seat": "2"
+   }
   },
   "H001076": {
    "name": "Margaret Wood Hassan",
@@ -9303,7 +9295,7 @@
     "seat": "10"
    },
    "status": "outgoing",
-   "detail": "Incumbent retiring to run for governor"
+   "detail": "Incumbent retired to run for governor. Democratic gain."
   },
   "J000309": {
    "name": "Jonathan L. Jackson",
@@ -11066,14 +11058,12 @@
     "state": "CA",
     "seat": "47"
    },
-   "status": "pending",
-   "race": {
+   "status": "returning",
+   "next": {
     "chamber": "house",
     "state": "CA",
-    "seat": "47",
-    "special": false
-   },
-   "detail": "Race not yet called (CA-47)"
+    "seat": "47"
+   }
   },
   "M001242": {
    "name": "Bernie Moreno",
@@ -11192,8 +11182,12 @@
     "state": "TX",
     "seat": "22"
    },
-   "status": "outgoing",
-   "detail": "Incumbent retired."
+   "status": "returning",
+   "next": {
+    "chamber": "house",
+    "state": "TX",
+    "seat": "22"
+   }
   },
   "N000147": {
    "name": "Eleanor Holmes Norton",
@@ -13239,7 +13233,7 @@
     "seat": "22"
    },
    "status": "outgoing",
-   "detail": "Not elected to the 120th Congress"
+   "detail": "Incumbent lost re-election. Democratic gain."
   },
   "V000130": {
    "name": "Juan Vargas",
@@ -13307,7 +13301,7 @@
     "seat": "3"
    },
    "status": "outgoing",
-   "detail": "Not elected to the 120th Congress"
+   "detail": "Incumbent lost re-election. Democratic gain."
   },
   "V000136": {
    "name": "Gabe Vasquez",
