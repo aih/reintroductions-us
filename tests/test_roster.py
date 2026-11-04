@@ -96,3 +96,17 @@ def test_next_congress_filters(con):
 
 def test_a_linked_incumbent_carries_the_reason(tmp_path):
     assert build(tmp_path)["members"]["H001104"]["detail"] == "Interim appointee lost election. Democratic gain."
+
+
+def test_a_redirect_to_a_relative_is_not_a_match():
+    """Wikipedia's "Trever Nehls" redirects to "Troy Nehls"; TX-22's member-elect is Trever."""
+    src = lambda n: (SRC / n).read_text()  # noqa: E731
+    current = json.loads(src("legislators-current.json"))
+    data = roster.build_roster(src("roster.wiki"), src("house.wiki"), src("senate.wiki"), current,
+                               json.loads(src("legislators-historical.json")), {"Trever Nehls": "Troy Nehls"})
+    assert data["members"]["N000026"]["status"] == "outgoing"
+    tx22 = next(s for s in data["seats"] if s["state"] == "TX" and s["seat"] == "22")
+    assert tx22["bioguide"] is None
+    data = roster.build_roster(src("roster.wiki"), src("house.wiki"), src("senate.wiki"), current,
+                               json.loads(src("legislators-historical.json")), {"Lauren Boebert (politician)": "Lauren Boebert"})
+    assert data["members"]["B000825"]["status"] == "pending"

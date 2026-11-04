@@ -188,14 +188,14 @@ def _rows(table_text: str) -> list[str]:
     return re.split(r"\n\|-[^\n]*", table_text)
 
 
-def _candidates(row: str) -> list[str]:
-    """Wikipedia titles of the candidates listed in a race row (lines starting with `*`)."""
+def _candidates(row: str) -> list[tuple[str, str]]:
+    """(Wikipedia title, name) of the candidates listed in a race row (lines starting with `*`)."""
     out = []
     for line in row.splitlines():
         if line.lstrip().startswith("*"):
-            t, _ = _link(re.sub(r"\{\{Party stripe\|[^}]*\}\}", "", _strip_refs(line)))
+            t, label = _link(re.sub(r"\{\{Party stripe\|[^}]*\}\}", "", _strip_refs(line)))
             if t:
-                out.append(t)
+                out.append((t, label))
     return out
 
 
@@ -257,7 +257,9 @@ def parse_races(house: str, senate: str) -> list[dict]:
 
 
 def _add_row(race: dict, row: str) -> None:
-    race["candidates"] += _candidates(row)
+    for t, label in _candidates(row):
+        race["candidates"].append(t)
+        race.setdefault("names", {})[t] = label
     if re.search(r"\{\{aye\}\}", row, re.I):
         race["called"] = True
     for m in re.finditer(r"\{\{sortname\|([^}]*)\}\}", row):
@@ -353,13 +355,25 @@ def build_roster(roster_text: str, house_text: str, senate_text: str, current: l
         if t:
             by_title[t] = p
             by_title[canon(t)] = p
+    def lookup(title: str | None, name: str | None) -> dict | None:
+        """The member a title names. A title that reaches a member only through a Wikipedia
+        redirect must also share the member's first name: a redirect can point at a relative's
+        article (Trever Nehls → Troy Nehls)."""
+        if not title:
+            return None
+        p = by_title.get(_norm(title))
+        if p is not None:
+            return p
+        p = by_title.get(canon(title))
+        return p if p is not None and _first_name_matches(p, name) else None
+
     seats = parse_roster(roster_text)
     races = parse_races(house_text, senate_text)
     cur_ids = {p["id"]["bioguide"]: p for p in current}
 
     elected: dict[str, dict] = {}
     for s in seats:
-        p = by_title.get(canon(s["wikipedia"])) if s["called"] else None
+        p = lookup(s["wikipedia"], s["name"]) if s["called"] else None
         if p is None and s["called"]:
             p = _same_name(current, s)
         s["bioguide"] = p["id"]["bioguide"] if p else None
@@ -379,19 +393,19 @@ def build_roster(roster_text: str, house_text: str, senate_text: str, current: l
     candidate_of: dict[str, dict] = {}
     for r in open_races:
         for t in r["candidates"]:
-            p = by_title.get(canon(t))
+            p = lookup(t, (r.get("names") or {}).get(t))
             if p:
                 candidate_of.setdefault(p["id"]["bioguide"], r)
     reason: dict[str, str] = {}
     for r in races:
         for inc in r["incumbents"]:
-            p = by_title.get(canon(inc["wikipedia"]))
+            p = lookup(inc["wikipedia"], inc["name"])
             if p and inc["status"]:
                 reason.setdefault(p["id"]["bioguide"], inc["status"])
 
     members: dict[str, dict] = {}
     for bid in sorted(set(cur_ids) | set(elected)):
-        p = cur_ids.get(bid) or by_title.get(canon(elected[bid]["wikipedia"]))
+        p = cur_ids.get(bid) or lookup(elected[bid]["wikipedia"], elected[bid]["name"])
         term = p["terms"][-1]
         now = None
         if bid in cur_ids:
@@ -421,6 +435,15 @@ def build_roster(roster_text: str, house_text: str, senate_text: str, current: l
             m["detail"] = r if r and LEAVING_RX.search(r) else "Not elected to the 120th Congress"
         members[bid] = m
     return {"seats": seats, "members": members}
+
+
+def _first_name_matches(p: dict, name: str | None) -> bool:
+    words = (name or "").split()
+    if not words:
+        return False
+    n = p.get("name") or {}
+    first = NICKNAMES.get(words[0].lower(), words[0].lower())
+    return first in {NICKNAMES.get(x, x) for x in (n.get("first", "").lower(), (n.get("nickname") or "").lower())}
 
 
 def _same_name(current: list[dict], seat: dict) -> dict | None:
